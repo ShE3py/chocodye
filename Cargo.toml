@@ -1,0 +1,8 @@
+[package]
+name = "chocodye"
+version = "0.1.0"
+authors = ["ShE3py"]
+repository = "https://github.com/ShE3py/chocodye"
+edition = "2021"
+rust-version = "1.69"
+license = "MIT OR Apache-2.0"
