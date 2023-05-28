@@ -6,3 +6,11 @@ repository = "https://github.com/ShE3py/chocodye"
 edition = "2021"
 rust-version = "1.69"
 license = "MIT OR Apache-2.0"
+
+[build-dependencies.quick-xml]
+version = "0.28.2"
+features = ["serialize"]
+
+[build-dependencies.serde]
+version = "1.0.163"
+features = ["derive"]
