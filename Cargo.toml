@@ -7,6 +7,30 @@ edition = "2021"
 rust-version = "1.69"
 license = "MIT OR Apache-2.0"
 
+[features]
+fluent = ["dep:fluent", "dep:fluent-syntax", "dep:unic-langid", "dep:log"]
+
+[[example]]
+name = "truecolor"
+required-features = ["fluent"]
+
+[dependencies.fluent]
+version = "0.16.0"
+optional = true
+
+[dependencies.fluent-syntax]
+version = "0.11.0"
+optional = true
+
+[dependencies.unic-langid]
+version = "0.9.1"
+features = ["macros"]
+optional = true
+
+[dependencies.log]
+version = "0.4.18"
+optional = true
+
 [build-dependencies.quick-xml]
 version = "0.28.2"
 features = ["serialize"]

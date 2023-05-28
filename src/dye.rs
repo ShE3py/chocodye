@@ -8,6 +8,59 @@ impl From<Dye> for Rgb {
     }
 }
 
+#[cfg(feature = "fluent")]
+fn full_name<R: std::borrow::Borrow<fluent::FluentResource>, M: fluent::memoizer::MemoizerKind>(dye: Dye, bundle: &fluent::bundle::FluentBundle<R, M>) -> String {
+    use log::error;
+
+    match bundle.get_message(dye.short_name()) {
+        Some(msg) => match msg.value() {
+            Some(pattern) => {
+                let mut errors = Vec::new();
+                let result = bundle.format_pattern(pattern, None, &mut errors);
+
+                if errors.is_empty() {
+                    match bundle.get_message("dye") {
+                        Some(msg) => {
+                            match msg.value() {
+                                Some(pattern) => {
+                                    let mut args = fluent::FluentArgs::new();
+                                    args.set("name", result);
+
+                                    let result = bundle.format_pattern(pattern, Some(&args), &mut errors);
+
+                                    if errors.is_empty() {
+                                        return result.into_owned();
+                                    }
+                                    else {
+                                        error!(target: "dye", "unable to format message `dye`:");
+
+                                        for error in errors {
+                                            error!(target: dye.short_name(), "{}", error)
+                                        }
+                                    }
+                                },
+                                None => error!(target: "dye", "message `dye` has no value")
+                            }
+                        },
+                        None => error!(target: "dye", "missing message `dye`")
+                    }
+                }
+                else {
+                    error!(target: dye.short_name(), "unable to format message `{}`:", dye.short_name());
+
+                    for error in errors {
+                        error!(target: dye.short_name(), "{}", error)
+                    }
+                }
+            },
+            None => error!(target: dye.short_name(), "message `{}` has no value", dye.short_name())
+        },
+        None => error!(target: dye.short_name(), "missing message `{}`", dye.short_name())
+    };
+
+    dye.short_name().to_owned()
+}
+
 impl TryFrom<Rgb> for Dye {
     type Error = Dye;
 

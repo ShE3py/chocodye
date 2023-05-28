@@ -85,7 +85,7 @@ impl fmt::Debug for Rgb {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub enum ParseHexError {
     BadLen,
     MissingHash,
