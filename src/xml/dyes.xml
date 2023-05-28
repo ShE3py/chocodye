@@ -18,7 +18,7 @@
         <dye name="wine-red" stain="#451511" />
         <dye name="coral-pink" stain="#cc6c5e" />
         <dye name="blood-red" stain="#913b27" />
-        <dye name="salmon-red" stain="#e4aa8a" />
+        <dye name="salmon-pink" stain="#e4aa8a" />
         <dye name="ruby-red" stain="#e40011" choco="false" />
         <dye name="cherry-pink" stain="#f5379b" choco="false" />
     </category>
