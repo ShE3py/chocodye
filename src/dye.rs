@@ -1,3 +1,6 @@
+#[cfg(feature = "fluent")]
+use {fluent::{bundle::FluentBundle, FluentResource, memoizer::MemoizerKind, FluentArgs}, log::error, std::borrow::{Borrow, Cow}};
+
 use crate::Rgb;
 
 include!(concat!(env!("OUT_DIR"), "/dye.rs"));
@@ -9,9 +12,41 @@ impl From<Dye> for Rgb {
 }
 
 #[cfg(feature = "fluent")]
-fn full_name<R: std::borrow::Borrow<fluent::FluentResource>, M: fluent::memoizer::MemoizerKind>(dye: Dye, bundle: &fluent::bundle::FluentBundle<R, M>) -> String {
-    use log::error;
+fn full_name<R: Borrow<FluentResource>, M: MemoizerKind>(dye: Dye, bundle: &FluentBundle<R, M>) -> String {
+    let color_name = color_name(dye, &bundle);
 
+    match bundle.get_message("dye") {
+        Some(msg) => {
+            match msg.value() {
+                Some(pattern) => {
+                    let mut args = FluentArgs::new();
+                    args.set("name", color_name.clone());
+
+                    let mut errors = Vec::new();
+                    let result = bundle.format_pattern(pattern, Some(&args), &mut errors);
+
+                    if errors.is_empty() {
+                        return result.into_owned();
+                    }
+                    else {
+                        error!(target: "fluent", "unable to format message `dye`:");
+
+                        for error in errors {
+                            error!(target: "fluent", "{}", error);
+                        }
+                    }
+                },
+                None => error!(target: "fluent", "message `dye` has no value")
+            }
+        },
+        None => error!(target: "fluent", "missing message `dye`")
+    }
+
+    format!("{}.dye", color_name)
+}
+
+#[cfg(feature = "fluent")]
+fn color_name<R: Borrow<FluentResource>, M: MemoizerKind>(dye: Dye, bundle: &FluentBundle<R, M>) -> Cow<str> {
     match bundle.get_message(dye.short_name()) {
         Some(msg) => match msg.value() {
             Some(pattern) => {
@@ -19,46 +54,21 @@ fn full_name<R: std::borrow::Borrow<fluent::FluentResource>, M: fluent::memoizer
                 let result = bundle.format_pattern(pattern, None, &mut errors);
 
                 if errors.is_empty() {
-                    match bundle.get_message("dye") {
-                        Some(msg) => {
-                            match msg.value() {
-                                Some(pattern) => {
-                                    let mut args = fluent::FluentArgs::new();
-                                    args.set("name", result);
-
-                                    let result = bundle.format_pattern(pattern, Some(&args), &mut errors);
-
-                                    if errors.is_empty() {
-                                        return result.into_owned();
-                                    }
-                                    else {
-                                        error!(target: "dye", "unable to format message `dye`:");
-
-                                        for error in errors {
-                                            error!(target: dye.short_name(), "{}", error)
-                                        }
-                                    }
-                                },
-                                None => error!(target: "dye", "message `dye` has no value")
-                            }
-                        },
-                        None => error!(target: "dye", "missing message `dye`")
-                    }
-                }
-                else {
-                    error!(target: dye.short_name(), "unable to format message `{}`:", dye.short_name());
+                    return result;
+                } else {
+                    error!(target: "fluent", "unable to format message `{}`", dye.short_name());
 
                     for error in errors {
-                        error!(target: dye.short_name(), "{}", error)
+                        error!(target: "fluent", "{}", error);
                     }
                 }
             },
-            None => error!(target: dye.short_name(), "message `{}` has no value", dye.short_name())
+            None => error!(target: "fluent", "message `{}` has no value", dye.short_name())
         },
-        None => error!(target: dye.short_name(), "missing message `{}`", dye.short_name())
-    };
+        None => error!(target: "fluent", "missing message `{}`", dye.short_name())
+    }
 
-    dye.short_name().to_owned()
+    Cow::Borrowed(dye.short_name())
 }
 
 impl TryFrom<Rgb> for Dye {

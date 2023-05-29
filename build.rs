@@ -111,8 +111,13 @@ impl Dye {{
     }}
 
     #[cfg(feature = "fluent")]
-    pub fn full_name<R: std::borrow::Borrow<fluent::FluentResource>, M: fluent::memoizer::MemoizerKind>(self, bundle: &fluent::bundle::FluentBundle<R, M>) -> String {{
+    pub fn full_name<R: Borrow<FluentResource>, M: MemoizerKind>(self, bundle: &FluentBundle<R, M>) -> String {{
         full_name(self, bundle)
+    }}
+
+    #[cfg(feature = "fluent")]
+    pub fn color_name<R: Borrow<FluentResource>, M: MemoizerKind>(self, bundle: &FluentBundle<R, M>) -> Cow<str> {{
+        color_name(self, bundle)
     }}
 }}"#,
                      variants = variants.join(",\n\t"),

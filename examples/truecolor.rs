@@ -4,6 +4,6 @@ fn  main() {
     let bundles: Vec<_> = Lang::values().iter().map(|lang| lang.into_bundle()).collect();
 
     for bundle in &bundles {
-        println!("{} ", Dye::AdamantoiseGreen.full_name(bundle));
+        println!("{}", Dye::AdamantoiseGreen.color_name(bundle));
     }
 }
