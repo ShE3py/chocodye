@@ -1,4 +1,4 @@
-pub use dye::{Category, Dye};
+pub use dye::{Category, Dye, ansi_text};
 pub use rgb::{ParseHexError, Rgb};
 pub use snack::Snack;
 

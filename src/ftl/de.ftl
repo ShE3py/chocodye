@@ -37,6 +37,14 @@ pineapple =
 -lemon = eine Han-Zitrone
 
 dye = { $name } Farbstoff
+white = Weiße Farbstoffe
+red = Rote Farbstoffe
+brown = Braune Farbstoffe
+yellow = Gelbe Farbstoffe
+green = Grüne Farbstoffe
+blue = Blaue Farbstoffe
+purple = Violette Farbstoffe
+
 snow-white = Schneeweißer
 ash-grey = Aschgrauer
 goobbue-grey = Goobbuegrauer

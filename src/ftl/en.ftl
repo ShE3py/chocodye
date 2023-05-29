@@ -37,6 +37,14 @@ pineapple =
 -lemon = a Han Lemon
 
 dye = { $name } Dye
+white = White Dyes
+red = Red Dyes
+brown = Brown Dyes
+yellow = Yellow Dyes
+green = Green Dyes
+blue = Blue Dyes
+purple = Purple Dyes
+
 snow-white = Snow White
 ash-grey = Ash Grey
 goobbue-grey = Goobbue Grey

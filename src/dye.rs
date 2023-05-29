@@ -12,12 +12,12 @@ impl From<Dye> for Rgb {
     }
 }
 
-fn ansi_text(dye: Dye, s: &str) -> String {
-    let bg = {
+pub fn ansi_text(bg: Rgb, s: &str) -> String {
+    let fg = {
         const WHITE: Rgb = Rgb::new(255, 255, 255);
         const BLACK: Rgb = Rgb::new(0, 0, 0);
 
-        let d = dye.color().distance(WHITE);
+        let d = bg.distance(WHITE);
         const LIMIT: u32 = Rgb::new(127, 127, 127).distance(WHITE);
 
         if d >= LIMIT {
@@ -29,9 +29,9 @@ fn ansi_text(dye: Dye, s: &str) -> String {
     };
 
     format!("\x1B[48;2;{};{};{}m\x1B[38;2;{};{};{}m{}\x1B[0m",
-            dye.color().r, dye.color().g, dye.color().b,
-            bg.r, bg.g, bg.b,
-            s
+        bg.r, bg.g, bg.b,
+        fg.r, fg.g, fg.b,
+        s
     )
 }
 

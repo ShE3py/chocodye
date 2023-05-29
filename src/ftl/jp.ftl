@@ -1,4 +1,5 @@
 dye = カララント:{ $name }
+
 snow-white = スノウホワイト
 ash-grey = アッシュグレイ
 goobbue-grey = グゥーブーグレイ

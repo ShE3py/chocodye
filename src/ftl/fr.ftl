@@ -37,6 +37,14 @@ pineapple =
 -lemon = un citron de Radz-at-Han
 
 dye = Teinture { $name }
+white = Teintures blanches
+red = Teintures rouges
+brown = Teintures brunes
+yellow = Teintures jaunes
+green = Teintures vertes
+blue = Teintures bleues
+purple = Teintures violettes
+
 snow-white = blanc neige
 ash-grey = gris cendre
 goobbue-grey = gris goobbue
