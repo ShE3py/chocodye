@@ -71,6 +71,29 @@ fn color_name<R: Borrow<FluentResource>, M: MemoizerKind>(dye: Dye, bundle: &Flu
     Cow::Borrowed(dye.short_name())
 }
 
+fn ansi_text(dye: Dye, s: &str) -> String {
+    let bg = {
+        const WHITE: Rgb = Rgb::new(255, 255, 255);
+        const BLACK: Rgb = Rgb::new(0, 0, 0);
+
+        let d = dye.color().distance(WHITE);
+        const LIMIT: u32 = Rgb::new(127, 127, 127).distance(WHITE);
+
+        if d >= LIMIT {
+            WHITE
+        }
+        else {
+            BLACK
+        }
+    };
+
+    format!("\x1B[48;2;{};{};{}m\x1B[38;2;{};{};{}m{}\x1B[0m",
+            dye.color().r, dye.color().g, dye.color().b,
+            bg.r, bg.g, bg.b,
+            s
+    )
+}
+
 impl TryFrom<Rgb> for Dye {
     type Error = Dye;
 
