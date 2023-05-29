@@ -1,8 +1,12 @@
-pub use dye::Dye;
-#[cfg(feature = "fluent")]
-pub use crate::fluent::{Lang, FluentBundle};
+pub use dye::{Category, Dye};
 pub use rgb::{ParseHexError, Rgb};
 pub use snack::Snack;
+
+#[cfg(feature = "fluent")]
+pub use crate::fluent::{FluentBundle, Lang};
+
+#[cfg(feature = "fluent")]
+pub(crate) use crate::fluent::__format_message;
 
 mod dye;
 mod rgb;

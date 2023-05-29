@@ -1,13 +1,76 @@
 #![cfg(feature = "fluent")]
 
+use std::borrow::{Borrow, Cow};
 use std::error::Error;
 use std::fmt::{self, Formatter};
 use std::str::FromStr;
 
-use fluent::FluentResource;
+use fluent::{FluentArgs, FluentResource};
+use fluent::memoizer::MemoizerKind;
+use fluent::resolver::Scope;
 use fluent_syntax::parser::ParserError;
 use log::error;
 use unic_langid::{langid, LanguageIdentifier};
+
+macro_rules! message {
+    ($bundle:expr, $id:expr) => {
+        $crate::__format_message($bundle, $id, None)
+    };
+
+    ($bundle:expr, $id:expr, { $($k:literal = $v:expr),+ }) => {{
+        let mut args = fluent::FluentArgs::new();
+        $(args.set($k, $v);)+
+
+        $crate::__format_message($bundle, $id, Some(args))
+    }};
+}
+
+pub(crate) use message;
+
+pub(crate) fn __format_message<'a, R, M>(bundle: &'a fluent::bundle::FluentBundle<R, M>, id: &'static str, args: Option<FluentArgs<'a>>) -> Cow<'a, str> where R: Borrow<FluentResource>, M: MemoizerKind {
+    match bundle.get_message(id) {
+        Some(msg) => match msg.value() {
+            Some(pattern) => {
+                let mut errors = Vec::new();
+
+                match &args {
+                    Some(args) => {
+                        let result = bundle.format_pattern(pattern, Some(args), &mut errors);
+
+                        if errors.is_empty() {
+                            return Cow::Owned(result.into_owned());
+                        }
+                    },
+                    None => {
+                        let result = bundle.format_pattern(pattern, None, &mut errors);
+
+                        if errors.is_empty() {
+                            return result;
+                        }
+                    }
+                }
+
+                error!(target: "fluent", "unable to format message `{}`", id);
+
+                for error in errors {
+                    error!(target: "fluent", "{}", error);
+                }
+            },
+            None => error!(target: "fluent", "message `{}` has no value", id)
+        },
+        None => error!(target: "fluent", "missing message `{}`", id)
+    }
+
+    if let Some(args) = args {
+        let scope = Scope::new(&bundle, None, None);
+        let args = args.into_iter().map(|(_, v)| v.as_string(&scope)).collect::<Vec<_>>().join(", ");
+
+        Cow::Owned(format!("{}({})", id, args))
+    }
+    else {
+        Cow::Borrowed(id)
+    }
+}
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 pub enum Lang {
@@ -115,6 +178,5 @@ impl fmt::Display for ParseLangError {
         f.write_str("unknow short code")
     }
 }
-
 
 impl Error for ParseLangError {}
