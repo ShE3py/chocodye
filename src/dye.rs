@@ -1,6 +1,5 @@
 #[cfg(feature = "fluent")]
-use {fluent::{bundle::FluentBundle, FluentResource, memoizer::MemoizerKind}, std::borrow::{Borrow, Cow}};
-use crate::fluent::message;
+use {crate::fluent::message, fluent::{bundle::FluentBundle, FluentResource, memoizer::MemoizerKind}, std::borrow::{Borrow, Cow}};
 
 use crate::Rgb;
 
@@ -72,6 +71,12 @@ impl TryFrom<Rgb> for Dye {
         }
 
         Err(min.1)
+    }
+}
+
+impl Default for Dye {
+    fn default() -> Dye {
+        Dye::DesertYellow
     }
 }
 
