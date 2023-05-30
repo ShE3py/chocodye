@@ -27,6 +27,7 @@ macro_rules! message {
     }};
 }
 
+#[doc(hidden)]
 pub fn __format_message<'a, R, M>(bundle: &'a fluent::bundle::FluentBundle<R, M>, id: &'static str, args: Option<FluentArgs<'a>>) -> Cow<'a, str> where R: Borrow<FluentResource>, M: MemoizerKind {
     match bundle.get_message(id) {
         Some(msg) => match msg.value() {

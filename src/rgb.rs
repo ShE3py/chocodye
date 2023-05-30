@@ -2,18 +2,73 @@ use std::error::Error;
 use std::fmt::{self, Formatter};
 use std::num::ParseIntError;
 
+/// A color represented by three `u8` components.
 #[derive(Copy, Clone, Eq, PartialEq, Hash)]
 pub struct Rgb {
+    /// The red component.
     pub r: u8,
+
+    /// The green component.
     pub g: u8,
+
+    /// The blue component.
     pub b: u8
 }
 
 impl Rgb {
+    /// `(255, 255, 255)`
+    pub const WHITE: Rgb = Rgb::new(255, 255, 255);
+
+    /// `(0, 0, 0)`
+    pub const BLACK: Rgb = Rgb::new(0, 0, 0);
+
+    /// `(255, 0, 0)`
+    pub const RED: Rgb = Rgb::new(255, 0, 0);
+
+    /// `(0, 255, 0)`
+    pub const GREEN: Rgb = Rgb::new(0, 255, 0);
+
+    /// `(0, 0, 255)`
+    pub const BLUE: Rgb = Rgb::new(0, 0, 255);
+
+    /// `(255, 255, 0)`
+    pub const YELLOW: Rgb = Rgb::new(255, 255, 0);
+
+    /// `(0, 255, 255)`
+    pub const CYAN: Rgb = Rgb::new(0, 255, 255);
+
+    /// `(255, 0, 255)`
+    pub const MAGENTA: Rgb = Rgb::new(255, 0, 255);
+
+    /// Creates a new color.
     pub const fn new(r: u8, g: u8, b: u8) -> Rgb {
         Rgb { r, g, b }
     }
 
+    /// Create a new color with all three components set to the same value.
+    ///
+    /// # Exemples
+    ///
+    /// ```
+    /// use chocodye::Rgb;
+    ///
+    /// assert_eq!(Rgb::gray(127), Rgb::new(127, 127, 127));
+    /// ```
+    pub const fn gray(rgb: u8) -> Rgb {
+        Rgb { r: rgb, g: rgb, b: rgb }
+    }
+
+    /// Parses a hex color.
+    ///
+    /// # Exemples
+    ///
+    /// ```
+    /// use chocodye::Rgb;
+    ///
+    /// assert_eq!(Rgb::from_hex("#ffffff"), Ok(Rgb::new(255, 255, 255)));
+    /// assert!(Rgb::from_hex("#fff").is_err());
+    /// assert!(Rgb::from_hex("ffffff").is_err());
+    /// ```
     pub fn from_hex(s: &str) -> Result<Rgb, ParseHexError> {
         if s.len() != 7 {
             Err(ParseHexError::BadLen)
@@ -26,6 +81,17 @@ impl Rgb {
         }
     }
 
+    /// Checked addition with three signed components.
+    /// Computes `self + rgb`, returning `None` if overflow occured.
+    ///
+    /// # Exemples
+    ///
+    /// ```
+    /// use chocodye::Rgb;
+    ///
+    /// assert_eq!(Rgb::new(20, 30, 40).checked_add_signed(2, -2, 0), Some(Rgb::new(22, 28, 40)));
+    /// assert_eq!(Rgb::new(10, 2, 250).checked_add_signed(4, -5, 1), None); // `g` would underflow.
+    /// ```
     pub const fn checked_add_signed(self, r: i8, g: i8, b: i8) -> Option<Rgb> {
         // FIXME: use const ? when stable
         macro_rules! checked_add_signed {
@@ -44,6 +110,17 @@ impl Rgb {
         })
     }
 
+    /// Computes the [squared Euclidian distance](https://en.wikipedia.org/wiki/Euclidean_distance#Squared_Euclidean_distance)
+    /// between `self` and `other`. Does *not* take human perception into consideration. Useful for intermediate algorithms.
+    ///
+    /// # Exemples
+    ///
+    /// ```
+    /// use chocodye::Rgb;
+    ///
+    /// assert_eq!(Rgb::WHITE.distance(Rgb::WHITE), 0);
+    /// assert_eq!(Rgb::gray(8).distance(Rgb::gray(16)), Rgb::gray(24).distance(Rgb::gray(16)));
+    /// ```
     pub const fn distance(self, other: Rgb) -> u32 {
         let dx = (self.r as i32) - (other.r as i32);
         let dy = (self.g as i32) - (other.g as i32);
@@ -52,12 +129,37 @@ impl Rgb {
         (dx * dx) as u32 + (dy * dy) as u32 + (dz * dz) as u32
     }
 
+    /// Computes the [luma](https://en.wikipedia.org/wiki/Luma_(video)), the brightness of `self`.
+    /// Takes human perception into account. Useful for sorting colors.
+    ///
+    /// # Exemples
+    ///
+    /// ```
+    /// use chocodye::Rgb;
+    ///
+    /// assert_eq!(Rgb::WHITE.luma(), 255);
+    /// assert_eq!(Rgb::BLACK.luma(), 0);
+    ///
+    /// assert_eq!(Rgb::new(10, 20, 30).luma(), 18);
+    /// assert_eq!(Rgb::new(20, 40, 60).luma(), 36);
+    ///
+    /// assert!(Rgb::GREEN.luma() > Rgb::RED.luma()); // Humans are more sensitive to green.
+    /// ```
     pub fn luma(self) -> u8 {
         (0.299 * (self.r as f32) + 0.587 * (self.g as f32) + 0.114 * (self.b as f32)) as u8
     }
 }
 
 impl From<u32> for Rgb {
+    /// Converts an `u32` in `RRGGBBAA` format to its corresponding color. The alpha bits are ignored.
+    ///
+    /// # Exemples
+    ///
+    /// ```
+    /// use chocodye::Rgb;
+    ///
+    /// assert_eq!(Rgb::from(0x01020300), Rgb::new(1, 2, 3));
+    /// ```
     fn from(value: u32) -> Rgb {
         Rgb {
             r: ((value >> 24) & 0xFF) as u8,
@@ -68,14 +170,25 @@ impl From<u32> for Rgb {
 }
 
 impl From<Rgb> for u32 {
+    /// Converts this color to an `u32` in `RRGGBBAA` format. The alpha bits are set to `0xFF`.
+    ///
+    /// # Exemples
+    ///
+    /// ```
+    /// use chocodye::Rgb;
+    ///
+    /// assert_eq!(u32::from(Rgb::new(1, 2, 3)), 0x010203FF);
+    /// assert_ne!(u32::from(Rgb::from(0x0ABCDEF0)), 0x0ABCDEF0); // The alpha bits are lost.
+    /// ```
     fn from(value: Rgb) -> u32 {
         ((value.r as u32) << 24) | ((value.g as u32) << 16) | ((value.b as u32) << 8) | 0xFF
     }
 }
 
 impl Default for Rgb {
+    /// The default color is arbitrarily set to `#5bcefa`, a light blue.
     fn default() -> Rgb {
-        Rgb::new(0, 0, 0)
+        Rgb::new(91, 206, 250)
     }
 }
 
@@ -89,10 +202,18 @@ impl fmt::Debug for Rgb {
     }
 }
 
+/// An error that can be returned when parsing a hexadecimal color.
+///
+/// This error is used as the error type for the [`Rgb::from_hex`] function.
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub enum ParseHexError {
+    /// The string length is not seven (`#rrggbb`).
     BadLen,
+
+    /// The string does not begin with a hashtag (`#`).
     MissingHash,
+
+    /// The string contains an invalid digit.
     BadInt(ParseIntError)
 }
 

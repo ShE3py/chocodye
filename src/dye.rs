@@ -13,17 +13,15 @@ impl From<Dye> for Rgb {
 
 pub fn ansi_text(bg: Rgb, s: &str) -> String {
     let fg = {
-        const WHITE: Rgb = Rgb::new(255, 255, 255);
-        const BLACK: Rgb = Rgb::new(0, 0, 0);
+        let d = bg.distance(Rgb::WHITE);
 
-        let d = bg.distance(WHITE);
-        const LIMIT: u32 = Rgb::new(127, 127, 127).distance(WHITE);
+        const LIMIT: u32 = Rgb::gray(127).distance(Rgb::WHITE);
 
         if d >= LIMIT {
-            WHITE
+            Rgb::WHITE
         }
         else {
-            BLACK
+            Rgb::BLACK
         }
     };
 
