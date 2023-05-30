@@ -12,6 +12,8 @@ use fluent_syntax::parser::ParserError;
 use log::error;
 use unic_langid::{langid, LanguageIdentifier};
 
+/// `message!(bundle, id, { $(key = value),+ })`
+#[macro_export]
 macro_rules! message {
     ($bundle:expr, $id:expr) => {
         $crate::__format_message($bundle, $id, None)
@@ -25,9 +27,7 @@ macro_rules! message {
     }};
 }
 
-pub(crate) use message;
-
-pub(crate) fn __format_message<'a, R, M>(bundle: &'a fluent::bundle::FluentBundle<R, M>, id: &'static str, args: Option<FluentArgs<'a>>) -> Cow<'a, str> where R: Borrow<FluentResource>, M: MemoizerKind {
+pub fn __format_message<'a, R, M>(bundle: &'a fluent::bundle::FluentBundle<R, M>, id: &'static str, args: Option<FluentArgs<'a>>) -> Cow<'a, str> where R: Borrow<FluentResource>, M: MemoizerKind {
     match bundle.get_message(id) {
         Some(msg) => match msg.value() {
             Some(pattern) => {

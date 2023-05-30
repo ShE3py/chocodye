@@ -1,12 +1,11 @@
 use std::collections::HashMap;
+
 pub use dye::{ansi_text, Category, Dye};
 pub use rgb::{ParseHexError, Rgb};
 pub use snack::Snack;
 
 #[cfg(feature = "fluent")]
-pub use crate::fluent::{FluentBundle, Lang};
-#[cfg(feature = "fluent")]
-pub(crate) use crate::fluent::__format_message;
+pub use crate::fluent::{__format_message, FluentBundle, Lang, ParseLangError};
 
 mod dye;
 mod rgb;
@@ -122,7 +121,7 @@ pub fn make_menu(starting_dye: Dye, snacks: &HashMap<Snack, u32>) -> Vec<(Snack,
 
                 let mut new_menu = menu.clone();
                 new_menu.push((snack, n));
-                
+
                 menus.push(backtrack(&new_map, new_color, new_menu));
             }
         }

@@ -136,3 +136,11 @@ lotus-pink = Lotus Pink
 colibri-pink = Colibri Pink
 plum-purple = Plum Purple
 regal-purple = Regal Purple
+
+
+starting-color = Starting Color: { $name }
+final-color = Final Color: { $name }
+
+required-fruits = Required Fruits:
+instructions = Instructions:
+row = – { $content }

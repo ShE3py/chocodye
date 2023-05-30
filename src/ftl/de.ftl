@@ -136,3 +136,10 @@ lotus-pink = Lotusrosa
 colibri-pink = Kolibrirosa
 plum-purple = Pflaumenvioletter
 regal-purple = Königsvioletter
+
+starting-color = Ausgangsfarbe: { $name }
+final-color = Endfarbe: { $name }
+
+required-fruits = Notwendige Früchte:
+instructions = Anweisungen:
+row = – { $content }

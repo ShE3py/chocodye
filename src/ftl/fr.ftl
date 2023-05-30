@@ -136,3 +136,10 @@ lotus-pink = mauve lotus
 colibri-pink = mauve colibri
 plum-purple = prune
 regal-purple = byzantium
+
+starting-color = Couleur initiale : { $name }
+final-color = Couleur finale : { $name }
+
+required-fruits = Fruits nécessaires :
+instructions = Instructions :
+row = – { $content }

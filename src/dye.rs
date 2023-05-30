@@ -1,5 +1,5 @@
 #[cfg(feature = "fluent")]
-use {crate::fluent::message, fluent::{bundle::FluentBundle, FluentResource, memoizer::MemoizerKind}, std::borrow::{Borrow, Cow}};
+use {crate::message, fluent::{bundle::FluentBundle, FluentResource, memoizer::MemoizerKind}, std::borrow::{Borrow, Cow}};
 
 use crate::Rgb;
 
@@ -77,7 +77,7 @@ impl TryFrom<Rgb> for Dye {
 #[allow(clippy::derivable_impls)]
 impl Default for Dye {
     fn default() -> Dye {
-        Dye::DesertYellow
+        Dye::DEFAULT_CHOCOBO_COLOR
     }
 }
 

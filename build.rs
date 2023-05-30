@@ -81,6 +81,7 @@ pub enum Dye {{
 
 impl Dye {{
     pub const EPSILON: u32 = 269;
+    pub const DEFAULT_CHOCOBO_COLOR: Dye = Dye::DesertYellow;
 
     pub const fn values() -> &'static [Dye] {{
         use Dye::*;
