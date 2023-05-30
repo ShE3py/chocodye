@@ -51,6 +51,10 @@ impl Rgb {
 
         (dx * dx) as u32 + (dy * dy) as u32 + (dz * dz) as u32
     }
+
+    pub fn luma(self) -> u8 {
+        (0.299 * (self.r as f32) + 0.587 * (self.g as f32) + 0.114 * (self.b as f32)) as u8
+    }
 }
 
 impl From<u32> for Rgb {

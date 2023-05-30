@@ -42,3 +42,6 @@ features = ["serialize"]
 [build-dependencies.serde]
 version = "1.0.163"
 features = ["derive"]
+
+[target.'cfg(unix)'.dev-dependencies.libc]
+version = "0.2.144"

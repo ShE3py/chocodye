@@ -105,6 +105,10 @@ impl Dye {{
         self.color().distance(other.color())
     }}
 
+    pub fn luma(self) -> u8 {{
+        self.color().luma()
+    }}
+
     pub const fn short_name(self) -> &'static str {{
         match self {{
             {names}
