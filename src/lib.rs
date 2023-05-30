@@ -50,12 +50,22 @@ pub fn make_meal(starting_dye: Dye, final_dye: Dye) -> Vec<Snack> {
     meal
 }
 
-pub fn make_menu(starting_dye: Dye, snacks: &Vec<Snack>) -> Vec<(Snack, u8)> {
-    fn backtrack(remaining: HashMap<Snack, u32>, current_color: Rgb, menu: Vec<(Snack, u8)>) -> Vec<(Snack, u8)> {
+pub fn count_snacks(snacks: &[Snack]) -> HashMap<Snack, u32> {
+    let mut snack_count = HashMap::new();
+
+    for snack in snacks {
+        *(snack_count.entry(*snack).or_insert(0)) += 1;
+    }
+
+    snack_count
+}
+
+pub fn make_menu(starting_dye: Dye, snacks: &HashMap<Snack, u32>) -> Vec<(Snack, u8)> {
+    fn backtrack(remaining: &HashMap<Snack, u32>, current_color: Rgb, menu: Vec<(Snack, u8)>) -> Vec<(Snack, u8)> {
         let mut menus = Vec::new();
 
         // for each snack, try putting the maximum of them so that the color wouldn't overflow
-        for (snack, count) in &remaining {
+        for (snack, count) in remaining {
             let snack = *snack;
             let count = *count;
 
@@ -112,8 +122,8 @@ pub fn make_menu(starting_dye: Dye, snacks: &Vec<Snack>) -> Vec<(Snack, u8)> {
 
                 let mut new_menu = menu.clone();
                 new_menu.push((snack, n));
-
-                menus.push(backtrack(new_map, new_color, new_menu));
+                
+                menus.push(backtrack(&new_map, new_color, new_menu));
             }
         }
 
@@ -121,13 +131,7 @@ pub fn make_menu(starting_dye: Dye, snacks: &Vec<Snack>) -> Vec<(Snack, u8)> {
         menus.into_iter().next().unwrap_or(menu)
     }
 
-    let mut snack_count = HashMap::new();
-
-    for snack in snacks {
-        *(snack_count.entry(*snack).or_insert(0)) += 1;
-    }
-
-    backtrack(snack_count, starting_dye.color(), Vec::new())
+    backtrack(snacks, starting_dye.color(), Vec::new())
 }
 
 #[cfg(test)]
@@ -162,7 +166,7 @@ mod lib {
         fn menus_are_ok() {
             fn assert_menu(starting_dye: Dye, final_dye: Dye) {
                 let meal = make_meal(starting_dye, final_dye);
-                let menu = make_menu(starting_dye, &meal);
+                let menu = make_menu(starting_dye, &count_snacks(&meal));
 
                 println!("{:?}", menu);
 
