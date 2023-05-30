@@ -74,6 +74,7 @@ impl TryFrom<Rgb> for Dye {
     }
 }
 
+#[allow(clippy::derivable_impls)]
 impl Default for Dye {
     fn default() -> Dye {
         Dye::DesertYellow

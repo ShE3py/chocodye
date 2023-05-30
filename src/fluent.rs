@@ -62,7 +62,7 @@ pub(crate) fn __format_message<'a, R, M>(bundle: &'a fluent::bundle::FluentBundl
     }
 
     if let Some(args) = args {
-        let scope = Scope::new(&bundle, None, None);
+        let scope = Scope::new(bundle, None, None);
         let args = args.into_iter().map(|(_, v)| v.as_string(&scope)).collect::<Vec<_>>().join(", ");
 
         Cow::Owned(format!("{}({})", id, args))

@@ -112,7 +112,7 @@ impl Dye {{
 
     #[cfg(feature = "fluent")]
     pub fn full_name<R: Borrow<FluentResource>, M: MemoizerKind>(self, bundle: &FluentBundle<R, M>) -> Cow<str> {{
-        message!(&bundle, "dye", {{ "name" = self.color_name(bundle) }})
+        message!(bundle, "dye", {{ "name" = self.color_name(bundle) }})
     }}
 
     #[cfg(feature = "fluent")]
@@ -122,7 +122,7 @@ impl Dye {{
 
     #[cfg(feature = "fluent")]
     pub fn color_name<R: Borrow<FluentResource>, M: MemoizerKind>(self, bundle: &FluentBundle<R, M>) -> Cow<str> {{
-        message!(&bundle, self.short_name())
+        message!(bundle, self.short_name())
     }}
 
     #[cfg(feature = "fluent")]
@@ -187,7 +187,7 @@ impl Category {{
 
     #[cfg(feature = "fluent")]
     pub fn full_name<R: Borrow<FluentResource>, M: MemoizerKind>(self, bundle: &FluentBundle<R, M>) -> Cow<str> {{
-        message!(&bundle, self.short_name())
+        message!(bundle, self.short_name())
     }}
 
     #[cfg(feature = "fluent")]
