@@ -2,6 +2,7 @@ use std::env;
 use std::process::exit;
 use std::str::FromStr;
 
+use unic_langid::langid;
 use chocodye::{ansi_text, Category, Lang};
 
 #[cfg(unix)]
@@ -75,6 +76,11 @@ fn  main() {
 
     const BASE_INDENT: u32 = TABS * TAB_WIDTH;
 
+    let char_weight = match bundle.locales.iter().next() {
+        Some(locale) if *locale == langid!("jp") => 2,
+        _ => 1
+    };
+
     println!();
 
     for category in Category::values() {
@@ -99,7 +105,7 @@ fn  main() {
             }
 
             print!("{} ", dye.ansi_color_name(&bundle));
-            current_width += char_count;
+            current_width += char_count * char_weight;
         }
 
         println!();
