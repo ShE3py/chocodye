@@ -74,69 +74,154 @@ mod dyes {
                 .collect();
 
             writeln!(buf,
-r#"#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+r#"
+/// A color that can be found as the plumage of a chocobo.
+///
+/// Some dyes, such as vanilla yellow, are not included in this enum.
+///
+/// As the build script has no access to [`Rgb`], documentation of variants is rather feeble.
+/// Please open a new issue on GitHub if you wish to use this enum in another crate not related
+/// to chocobo dyeing.
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 pub enum Dye {{
     {variants}
 }}
 
 impl Dye {{
+    /// The smallest distance between two dyes. Used to optimize search algorithms.
     pub const EPSILON: u32 = 269;
+
+    /// The chocobos' default color.
     pub const DEFAULT_CHOCOBO_COLOR: Dye = Dye::DesertYellow;
 
-    pub const fn values() -> &'static [Dye] {{
-        use Dye::*;
+    /// Contains all eighty-five `Dye` variants.
+    pub const VALUES: [Dye; 85] = [
+        {values}
+    ];
 
-        &[{values}]
-    }}
-
+    /// Returns the dye category of `self`.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use chocodye::{{Category, Dye}};
+    ///
+    /// assert_eq!(Dye::CeruleumBlue.category(), Category::Blue);
+    /// ```
     pub const fn category(self) -> Category {{
         match self {{
             {categories}
         }}
     }}
 
+    /// Returns the color of `self`.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use chocodye::{{Dye, Rgb}};
+    ///
+    /// assert_eq!(Dye::DesertYellow.color(), Rgb::new(219, 180, 87));
+    /// ```
     pub const fn color(self) -> Rgb {{
         match self {{
             {rgbs}
         }}
     }}
 
+    /// Computes the [squared Euclidian distance](https://en.wikipedia.org/wiki/Euclidean_distance#Squared_Euclidean_distance)
+    /// between `self` and `other`. Does *not* take human perception into consideration. Useful for intermediate algorithms.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use chocodye::Dye;
+    ///
+    /// assert_eq!(Dye::SnowWhite.distance(Dye::SootBlack), 97278);
+    /// assert_eq!(Dye::ShadowBlue.distance(Dye::CurrantPurple), 290);
+    /// ```
     pub const fn distance(self, other: Dye) -> u32 {{
         self.color().distance(other.color())
     }}
 
+    /// Computes the [luma](https://en.wikipedia.org/wiki/Luma_(video)), the brightness of `self`.
+    /// Takes human perception into account. Useful for sorting dyes.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use chocodye::Dye;
+    ///
+    /// assert_eq!(Dye::SnowWhite.luma(), 222);
+    /// assert_eq!(Dye::SootBlack.luma(), 40);
+    ///
+    /// assert!(Dye::HunterGreen.luma() > Dye::WineRed.luma()); // Humans are more sensitive to green.
+    /// ```
     pub fn luma(self) -> u8 {{
         self.color().luma()
     }}
 
+    /// Returns the variant name of `self` in kebab-case.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use chocodye::Dye;
+    ///
+    /// assert_eq!(Dye::OpoOpoBrown.short_name(), "opo-opo-brown");
+    /// ```
     pub const fn short_name(self) -> &'static str {{
         match self {{
             {names}
         }}
     }}
 
+    /// Returns the localized name of `self`.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use chocodye::{{Dye, Lang}};
+    ///
+    /// assert_eq!(Dye::RegalPurple.full_name(&Lang::French.into_bundle()), "Teinture \u{{2068}}byzantium\u{{2069}}");
+    /// ```
     #[cfg(feature = "fluent")]
     pub fn full_name(self, bundle: &FluentBundle) -> Cow<str> {{
         message!(bundle, "dye", {{ "name" = self.color_name(bundle) }})
     }}
 
+    /// Returns the localized name of `self` with [ANSI escape codes](https://en.wikipedia.org/wiki/ANSI_escape_code#24-bit) for display in `stdout`.
+    ///
+    /// For more documentation, check the [`ansi_text`] function. This function is also used in the `truecolor` example.
     #[cfg(feature = "fluent")]
     pub fn ansi_full_name(self, bundle: &FluentBundle) -> String {{
         ansi_text(self.color(), &self.full_name(bundle))
     }}
 
+    /// Returns the localized name of `self`'s color.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use chocodye::{{Dye, Lang}};
+    ///
+    /// assert_eq!(Dye::RegalPurple.color_name(&Lang::French.into_bundle()), "byzantium");
+    /// ```
     #[cfg(feature = "fluent")]
     pub fn color_name(self, bundle: &FluentBundle) -> Cow<str> {{
         message!(bundle, self.short_name())
     }}
 
+    /// Returns the localized name of `self`'s color with [ANSI escape codes](https://en.wikipedia.org/wiki/ANSI_escape_code#24-bit) for display in `stdout`.
+    ///
+    /// For more documentation, check the [`ansi_text`] function. This function is also used in the `truecolor` example.
     #[cfg(feature = "fluent")]
     pub fn ansi_color_name(self, bundle: &FluentBundle) -> String {{
         ansi_text(self.color(), self.color_name(bundle).as_ref())
     }}
 }}"#,
-                     variants = variants.join(",\n\t"),
-                     values = variants.join(", "),
+                     variants = dyes.iter().zip(&variants).map(|(dye, variant)| format!("/// `{}`\n\t{variant}", dye.stain)).collect::<Vec<_>>().join(",\n\n\t"),
+                     values = variants.iter().map(|dye| format!("Dye::{dye}")).collect::<Vec<_>>().join(",\n\t\t"),
 
                      categories = self.categories
                          .iter()
