@@ -1,5 +1,5 @@
 #[cfg(feature = "fluent")]
-use {crate::message, fluent::{bundle::FluentBundle, FluentResource, memoizer::MemoizerKind}, std::borrow::{Borrow, Cow}};
+use {crate::{FluentBundle, message}, std::borrow::Cow};
 
 use crate::Rgb;
 

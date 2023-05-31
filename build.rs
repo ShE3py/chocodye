@@ -116,22 +116,22 @@ impl Dye {{
     }}
 
     #[cfg(feature = "fluent")]
-    pub fn full_name<R: Borrow<FluentResource>, M: MemoizerKind>(self, bundle: &FluentBundle<R, M>) -> Cow<str> {{
+    pub fn full_name(self, bundle: &FluentBundle) -> Cow<str> {{
         message!(bundle, "dye", {{ "name" = self.color_name(bundle) }})
     }}
 
     #[cfg(feature = "fluent")]
-    pub fn ansi_full_name<R: Borrow<FluentResource>, M: MemoizerKind>(self, bundle: &FluentBundle<R, M>) -> String {{
+    pub fn ansi_full_name(self, bundle: &FluentBundle) -> String {{
         ansi_text(self.color(), &self.full_name(bundle))
     }}
 
     #[cfg(feature = "fluent")]
-    pub fn color_name<R: Borrow<FluentResource>, M: MemoizerKind>(self, bundle: &FluentBundle<R, M>) -> Cow<str> {{
+    pub fn color_name(self, bundle: &FluentBundle) -> Cow<str> {{
         message!(bundle, self.short_name())
     }}
 
     #[cfg(feature = "fluent")]
-    pub fn ansi_color_name<R: Borrow<FluentResource>, M: MemoizerKind>(self, bundle: &FluentBundle<R, M>) -> String {{
+    pub fn ansi_color_name(self, bundle: &FluentBundle) -> String {{
         ansi_text(self.color(), self.color_name(bundle).as_ref())
     }}
 }}"#,
@@ -191,12 +191,12 @@ impl Category {{
     }}
 
     #[cfg(feature = "fluent")]
-    pub fn full_name<R: Borrow<FluentResource>, M: MemoizerKind>(self, bundle: &FluentBundle<R, M>) -> Cow<str> {{
+    pub fn full_name(self, bundle: &FluentBundle) -> Cow<str> {{
         message!(bundle, self.short_name())
     }}
 
     #[cfg(feature = "fluent")]
-    pub fn ansi_full_name<R: Borrow<FluentResource>, M: MemoizerKind>(self, bundle: &FluentBundle<R, M>) -> String {{
+    pub fn ansi_full_name(self, bundle: &FluentBundle) -> String {{
         ansi_text(self.color(), self.full_name(bundle).as_ref())
     }}
 }}"#,
