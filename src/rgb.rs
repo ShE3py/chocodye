@@ -41,13 +41,21 @@ impl Rgb {
     pub const MAGENTA: Rgb = Rgb::new(255, 0, 255);
 
     /// Creates a new color.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use chocodye::Rgb;
+    ///
+    /// assert_eq!(Rgb::new(5, 7, 11), Rgb { r: 5, g: 7, b: 11 });
+    /// ```
     pub const fn new(r: u8, g: u8, b: u8) -> Rgb {
         Rgb { r, g, b }
     }
 
-    /// Create a new color with all three components set to the same value.
+    /// Creates a new color with all three components set to the same value.
     ///
-    /// # Exemples
+    /// # Examples
     ///
     /// ```
     /// use chocodye::Rgb;
@@ -60,7 +68,7 @@ impl Rgb {
 
     /// Parses a hex color.
     ///
-    /// # Exemples
+    /// # Examples
     ///
     /// ```
     /// use chocodye::Rgb;
@@ -84,7 +92,7 @@ impl Rgb {
     /// Checked addition with three signed components.
     /// Computes `self + rgb`, returning `None` if overflow occured.
     ///
-    /// # Exemples
+    /// # Examples
     ///
     /// ```
     /// use chocodye::Rgb;
@@ -113,7 +121,7 @@ impl Rgb {
     /// Computes the [squared Euclidian distance](https://en.wikipedia.org/wiki/Euclidean_distance#Squared_Euclidean_distance)
     /// between `self` and `other`. Does *not* take human perception into consideration. Useful for intermediate algorithms.
     ///
-    /// # Exemples
+    /// # Examples
     ///
     /// ```
     /// use chocodye::Rgb;
@@ -132,7 +140,7 @@ impl Rgb {
     /// Computes the [luma](https://en.wikipedia.org/wiki/Luma_(video)), the brightness of `self`.
     /// Takes human perception into account. Useful for sorting colors.
     ///
-    /// # Exemples
+    /// # Examples
     ///
     /// ```
     /// use chocodye::Rgb;
@@ -148,12 +156,27 @@ impl Rgb {
     pub fn luma(self) -> u8 {
         (0.299 * (self.r as f32) + 0.587 * (self.g as f32) + 0.114 * (self.b as f32)) as u8
     }
+
+    /// Converts this color into a gray shade. Takes human perception into account.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use chocodye::Rgb;
+    ///
+    /// assert_eq!(Rgb::RED.grayscale(), Rgb::gray(76));
+    /// assert_eq!(Rgb::WHITE.grayscale(), Rgb::WHITE);
+    /// assert_eq!(Rgb::BLACK.grayscale(), Rgb::BLACK);
+    /// ```
+    pub fn grayscale(self) -> Rgb {
+        Rgb::gray(self.luma())
+    }
 }
 
 impl From<u32> for Rgb {
     /// Converts an `u32` in `RRGGBBAA` format to its corresponding color. The alpha bits are ignored.
     ///
-    /// # Exemples
+    /// # Examples
     ///
     /// ```
     /// use chocodye::Rgb;
@@ -172,7 +195,7 @@ impl From<u32> for Rgb {
 impl From<Rgb> for u32 {
     /// Converts this color to an `u32` in `RRGGBBAA` format. The alpha bits are set to `0xFF`.
     ///
-    /// # Exemples
+    /// # Examples
     ///
     /// ```
     /// use chocodye::Rgb;
