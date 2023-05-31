@@ -31,7 +31,7 @@ pub fn make_meal(starting_dye: Dye, final_dye: Dye) -> Vec<Snack> {
 
         let make_possibility = |snack: Snack| snack.alter(current_color).map(|next_color| Possibility { snack, next_color, next_distance: next_color.distance(final_color) });
 
-        let mut possibilities: Vec<_> = Snack::values().iter().copied().filter_map(make_possibility).collect();
+        let mut possibilities: Vec<_> = Snack::VALUES.iter().copied().filter_map(make_possibility).collect();
         possibilities.sort_unstable_by_key(|possibility| possibility.next_distance);
 
         let best_choice = possibilities.first().unwrap();
