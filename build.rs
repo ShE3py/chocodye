@@ -158,18 +158,19 @@ impl Dye {{
                 collect();
 
             writeln!(buf, r#"
+/// A category of dyes with similar hues.
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 pub enum Category {{
     {variants}
 }}
 
 impl Category {{
-    pub const fn values() -> &'static [Category] {{
-        use Category::*;
+    /// Contains all seven `Category` variants.
+    pub const VALUES: [Category; 7] = [
+        {values}
+    ];
 
-        &[{values}]
-    }}
-
+    /// Returns all the dyes belonging to `self`. Dyes belong to one and only one category.
     pub const fn dyes(self) -> &'static [Dye] {{
         use Dye::*;
 
@@ -178,30 +179,52 @@ impl Category {{
         }}
     }}
 
+    /// Returns a color representing `self`. Does not necessarily correspond to a dye.
     pub const fn color(self) -> Rgb {{
         match self {{
             {rgbs}
         }}
     }}
 
+    /// Returns the variant name of `self` in kebab-case.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use chocodye::Category;
+    ///
+    /// assert_eq!(Category::Purple.short_name(), "purple");
+    /// ```
     pub const fn short_name(self) -> &'static str {{
         match self {{
             {names}
         }}
     }}
 
+    /// Returns the localized name of `self`.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use chocodye::{{Category, Lang}};
+    ///
+    /// assert_eq!(Category::Purple.full_name(&Lang::French.into_bundle()), "Teintures violettes");
+    /// ```
     #[cfg(feature = "fluent")]
     pub fn full_name(self, bundle: &FluentBundle) -> Cow<str> {{
         message!(bundle, self.short_name())
     }}
 
+    /// Returns the localized name of `self` with [ANSI escape codes](https://en.wikipedia.org/wiki/ANSI_escape_code#24-bit) for display in `stdout`.
+    ///
+    /// For more documentation, check the [`ansi_text`] function. This function is also used in the `truecolor` example.
     #[cfg(feature = "fluent")]
     pub fn ansi_full_name(self, bundle: &FluentBundle) -> String {{
         ansi_text(self.color(), self.full_name(bundle).as_ref())
     }}
 }}"#,
                      variants = categories.join(",\n\t"),
-                     values = categories.join(", "),
+                     values = categories.iter().map(|category| format!("Category::{category}")).collect::<Vec<_>>().join(",\n\t\t"),
 
                      dyes = self.categories
                     .iter()

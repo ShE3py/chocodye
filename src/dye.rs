@@ -85,10 +85,10 @@ mod test {
 
     #[test]
     pub fn dyes_in_self_category() {
-        assert_eq!(Dye::values().len(), Category::values().iter().map(|category| category.dyes().len()).sum());
+        assert_eq!(Dye::values().len(), Category::VALUES.iter().map(|category| category.dyes().len()).sum());
 
-        for category in Category::values() {
-            assert!(category.dyes().iter().all(|dye| dye.category() == *category));
+        for category in Category::VALUES {
+            assert!(category.dyes().iter().all(|dye| dye.category() == category));
         }
     }
 

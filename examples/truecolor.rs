@@ -83,7 +83,7 @@ fn  main() {
 
     println!();
 
-    for category in Category::values() {
+    for category in Category::VALUES {
         let mut dyes: Vec<_> = category.dyes().to_vec();
         dyes.sort_unstable_by_key(|dye| 255 - dye.luma());
 
