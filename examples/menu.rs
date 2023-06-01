@@ -2,12 +2,12 @@ use std::env;
 use std::process::exit;
 use std::str::FromStr;
 
-use chocodye::{count_snacks, Dye, Lang, make_meal, make_menu, message};
+use chocodye::{Dye, Lang, make_meal, make_menu, message, SnackList};
 
 macro_rules! print_rows {
     ($bundle:expr, $iter:expr) => {
         for (snack, count) in $iter {
-            println!("{}", message!($bundle, "row", { "content" = message!($bundle, snack.short_name(), { "quantity" = *count }) }));
+            println!("{}", message!($bundle, "row", { "content" = message!($bundle, snack.short_name(), { "quantity" = count }) }));
         }
     };
 }
@@ -47,13 +47,13 @@ fn main() {
     println!();
 
     let meal = make_meal(STARTING_DYE, FINAL_DYE);
-    let snacks = count_snacks(&meal);
+    let snacks = SnackList::from(meal.as_slice());
 
     println!("{}", message!(&bundle, "required-fruits"));
-    print_rows!(&bundle, snacks.iter());
+    print_rows!(&bundle, snacks);
     println!();
 
-    let menu = make_menu(STARTING_DYE, &snacks);
+    let menu = make_menu(STARTING_DYE, snacks);
     println!("{}", message!(&bundle, "instructions"));
-    print_rows!(&bundle, menu.iter());
+    print_rows!(&bundle, menu.into_iter());
 }

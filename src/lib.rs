@@ -1,4 +1,5 @@
-use std::collections::HashMap;
+use std::{array, fmt};
+use std::fmt::Formatter;
 
 pub use dye::{ansi_text, Category, Dye};
 pub use rgb::{ParseHexError, Rgb};
@@ -65,25 +66,93 @@ pub fn make_meal(starting_dye: Dye, final_dye: Dye) -> Vec<Snack> {
     meal
 }
 
-pub fn count_snacks(snacks: &[Snack]) -> HashMap<Snack, u32> {
-    let mut snack_count = HashMap::new();
+/// An unsorted list of [`Snack`], can be considered an `EnumMap<Snack, u8>`.
+#[repr(transparent)]
+#[derive(Copy, Clone, Eq, PartialEq, Hash)]
+pub struct SnackList(u64);
 
-    for snack in snacks {
-        *(snack_count.entry(*snack).or_insert(0)) += 1;
+impl SnackList {
+    /// Creates a new, empty `SnackList`.
+    pub const fn new() -> SnackList {
+        SnackList(0)
     }
 
-    snack_count
+    /// Returns how many times a [`Snack`] is contained within `self`.
+    pub const fn get(&self, snack: Snack) -> u8 {
+        ((self.0 >> (8 * snack as usize)) & 0xFF) as u8
+    }
+
+    /// Sets how many times a [`Snack`] is contained within `self`.
+    pub fn set(&mut self, snack: Snack, value: u8) {
+        self.0 = (self.0 & !(0xFFu64 << (8 * snack as usize))) | (value as u64) << (8 * snack as usize);
+    }
+
+    /// Adds *n* [`Snack`] to `self`.
+    pub fn add(&mut self, snack: Snack, n: u8) {
+        self.set(snack, self.get(snack) + n);
+    }
 }
 
-pub fn make_menu(starting_dye: Dye, snacks: &HashMap<Snack, u32>) -> Vec<(Snack, u8)> {
-    fn backtrack(remaining: &HashMap<Snack, u32>, current_color: Rgb, menu: Vec<(Snack, u8)>) -> Vec<(Snack, u8)> {
+impl From<&[Snack]> for SnackList {
+    /// Creates a new [`SnackList`] from a slice of [`Snack`].
+    fn from(snacks: &[Snack]) -> SnackList {
+        let mut sl = SnackList::new();
+
+        for snack in snacks {
+            sl.add(*snack, 1);
+        }
+
+        sl
+    }
+}
+
+impl From<SnackList> for [(Snack, u8); 6] {
+    fn from(value: SnackList) -> [(Snack, u8); 6] {
+        [
+            (Snack::Apple,     ((value.0      ) & 0xFF) as u8),
+            (Snack::Pear,      ((value.0 >>  8) & 0xFF) as u8),
+            (Snack::Berries,   ((value.0 >> 16) & 0xFF) as u8),
+            (Snack::Plum,      ((value.0 >> 24) & 0xFF) as u8),
+            (Snack::Fruit,     ((value.0 >> 32) & 0xFF) as u8),
+            (Snack::Pineapple, ((value.0 >> 40) & 0xFF) as u8)
+        ]
+    }
+}
+
+impl IntoIterator for SnackList {
+    type Item = (Snack, u8);
+    type IntoIter = array::IntoIter<Self::Item, 6>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        <SnackList as Into<[Self::Item; 6]>>::into(self).into_iter()
+    }
+}
+
+impl Default for SnackList {
+    /// Creates a new, empty `SnackList`.
+    fn default() -> SnackList {
+        SnackList::new()
+    }
+}
+
+impl fmt::Debug for SnackList {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        let mut dm = f.debug_map();
+
+        for snack in Snack::VALUES {
+            dm.entry(&snack, &self.get(snack));
+        }
+
+        dm.finish()
+    }
+}
+
+pub fn make_menu(starting_dye: Dye, snacks: SnackList) -> Vec<(Snack, u8)> {
+    fn backtrack(remaining: SnackList, current_color: Rgb, menu: Vec<(Snack, u8)>) -> Vec<(Snack, u8)> {
         let mut menus = Vec::new();
 
         // for each snack, try putting the maximum of them so that the color wouldn't overflow
         for (snack, count) in remaining {
-            let snack = *snack;
-            let count = *count;
-
             /// Returns the largest number `q` such that `0 <= c + qd <= 255`.
             fn q(c: u8, d: i8) -> u8 {
                 if d > 0 {
@@ -116,18 +185,11 @@ pub fn make_menu(starting_dye: Dye, snacks: &HashMap<Snack, u32>) -> Vec<(Snack,
             }
 
             // `q` considering all components and the remaining count
-            let n = Q(current_color, snack).min(count.try_into().unwrap_or(u8::MAX));
+            let n = Q(current_color, snack).min(count);
 
             if n > 0 {
-                let new_count = count - (n as u32);
-
-                let mut new_map = remaining.clone();
-                if new_count == 0 {
-                    new_map.remove(&snack);
-                }
-                else {
-                    new_map.insert(snack, new_count);
-                }
+                let mut new_map = remaining;
+                new_map.set(snack, count - n);
 
                 let new_color = Rgb {
                     r: ((current_color.r as i16) + (n as i16) * (snack.effect().0 as i16)) as u8,
@@ -138,7 +200,7 @@ pub fn make_menu(starting_dye: Dye, snacks: &HashMap<Snack, u32>) -> Vec<(Snack,
                 let mut new_menu = menu.clone();
                 new_menu.push((snack, n));
 
-                menus.push(backtrack(&new_map, new_color, new_menu));
+                menus.push(backtrack(new_map, new_color, new_menu));
             }
         }
 
@@ -155,6 +217,39 @@ mod lib {
         use std::convert::identity;
 
         use super::super::*;
+
+        #[test]
+        fn snacklist_get_set() {
+            let mut list = SnackList::new();
+            assert_eq!(list.0, 0);
+
+            list.set(Snack::Pear, 210);
+            assert_ne!(list.0, 0);
+            assert_eq!(list.get(Snack::Pear), 210);
+
+            list.set(Snack::Pear, 0);
+            assert_eq!(list.0, 0);
+        }
+
+        #[test]
+        fn snacklist_into_array() {
+            let mut list = SnackList::new();
+            list.set(Snack::Pear, 1);
+            list.set(Snack::Pineapple, 2);
+            list.set(Snack::Fruit, 3);
+            list.set(Snack::Plum, 4);
+            list.set(Snack::Berries, 5);
+            list.set(Snack::Apple, 6);
+
+            assert_eq!(<SnackList as Into<[(Snack, u8); 6]>>::into(list), [
+                (Snack::Apple, 6),
+                (Snack::Pear, 1),
+                (Snack::Berries, 5),
+                (Snack::Plum, 4),
+                (Snack::Fruit, 3),
+                (Snack::Pineapple, 2)
+            ]);
+        }
 
         #[test]
         fn meals_are_ok() {
@@ -181,7 +276,7 @@ mod lib {
         fn menus_are_ok() {
             fn assert_menu(starting_dye: Dye, final_dye: Dye) {
                 let meal = make_meal(starting_dye, final_dye);
-                let menu = make_menu(starting_dye, &count_snacks(&meal));
+                let menu = make_menu(starting_dye, meal.as_slice().into());
 
                 println!("{:?}", menu);
 
