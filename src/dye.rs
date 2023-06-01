@@ -72,7 +72,8 @@ impl TryFrom<Rgb> for Dye {
     /// assert_eq!(Dye::try_from(Rgb::new(155, 179, 98)), Err(Dye::AppleGreen));
     ///
     /// // use `std::convert::identity` if you don't care about exact matches
-    /// assert_eq!(Dye::try_from(Rgb::new(155, 179, 100)).unwrap_or_else(identity), Dye::AppleGreen);
+    /// assert_eq!(Dye::try_from(Rgb::WHITE).unwrap_or_else(identity), Dye::LotusPink);
+    /// assert_eq!(Dye::try_from(Rgb::BLACK).unwrap_or_else(identity), Dye::InkBlue);
     /// ```
     fn try_from(value: Rgb) -> Result<Dye, Self::Error> {
         let mut iter = Dye::VALUES.iter();
