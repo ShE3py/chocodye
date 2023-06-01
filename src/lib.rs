@@ -1,5 +1,6 @@
 use std::{array, fmt};
 use std::fmt::Formatter;
+use std::num::NonZeroU64;
 
 pub use dye::{ansi_text, Category, Dye};
 pub use rgb::{ParseHexError, Rgb};
@@ -67,24 +68,38 @@ pub fn make_meal(starting_dye: Dye, final_dye: Dye) -> Vec<Snack> {
 }
 
 /// An unsorted list of [`Snack`], can be considered an `EnumMap<Snack, u8>`.
+///
+/// This struct is stored as a [`NonZeroU64`], enabling some memory layout optimization:
+///
+/// ```
+/// use chocodye::SnackList;
+/// use std::mem::size_of;
+///
+/// assert_eq!(size_of::<Option<SnackList>>(), size_of::<u64>());
+/// ```
 #[repr(transparent)]
 #[derive(Copy, Clone, Eq, PartialEq, Hash)]
-pub struct SnackList(u64);
+pub struct SnackList(NonZeroU64);
 
 impl SnackList {
     /// Creates a new, empty `SnackList`.
     pub const fn new() -> SnackList {
-        SnackList(0)
+        // SAFETY: `1 << 63` is not zero.
+        SnackList(unsafe { NonZeroU64::new_unchecked(1 << 63) })
     }
 
     /// Returns how many times a [`Snack`] is contained within `self`.
     pub const fn get(&self, snack: Snack) -> u8 {
-        ((self.0 >> (8 * snack as usize)) & 0xFF) as u8
+        ((self.0.get() >> (8 * snack as usize)) & 0xFF) as u8
     }
 
     /// Sets how many times a [`Snack`] is contained within `self`.
     pub fn set(&mut self, snack: Snack, value: u8) {
-        self.0 = (self.0 & !(0xFFu64 << (8 * snack as usize))) | (value as u64) << (8 * snack as usize);
+        // SAFETY: both `self.0` and `!(0xFFu64 << (8 * snack as usize))` have their msb set to `1`, thus
+        // making the result's msb to `1`.
+        self.0 = unsafe { NonZeroU64::new_unchecked(
+            (self.0.get() & !(0xFFu64 << (8 * snack as usize))) | (value as u64) << (8 * snack as usize)
+        ) };
     }
 
     /// Adds *n* [`Snack`] to `self`.
@@ -109,12 +124,12 @@ impl From<&[Snack]> for SnackList {
 impl From<SnackList> for [(Snack, u8); 6] {
     fn from(value: SnackList) -> [(Snack, u8); 6] {
         [
-            (Snack::Apple,     ((value.0      ) & 0xFF) as u8),
-            (Snack::Pear,      ((value.0 >>  8) & 0xFF) as u8),
-            (Snack::Berries,   ((value.0 >> 16) & 0xFF) as u8),
-            (Snack::Plum,      ((value.0 >> 24) & 0xFF) as u8),
-            (Snack::Fruit,     ((value.0 >> 32) & 0xFF) as u8),
-            (Snack::Pineapple, ((value.0 >> 40) & 0xFF) as u8)
+            (Snack::Apple,     ((value.0.get()      ) & 0xFF) as u8),
+            (Snack::Pear,      ((value.0.get() >>  8) & 0xFF) as u8),
+            (Snack::Berries,   ((value.0.get() >> 16) & 0xFF) as u8),
+            (Snack::Plum,      ((value.0.get() >> 24) & 0xFF) as u8),
+            (Snack::Fruit,     ((value.0.get() >> 32) & 0xFF) as u8),
+            (Snack::Pineapple, ((value.0.get() >> 40) & 0xFF) as u8)
         ]
     }
 }
@@ -252,14 +267,14 @@ mod lib {
         #[test]
         fn snacklist_get_set() {
             let mut list = SnackList::new();
-            assert_eq!(list.0, 0);
+            assert_eq!(list.0.get(), 1 << 63);
 
             list.set(Snack::Pear, 210);
-            assert_ne!(list.0, 0);
+            assert_ne!(list.0.get(), 1 << 63);
             assert_eq!(list.get(Snack::Pear), 210);
 
             list.set(Snack::Pear, 0);
-            assert_eq!(list.0, 0);
+            assert_eq!(list.0.get(), 1 << 63);
         }
 
         #[test]
@@ -280,6 +295,8 @@ mod lib {
                 (Snack::Fruit, 3),
                 (Snack::Pineapple, 2)
             ]);
+
+            assert!(Snack::VALUES.len() < 8); // see safety note of `SnackList::set`
         }
 
         #[test]
