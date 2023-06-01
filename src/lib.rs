@@ -14,6 +14,22 @@ mod snack;
 #[cfg(feature = "fluent")]
 mod fluent;
 
+/// Creates a vector of [`Snack`], that when fed to a chocobo, will change its plumage from one [`Dye`] to another.
+///
+/// The current implementation is a [brute-force search](https://en.wikipedia.org/wiki/Brute-force_search);
+/// it tries all six snacks and takes the one that brings it closest to the desired dye, repeating until this dye is reached.
+/// Despite its name, this algorithm is quite fast, as there aren't that much possibilities.
+///
+/// # Examples
+///
+/// ```
+/// use chocodye::{Dye, make_meal, Snack};
+///
+/// assert_eq!(Dye::SalmonPink.distance(Dye::RosePink), Dye::EPSILON);
+///
+/// assert_eq!(make_meal(Dye::SalmonPink, Dye::RosePink), [ Snack::Fruit,  Snack::Berries]);
+/// assert_eq!(make_meal(Dye::RosePink, Dye::SalmonPink), [-Snack::Fruit, -Snack::Berries]);
+/// ```
 pub fn make_meal(starting_dye: Dye, final_dye: Dye) -> Vec<Snack> {
     let mut meal = Vec::new();
 
