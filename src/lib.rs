@@ -147,9 +147,37 @@ impl fmt::Debug for SnackList {
     }
 }
 
+/// Reduces the complexity of a meal made with [`make_meal`] while preserving the same change of plumage.
+///
+/// The current implementation is a [backtracking](https://en.wikipedia.org/wiki/Backtracking) algorithm;
+/// for each type of [`Snack`], it tries to remove as many as possible that won't overflow the [color](`Rgb`),
+/// and then recurses until there are no more snacks.
+/// It then returns the candidate with the fewest groups.
+///
+/// # Examples
+///
+/// ```
+/// use chocodye::{Dye, make_meal, make_menu, Snack::*, SnackList};
+///
+/// let meal = make_meal(Dye::BarkBrown, Dye::MesaRed);
+/// let menu = make_menu(Dye::BarkBrown, SnackList::from(meal.as_slice()));
+///
+/// assert_eq!(meal, [Apple, Apple, Apple, Apple, Pear, Apple, Pear, Apple, Pear, Apple]);
+/// assert_eq!(menu, [(Apple, 7), (Pear, 3)]);
+/// ```
 pub fn make_menu(starting_dye: Dye, snacks: SnackList) -> Vec<(Snack, u8)> {
+    /// # Backtracking parameters
+    ///
+    /// - `remaining`: snacks that have yet to be added.
+    /// - `current_color`: the current color after having ate all the `menu` snacks.
+    /// - `menu`: snacks that have already been added.
+    ///
+    /// # Returns
+    ///
+    /// The smallest menu beginning with `menu` after having removed some snacks in `remaining`.
+    ///
     fn backtrack(remaining: SnackList, current_color: Rgb, menu: Vec<(Snack, u8)>) -> Vec<(Snack, u8)> {
-        let mut menus = Vec::new();
+        let mut menus = Vec::with_capacity(Snack::VALUES.len());
 
         // for each snack, try putting the maximum of them so that the color wouldn't overflow
         for (snack, count) in remaining {
@@ -184,23 +212,26 @@ pub fn make_menu(starting_dye: Dye, snacks: SnackList) -> Vec<(Snack, u8)> {
                 qr.min(qg).min(qb)
             }
 
-            // `q` considering all components and the remaining count
-            let n = Q(current_color, snack).min(count);
+            if count > 0 {
+                // `q` considering all components and the remaining count
+                let n = Q(current_color, snack).min(count);
 
-            if n > 0 {
-                let mut new_map = remaining;
-                new_map.set(snack, count - n);
+                if n > 0 {
+                    // try backtracking with `n` less `snack` snacks
+                    let mut new_map = remaining;
+                    new_map.set(snack, count - n);
 
-                let new_color = Rgb {
-                    r: ((current_color.r as i16) + (n as i16) * (snack.effect().0 as i16)) as u8,
-                    g: ((current_color.g as i16) + (n as i16) * (snack.effect().1 as i16)) as u8,
-                    b: ((current_color.b as i16) + (n as i16) * (snack.effect().2 as i16)) as u8
-                };
+                    let new_color = Rgb {
+                        r: ((current_color.r as i16) + (n as i16) * (snack.effect().0 as i16)) as u8,
+                        g: ((current_color.g as i16) + (n as i16) * (snack.effect().1 as i16)) as u8,
+                        b: ((current_color.b as i16) + (n as i16) * (snack.effect().2 as i16)) as u8
+                    };
 
-                let mut new_menu = menu.clone();
-                new_menu.push((snack, n));
+                    let mut new_menu = menu.clone();
+                    new_menu.push((snack, n));
 
-                menus.push(backtrack(new_map, new_color, new_menu));
+                    menus.push(backtrack(new_map, new_color, new_menu));
+                }
             }
         }
 
