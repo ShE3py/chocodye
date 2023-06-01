@@ -12,7 +12,20 @@ use fluent_syntax::parser::ParserError;
 use log::error;
 use unic_langid::{langid, LanguageIdentifier};
 
-/// `message!(bundle, id, { $(key = value),+ })`
+/// Formats a Fluent message fail-safely. Missing keys are formatted arbitrarily.
+///
+/// # Examples
+///
+/// ```
+/// use chocodye::{Lang, message};
+///
+/// let bundle = Lang::English.into_bundle();
+///
+/// assert_eq!(message!(&bundle, "sky-blue"), "Sky Blue");
+/// assert_eq!(message!(&bundle, "pear", { "quantity" = 1 }), "a Mamook Pear");
+///
+/// assert_eq!(message!(&bundle, "missing-key", { "foo" = "bar" }), "missing-key(bar)");
+/// ```
 #[macro_export]
 macro_rules! message {
     ($bundle:expr, $id:expr) => {
@@ -73,6 +86,8 @@ pub fn __format_message<'a, R, M>(bundle: &'a fluent::bundle::FluentBundle<R, M>
     }
 }
 
+/// A language officially supported by *Final Fantasy XIV*.
+/// Can be converted into a [`FluentBundle`].
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 pub enum Lang {
     English,
@@ -82,12 +97,24 @@ pub enum Lang {
 }
 
 impl Lang {
-    pub const fn values() -> &'static [Lang] {
-        use crate::Lang::*;
+    /// Contains all four `Lang` variants.
+    pub const VALUES: [Lang; 4] = [
+        Lang::English,
+        Lang::French,
+        Lang::German,
+        Lang::Japanese
+    ];
 
-        &[English, French, German, Japanese]
-    }
-
+    /// Returns the two-letter [Unicode Language Identifier](https://unicode.org/reports/tr35/tr35.html#Unicode_language_identifier)
+    /// of `self`.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use chocodye::Lang;
+    ///
+    /// assert_eq!(Lang::German.short_code(), "de");
+    /// ```
     pub const fn short_code(self) -> &'static str {
         match self {
             Lang::English  => "en",
@@ -97,15 +124,8 @@ impl Lang {
         }
     }
 
-    pub const fn file(self) -> &'static str {
-        match self {
-            Lang::English  => include_str!("ftl/en.ftl"),
-            Lang::French   => include_str!("ftl/fr.ftl"),
-            Lang::German   => include_str!("ftl/de.ftl"),
-            Lang::Japanese => include_str!("ftl/jp.ftl")
-        }
-    }
-
+    /// Returns the [Unicode Language Identifier](https://unicode.org/reports/tr35/tr35.html#Unicode_language_identifier)
+    /// of `self`.
     pub const fn langid(self) -> LanguageIdentifier {
         match self {
             Lang::English  => langid!("en"),
@@ -115,6 +135,18 @@ impl Lang {
         }
     }
 
+    /// Returns the Fluent translation resource of `self`.
+    pub const fn file(self) -> &'static str {
+        match self {
+            Lang::English  => include_str!("ftl/en.ftl"),
+            Lang::French   => include_str!("ftl/fr.ftl"),
+            Lang::German   => include_str!("ftl/de.ftl"),
+            Lang::Japanese => include_str!("ftl/jp.ftl")
+        }
+    }
+
+    /// Parses the translation resource of `self` into a new [`FluentBundle`].
+    /// Returns an empty bundle on error, but this shouldn't happen since the file is located in the read-only data segment.
     pub fn into_bundle(self) -> FluentBundle {
         match self.try_into() {
             Ok(bundle) => bundle,
@@ -131,11 +163,15 @@ impl Lang {
     }
 }
 
+/// A collection of messages for a given language. Obtained from [`Lang::into_bundle`].
 pub type FluentBundle = fluent::FluentBundle<FluentResource>;
 
 impl TryFrom<Lang> for FluentBundle {
-    type Error = (FluentResource, Vec<ParserError>);
+    // the `Error` type is further down so that it stays below the function in the generated documentation,
+    // so that the reader reads the type description after the fn description.
 
+    /// Parses the translation resource of `value` into a new [`FluentBundle`].
+    /// Returns both the resource and a vec of errors in case of error.
     fn try_from(value: Lang) -> Result<Self, Self::Error> {
         let mut bundle = FluentBundle::new(vec![value.langid()]);
         let res = FluentResource::try_new(value.file().to_owned())?;
@@ -143,6 +179,9 @@ impl TryFrom<Lang> for FluentBundle {
         bundle.add_resource_overriding(res);
         Ok(bundle)
     }
+
+    /// The tuple returned in the event of a parse error.
+    type Error = (FluentResource, Vec<ParserError>);
 }
 
 impl fmt::Display for Lang {
@@ -152,8 +191,21 @@ impl fmt::Display for Lang {
 }
 
 impl FromStr for Lang {
-    type Err = ParseLangError;
+    // the `Error` type is further down so that it stays below the function in the generated documentation,
+    // so that the reader reads the type description after the fn description.
 
+    /// Parses the two-letter [Unicode Language Identifier](https://unicode.org/reports/tr35/tr35.html#Unicode_language_identifier)
+    /// of a `Lang`.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use chocodye::{Lang, ParseLangError};
+    /// use std::str::FromStr;
+    ///
+    /// assert_eq!(Lang::from_str("jp"), Ok(Lang::Japanese));
+    /// assert_eq!(Lang::from_str("ja"), Err(ParseLangError));
+    /// ```
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
             "en" => Ok(Lang::English),
@@ -163,14 +215,21 @@ impl FromStr for Lang {
             _ => Err(ParseLangError)
         }
     }
+
+    /// The type returned if there's no [`Lang`] associated with a given `&str`.
+    type Err = ParseLangError;
 }
 
 impl From<Lang> for LanguageIdentifier {
+    /// Returns [`Lang::langid`].
     fn from(value: Lang) -> LanguageIdentifier {
         value.langid()
     }
 }
 
+/// An error that can be returned when parsing an [Unicode Language Identifier](https://unicode.org/reports/tr35/tr35.html#Unicode_language_identifier).
+///
+/// This error is used as the error type for the [`Lang::from_str`] function.
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 pub struct ParseLangError;
 
