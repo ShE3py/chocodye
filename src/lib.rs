@@ -1,3 +1,85 @@
+//! A crate to generate a sequence of fruits to change the color of a chocobo's plumage.
+//!
+//! The optional `fluent` feature provides access to localized fruit and color names,
+//! but only for English, French, German and Japanese.
+//!
+//! # Examples
+//!
+//! To print all the dyes:
+//!
+
+#![cfg_attr(feature = "fluent", doc = r#"
+```
+use chocodye::{Dye, Lang};
+
+let bundle = Lang::English.into_bundle();
+
+let mut dyes = Dye::VALUES;
+dyes.sort_unstable_by_key(|dye| 255 - dye.luma());
+
+for dye in dyes {
+    print!("{} ", dye.ansi_full_name(&bundle));
+}
+
+println!();
+```
+"#)]
+
+#![cfg_attr(not(feature = "fluent"), doc = r#"
+```
+use chocodye::Dye;
+
+let mut dyes = Dye::VALUES;
+dyes.sort_unstable_by_key(|dye| 255 - dye.luma());
+
+println!("{:#?}", dyes);
+```
+"#)]
+
+//!
+//! To print all the dyes by category:
+//!
+
+#![cfg_attr(feature = "fluent", doc = r#"
+```
+use chocodye::{Category, Lang};
+
+let bundle = Lang::English.into_bundle();
+
+for category in Category::VALUES {
+    print!("{} -- ", category.ansi_full_name(&bundle));
+
+    for dye in category.dyes() {
+        print!("{} ", dye.ansi_color_name(&bundle));
+    }
+
+    println!();
+}
+```
+"#)]
+
+#![cfg_attr(not(feature = "fluent"), doc = r#"
+```
+use chocodye::Category;
+
+for category in Category::VALUES {
+    println!("{:?} {:#?}", category, category.dyes());
+}
+```
+"#)]
+
+//!
+//! To print a menu:
+//!
+//! ```
+//! use chocodye::{Dye, make_meal, make_menu, SnackList};
+//!
+//! let meal = make_meal(Dye::SnowWhite, Dye::BoneWhite);
+//! let menu = make_menu(Dye::SnowWhite, SnackList::from(meal.as_slice()));
+//!
+//! println!("{:?}", menu);
+//! ```
+
 use std::{array, fmt};
 use std::fmt::Formatter;
 use std::num::NonZeroU64;
