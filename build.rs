@@ -80,7 +80,7 @@ r#"
 /// Some dyes, such as vanilla yellow, are not included in this enum.
 ///
 /// As the build script has no access to [`Rgb`], documentation of variants is rather feeble.
-/// Please open a new issue on GitHub if you wish to use this enum in another crate not related
+/// Please open an issue on GitHub if you wish to use this enum in another crate not related
 /// to chocobo dyeing.
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 pub enum Dye {{
