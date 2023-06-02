@@ -81,6 +81,8 @@ fn  main() {
         _ => 1
     };
 
+    const PAD_CAT: u32 = BASE_INDENT - 4;
+
     println!();
 
     for category in Category::VALUES {
@@ -88,11 +90,12 @@ fn  main() {
         dyes.sort_unstable_by_key(|dye| 255 - dye.luma());
 
         let category_full_name = category.full_name(&bundle);
-        let tabs = "\t".repeat(((BASE_INDENT - category_full_name.len() as u32 + (TAB_WIDTH - 1)) / TAB_WIDTH) as usize);
-        print!("{}{tabs}", ansi_text(category.color(), category_full_name.as_ref()));
+        let colored_category_name = ansi_text(category.color(), category_full_name);
+
+        print!("{:>pad$}\t", colored_category_name, pad = PAD_CAT as usize + (colored_category_name.len() - category_full_name.len()));
 
         let mut current_width = BASE_INDENT;
-        let carriage = ansi_text(category.color(), &" ".repeat(category_full_name.len()));
+        let carriage = format!("{}{}", " ".repeat(PAD_CAT as usize - category_full_name.len()), ansi_text(category.color(), &" ".repeat(category_full_name.len())));
 
         for dye in dyes {
             let color_name = dye.color_name(&bundle);
@@ -100,7 +103,7 @@ fn  main() {
 
             if (current_width + char_count) > (term_width as u32) {
                 println!();
-                print!("{}{tabs}", carriage);
+                print!("{}\t", carriage);
                 current_width = BASE_INDENT;
             }
 
