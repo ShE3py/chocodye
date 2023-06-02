@@ -33,14 +33,18 @@ use unic_langid::{langid, LanguageIdentifier};
 #[cfg_attr(docrs, doc(cfg(feature = "fluent")))]
 macro_rules! message {
     ($bundle:expr, $id:expr $(, {})?) => {
-        match $crate::__format_message($bundle, $id, None) {
-            ::std::borrow::Cow::Borrowed(s) => s,
-            ::std::borrow::Cow::Owned(_string) => {
-                #[cfg(debug_assertions)]
-                { ::std::unreachable!("`message!(_, {:?})` should be `Cow::Borrowed(_)`, got `Cow::Owned({:?})`", $id, _string) }
+        {
+            let key: &'static str = $id;
 
-                #[cfg(not(debug_assertions))]
-                { $id }
+            match $crate::__format_message($bundle, key, None) {
+                ::std::borrow::Cow::Borrowed(s) => s,
+                ::std::borrow::Cow::Owned(_string) => {
+                    #[cfg(debug_assertions)]
+                    { ::std::unreachable!("`message!(_, {:?})` should be `Cow::Borrowed(_)`, got `Cow::Owned({:?})`", key, _string) }
+
+                    #[cfg(not(debug_assertions))]
+                    { key }
+                }
             }
         }
     };
