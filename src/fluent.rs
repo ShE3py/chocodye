@@ -27,6 +27,7 @@ use unic_langid::{langid, LanguageIdentifier};
 /// assert_eq!(message!(&bundle, "missing-key", { "foo" = "bar" }), "missing-key(bar)");
 /// ```
 #[macro_export]
+#[cfg_attr(docrs, doc(cfg(feature = "fluent")))]
 macro_rules! message {
     ($bundle:expr, $id:expr) => {
         $crate::__format_message($bundle, $id, None)
@@ -89,6 +90,7 @@ pub fn __format_message<'a, R, M>(bundle: &'a fluent::bundle::FluentBundle<R, M>
 /// A language officially supported by *Final Fantasy XIV*.
 /// Can be converted into a [`FluentBundle`].
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+#[cfg_attr(docrs, doc(cfg(feature = "fluent")))]
 pub enum Lang {
     English,
     French,
@@ -164,6 +166,7 @@ impl Lang {
 }
 
 /// A collection of messages for a given language. Obtained from [`Lang::into_bundle`].
+#[cfg_attr(docrs, doc(cfg(feature = "fluent")))]
 pub type FluentBundle = fluent::FluentBundle<FluentResource>;
 
 impl TryFrom<Lang> for FluentBundle {
@@ -231,6 +234,7 @@ impl From<Lang> for LanguageIdentifier {
 ///
 /// This error is used as the error type for the [`Lang::from_str`] function.
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+#[cfg_attr(docrs, doc(cfg(feature = "fluent")))]
 pub struct ParseLangError;
 
 impl fmt::Display for ParseLangError {

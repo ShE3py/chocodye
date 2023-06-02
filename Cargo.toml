@@ -6,6 +6,10 @@ repository = "https://github.com/ShE3py/chocodye"
 edition = "2021"
 license = "MIT OR Apache-2.0"
 
+[package.metadata.docs.rs]
+features = ["fluent"]
+rustdoc-args = ["--cfg", "docsrs"]
+
 [features]
 fluent = ["dep:fluent", "dep:fluent-syntax", "dep:unic-langid", "dep:log"]
 

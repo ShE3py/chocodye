@@ -80,6 +80,8 @@ for category in Category::VALUES {
 //! println!("{:?}", menu);
 //! ```
 
+#![cfg_attr(docsrs, feature(doc_cfg))]
+
 use std::{array, fmt};
 use std::fmt::Formatter;
 use std::num::NonZeroU64;

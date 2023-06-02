@@ -186,6 +186,7 @@ impl Dye {{
     /// assert_eq!(Dye::RegalPurple.full_name(&Lang::French.into_bundle()), "Teinture \u{{2068}}byzantium\u{{2069}}");
     /// ```
     #[cfg(feature = "fluent")]
+    #[cfg_attr(docrs, doc(cfg(feature = "fluent")))]
     pub fn full_name(self, bundle: &FluentBundle) -> Cow<str> {{
         message!(bundle, "dye", {{ "name" = self.color_name(bundle) }})
     }}
@@ -194,6 +195,7 @@ impl Dye {{
     ///
     /// For more documentation, check the [`ansi_text`] function. This function is also used in the `truecolor` example.
     #[cfg(feature = "fluent")]
+    #[cfg_attr(docrs, doc(cfg(feature = "fluent")))]
     pub fn ansi_full_name(self, bundle: &FluentBundle) -> String {{
         ansi_text(self.color(), &self.full_name(bundle))
     }}
@@ -208,6 +210,7 @@ impl Dye {{
     /// assert_eq!(Dye::RegalPurple.color_name(&Lang::French.into_bundle()), "byzantium");
     /// ```
     #[cfg(feature = "fluent")]
+    #[cfg_attr(docrs, doc(cfg(feature = "fluent")))]
     pub fn color_name(self, bundle: &FluentBundle) -> Cow<str> {{
         message!(bundle, self.short_name())
     }}
@@ -216,6 +219,7 @@ impl Dye {{
     ///
     /// For more documentation, check the [`ansi_text`] function. This function is also used in the `truecolor` example.
     #[cfg(feature = "fluent")]
+    #[cfg_attr(docrs, doc(cfg(feature = "fluent")))]
     pub fn ansi_color_name(self, bundle: &FluentBundle) -> String {{
         ansi_text(self.color(), self.color_name(bundle).as_ref())
     }}
@@ -296,6 +300,7 @@ impl Category {{
     /// assert_eq!(Category::Purple.full_name(&Lang::French.into_bundle()), "Teintures violettes");
     /// ```
     #[cfg(feature = "fluent")]
+    #[cfg_attr(docrs, doc(cfg(feature = "fluent")))]
     pub fn full_name(self, bundle: &FluentBundle) -> Cow<str> {{
         message!(bundle, self.short_name())
     }}
@@ -304,6 +309,7 @@ impl Category {{
     ///
     /// For more documentation, check the [`ansi_text`] function. This function is also used in the `truecolor` example.
     #[cfg(feature = "fluent")]
+    #[cfg_attr(docrs, doc(cfg(feature = "fluent")))]
     pub fn ansi_full_name(self, bundle: &FluentBundle) -> String {{
         ansi_text(self.color(), self.full_name(bundle).as_ref())
     }}
