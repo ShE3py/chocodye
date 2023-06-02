@@ -1,10 +1,14 @@
 [package]
 name = "chocodye"
-version = "0.1.0"
+description = "A Rust library for changing the color of the chocobos' plumage in Final Fantasy XIV."
+version = "1.0.0"
 authors = ["ShE3py"]
-repository = "https://github.com/ShE3py/chocodye"
+repository = "https://github.com/ShE3py/chocodye/"
 edition = "2021"
+rust-version = "1.66"
 license = "MIT OR Apache-2.0"
+keywords = ["ffxiv", "chocobo"]
+include = ["src/**/*", "LICENSE-*", "README.md", "build.rs"]
 
 [package.metadata.docs.rs]
 rustdoc-args = ["--cfg", "docsrs"]

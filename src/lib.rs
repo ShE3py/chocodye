@@ -1,4 +1,4 @@
-//! A crate to generate a sequence of fruits to change the color of a chocobo's plumage.
+//! A Rust library for changing the color of the chocobos' plumage in *Final Fantasy XIV*.
 //!
 //! # Features
 //!
