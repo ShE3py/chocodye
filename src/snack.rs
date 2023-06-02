@@ -1,5 +1,6 @@
 use std::ops::Neg;
-use crate::Rgb;
+
+use crate::{FluentBundle, message, Rgb};
 
 /// A type of bitter fruit that changes the hue of the chocobos that eat it.
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
@@ -52,6 +53,21 @@ impl Snack {
             Snack::Fruit     => "fruit",
             Snack::Pineapple => "pineapple"
         }
+    }
+
+    /// Returns the localized quantified name of `self`.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use chocodye::{Lang, Snack};
+    ///
+    /// assert_eq!(Snack::Fruit.quantified_name(&Lang::English.into_bundle(), 12), "\u{2068}12\u{2069} Valfruits");
+    /// ```
+    #[cfg(feature = "fluent")]
+    #[cfg_attr(docrs, doc(cfg(feature = "fluent")))]
+    pub fn quantified_name(self, bundle: &FluentBundle, quantity: u32) -> String {
+        message!(bundle, self.short_name(), { "quantity" = quantity })
     }
 
     /// Returns the effect `self` will have on a chocobo's plumage.

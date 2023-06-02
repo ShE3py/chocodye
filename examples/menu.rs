@@ -7,7 +7,7 @@ use chocodye::{Dye, Lang, make_meal, make_menu, message, SnackList};
 macro_rules! print_rows {
     ($bundle:expr, $iter:expr) => {
         for (snack, count) in $iter {
-            println!("{}", message!($bundle, "row", { "content" = message!($bundle, snack.short_name(), { "quantity" = count }) }));
+            println!("– {}", snack.quantified_name($bundle, count as u32));
         }
     };
 }
