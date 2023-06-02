@@ -24,15 +24,20 @@ https://docs.rs/chocodye/
 
 ## Examples
 
-Sample menu:
-```bash
-cargo run --example menu -- en
-```
-
 List of colors:
 ```bash
 cargo run --example truecolor -- en
 ```
+
+![Result of running the truecolor example](examples/truecolor.png)
+
+Sample menu:
+
+```bash
+cargo run --example menu -- en
+```
+
+![Result of running the menu example](examples/menu.png)
 
 The displayed language can be changed by replacing `en` with `fr`, `de` or `jp`.
 
