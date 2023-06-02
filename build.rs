@@ -176,30 +176,6 @@ impl Dye {{
         }}
     }}
 
-    /// Returns the localized name of `self`.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use chocodye::{{Dye, Lang}};
-    ///
-    /// assert_eq!(Dye::RegalPurple.full_name(&Lang::French.into_bundle()), "Teinture \u{{2068}}byzantium\u{{2069}}");
-    /// ```
-    #[cfg(feature = "fluent")]
-    #[cfg_attr(docrs, doc(cfg(feature = "fluent")))]
-    pub fn full_name(self, bundle: &FluentBundle) -> Cow<str> {{
-        message!(bundle, "dye", {{ "name" = self.color_name(bundle) }})
-    }}
-
-    /// Returns the localized name of `self` with [ANSI escape codes](https://en.wikipedia.org/wiki/ANSI_escape_code#24-bit) for display in `stdout`.
-    ///
-    /// For more documentation, check the [`ansi_text`] function. This function is also used in the `truecolor` example.
-    #[cfg(all(feature = "fluent", feature = "truecolor"))]
-    #[cfg_attr(docrs, doc(cfg(all(feature = "fluent", feature = "truecolor"))))]
-    pub fn ansi_full_name(self, bundle: &FluentBundle) -> String {{
-        ansi_text(self.color(), &self.full_name(bundle)).into_owned()
-    }}
-
     /// Returns the localized name of `self`'s color.
     ///
     /// # Examples

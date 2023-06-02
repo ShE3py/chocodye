@@ -25,7 +25,7 @@ let mut dyes = Dye::VALUES;
 dyes.sort_unstable_by_key(|dye| 255 - dye.luma());
 
 for dye in dyes {
-    print!("{} ", dye.ansi_full_name(&bundle));
+    print!("{} ", dye.ansi_color_name(&bundle));
 }
 
 println!();

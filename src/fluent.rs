@@ -22,7 +22,7 @@ use unic_langid::{langid, LanguageIdentifier};
 /// let bundle = Lang::English.into_bundle();
 ///
 /// assert_eq!(message!(&bundle, "sky-blue"), "Sky Blue");
-/// assert_eq!(message!(&bundle, "pear", { "quantity" = 1 }), "a Mamook Pear");
+/// assert_eq!(message!(&bundle, "pear", { "quantity" = 1 }), "\u{2068}1\u{2069} Mamook Pear");
 ///
 /// assert_eq!(message!(&bundle, "missing-key", { "foo" = "bar" }), "missing-key(bar)");
 /// ```

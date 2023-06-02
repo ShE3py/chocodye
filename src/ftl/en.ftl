@@ -1,49 +1,48 @@
+## Fruits
+
 apple =
     { $quantity ->
-         [one] a Xelphatol Apple
+         [one] { $quantity } Xelphatol Apple
         *[other] { $quantity } Xelphatol Apples
     }
 
 pear =
     { $quantity ->
-         [one] a Mamook Pear
+         [one] { $quantity } Mamook Pear
         *[other] { $quantity } Mamook Pears
     }
 
 berries =
     { $quantity ->
-         [one] a O'Ghomoro Berry
+         [one] { $quantity } O'Ghomoro Berry
         *[other] { $quantity } O'Ghomoro Berries
     }
 
 plum =
     { $quantity ->
-         [one] a Doman Plum
+         [one] { $quantity } Doman Plum
         *[other] { $quantity } Doman Plums
     }
 
 fruit =
     { $quantity ->
-         [one] a Valfruit
+         [one] { $quantity } Valfruit
         *[other] { $quantity } Valfruits
     }
 
 pineapple =
     { $quantity ->
-         [one] a Cieldalaes Pineapple
+         [one] { $quantity } Cieldalaes Pineapple
         *[other] { $quantity } Cieldalaes Pineapples
     }
 
--lemon = a Han Lemon
+lemon =
+    { $quantity ->
+        [one] { $quantity } Han Lemon
+       *[other] { $quantity } Han Lemons
+    }
 
-dye = { $name } Dye
-white = White Dyes
-red = Red Dyes
-brown = Brown Dyes
-yellow = Yellow Dyes
-green = Green Dyes
-blue = Blue Dyes
-purple = Purple Dyes
+## Colors
 
 snow-white = Snow White
 ash-grey = Ash Grey
@@ -137,10 +136,20 @@ colibri-pink = Colibri Pink
 plum-purple = Plum Purple
 regal-purple = Regal Purple
 
+## Categories
+
+white = White Dyes
+red = Red Dyes
+brown = Brown Dyes
+yellow = Yellow Dyes
+green = Green Dyes
+blue = Blue Dyes
+purple = Purple Dyes
+
+## Builtin examples
 
 starting-color = Starting Color: { $name }
 final-color = Final Color: { $name }
 
 required-fruits = Required Fruits:
 instructions = Instructions:
-row = – { $content }

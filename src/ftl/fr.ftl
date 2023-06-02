@@ -1,49 +1,48 @@
+## Fruits
+
 apple =
     { $quantity ->
-         [one] une pomme de Xelphatol
+         [one] { $quantity } pomme de Xelphatol
         *[other] { $quantity } pommes de Xelphatol
     }
 
 pear =
     { $quantity ->
-         [one] une poire alligator de Mamook
+         [one] { $quantity } poire alligator de Mamook
         *[other] { $quantity } poires alligator de Mamook
     }
 
 berries =
     { $quantity ->
-         [one] un raisin d'O'Ghomoro
+         [one] { $quantity } raisin d'O'Ghomoro
         *[other] { $quantity } raisins d'O'Ghomoro
     }
 
 plum =
     { $quantity ->
-         [one] une prune de Doma
+         [one] { $quantity } prune de Doma
         *[other] { $quantity } prunes de Doma
     }
 
 fruit =
     { $quantity ->
-         [one] une groseille sanguine du Val
+         [one] { $quantity } groseille sanguine du Val
         *[other] { $quantity } groseilles sanguines du Val
     }
 
 pineapple =
     { $quantity ->
-         [one] un ananas des Cieldalaes
+         [one] { $quantity } ananas des Cieldalaes
         *[other] { $quantity } ananas des Cieldalaes
     }
 
--lemon = un citron de Radz-at-Han
+lemon =
+    { $quantity ->
+        [one] { $quantity } citron de Radz-at-Han
+       *[other] { $quantity } citrons de Radz-at-Han
+   }
 
-dye = Teinture { $name }
-white = Teintures blanches
-red = Teintures rouges
-brown = Teintures brunes
-yellow = Teintures jaunes
-green = Teintures vertes
-blue = Teintures bleues
-purple = Teintures violettes
+## Couleurs
 
 snow-white = blanc neige
 ash-grey = gris cendre
@@ -137,9 +136,20 @@ colibri-pink = mauve colibri
 plum-purple = prune
 regal-purple = byzantium
 
+## Catégories
+
+white = Teintures blanches
+red = Teintures rouges
+brown = Teintures brunes
+yellow = Teintures jaunes
+green = Teintures vertes
+blue = Teintures bleues
+purple = Teintures violettes
+
+## Exemples intégrés
+
 starting-color = Couleur initiale : { $name }
 final-color = Couleur finale : { $name }
 
 required-fruits = Fruits nécessaires :
 instructions = Instructions :
-row = – { $content }
