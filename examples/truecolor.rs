@@ -92,7 +92,7 @@ fn  main() {
         print!("{}{tabs}", ansi_text(category.color(), category_full_name.as_ref()));
 
         let mut current_width = BASE_INDENT;
-        let carriage = ansi_text(category.color(), &" ".repeat(category_full_name.len())).into_owned();
+        let carriage = ansi_text(category.color(), &" ".repeat(category_full_name.len()));
 
         for dye in dyes {
             let color_name = dye.color_name(&bundle);

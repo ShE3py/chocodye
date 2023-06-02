@@ -187,7 +187,7 @@ impl Dye {{
     /// ```
     #[cfg(feature = "fluent")]
     #[cfg_attr(docrs, doc(cfg(feature = "fluent")))]
-    pub fn color_name(self, bundle: &FluentBundle) -> Cow<str> {{
+    pub fn color_name(self, bundle: &FluentBundle) -> &str {{
         message!(bundle, self.short_name())
     }}
 
@@ -197,7 +197,7 @@ impl Dye {{
     #[cfg(all(feature = "fluent", feature = "truecolor"))]
     #[cfg_attr(docrs, doc(cfg(all(feature = "fluent", feature = "truecolor"))))]
     pub fn ansi_color_name(self, bundle: &FluentBundle) -> String {{
-        ansi_text(self.color(), self.color_name(bundle).as_ref()).into_owned()
+        ansi_text(self.color(), self.color_name(bundle))
     }}
 }}"#,
                      variants = dyes.iter().zip(&variants).map(|(dye, variant)| format!("/// `{}`\n\t{variant}", dye.stain)).collect::<Vec<_>>().join(",\n\n\t"),
@@ -277,7 +277,7 @@ impl Category {{
     /// ```
     #[cfg(feature = "fluent")]
     #[cfg_attr(docrs, doc(cfg(feature = "fluent")))]
-    pub fn full_name(self, bundle: &FluentBundle) -> Cow<str> {{
+    pub fn full_name(self, bundle: &FluentBundle) -> &str {{
         message!(bundle, self.short_name())
     }}
 
@@ -287,7 +287,7 @@ impl Category {{
     #[cfg(all(feature = "fluent", feature = "truecolor"))]
     #[cfg_attr(docrs, doc(cfg(all(feature = "fluent", feature = "truecolor"))))]
     pub fn ansi_full_name(self, bundle: &FluentBundle) -> String {{
-        ansi_text(self.color(), self.full_name(bundle).as_ref()).into_owned()
+        ansi_text(self.color(), self.full_name(bundle))
     }}
 }}"#,
                      variants = categories.join(",\n\t"),

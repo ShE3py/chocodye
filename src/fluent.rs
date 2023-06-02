@@ -14,6 +14,9 @@ use unic_langid::{langid, LanguageIdentifier};
 
 /// Formats a Fluent message fail-safely. Missing keys are formatted arbitrarily.
 ///
+/// Messages without arguments are evaluated to [`&str`], while messages with arguments
+/// are evaluated to [`String`].
+///
 /// # Examples
 ///
 /// ```
@@ -29,15 +32,24 @@ use unic_langid::{langid, LanguageIdentifier};
 #[macro_export]
 #[cfg_attr(docrs, doc(cfg(feature = "fluent")))]
 macro_rules! message {
-    ($bundle:expr, $id:expr) => {
-        $crate::__format_message($bundle, $id, None)
+    ($bundle:expr, $id:expr $(, {})?) => {
+        match $crate::__format_message($bundle, $id, None) {
+            ::std::borrow::Cow::Borrowed(s) => s,
+            ::std::borrow::Cow::Owned(_string) => {
+                #[cfg(debug_assertions)]
+                { ::std::unreachable!("`message!(_, {:?})` should be `Cow::Borrowed(_)`, got `Cow::Owned({:?})`", $id, _string) }
+
+                #[cfg(not(debug_assertions))]
+                { $id }
+            }
+        }
     };
 
     ($bundle:expr, $id:expr, { $($k:literal = $v:expr),+ }) => {{
         let mut args = fluent::FluentArgs::new();
         $(args.set($k, $v);)+
 
-        $crate::__format_message($bundle, $id, Some(args))
+        $crate::__format_message($bundle, $id, Some(args)).into_owned()
     }};
 }
 

@@ -1,7 +1,7 @@
 #![cfg(feature = "truecolor")]
 
-use std::borrow::Cow;
 use std::env;
+
 use crate::Rgb;
 
 fn find_subsequence<T: PartialEq>(haystack: &[T], needle: &[T]) -> Option<usize> {
@@ -56,9 +56,9 @@ fn is_supported() -> bool {
 /// //                                                        background          foreground     text
 /// ```
 #[cfg_attr(docrs, doc(cfg(feature = "truecolor")))]
-pub fn ansi_text(bg: Rgb, s: &str) -> Cow<str> {
+pub fn ansi_text(bg: Rgb, s: &str) -> String {
     if !is_supported() {
-        Cow::Borrowed(s)
+        s.to_owned()
     }
     else {
         let fg = {
@@ -73,10 +73,10 @@ pub fn ansi_text(bg: Rgb, s: &str) -> Cow<str> {
             }
         };
 
-        Cow::Owned(format!("\x1B[48;2;{};{};{}m\x1B[38;2;{};{};{}m{}\x1B[0m",
+        format!("\x1B[48;2;{};{};{}m\x1B[38;2;{};{};{}m{}\x1B[0m",
            bg.r, bg.g, bg.b,
            fg.r, fg.g, fg.b,
            s
-        ))
+        )
     }
 }

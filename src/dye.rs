@@ -1,5 +1,5 @@
 #[cfg(feature = "fluent")]
-use {crate::{FluentBundle, message}, std::borrow::Cow};
+use crate::{FluentBundle, message};
 
 #[cfg(all(feature = "fluent", feature = "truecolor"))]
 use crate::ansi_text;
