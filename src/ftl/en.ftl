@@ -148,8 +148,8 @@ purple = Purple Dyes
 
 ## Builtin examples
 
-starting-color = Starting Color: { $name }
-final-color = Final Color: { $name }
+starting-color-input = Starting Color:
+final-color-input = Final Color:
 
 required-fruits = Required Fruits:
-instructions = Instructions:
+feed-order = Feed Order:

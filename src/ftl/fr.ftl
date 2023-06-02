@@ -148,8 +148,8 @@ purple = Teintures violettes
 
 ## Exemples intégrés
 
-starting-color = Couleur initiale : { $name }
-final-color = Couleur finale : { $name }
+starting-color-input = Couleur initiale :
+final-color-input = Couleur finale :
 
 required-fruits = Fruits nécessaires :
-instructions = Instructions :
+feed-order = Reihenfolge, in der die Früchte zu geben:

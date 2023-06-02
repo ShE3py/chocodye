@@ -1,21 +1,38 @@
-use std::env;
+use std::{env, io};
+use std::io::{BufRead, Write};
 use std::process::exit;
 use std::str::FromStr;
 
-use chocodye::{Dye, Lang, make_meal, make_menu, message, SnackList};
+use chocodye::{Dye, FluentBundle, Lang, make_meal, make_menu, message, SnackList};
 
-macro_rules! print_rows {
-    ($bundle:expr, $iter:expr) => {
-        for (snack, count) in $iter {
-            println!("– {}", snack.quantified_name($bundle, count as u32));
+
+fn ask_dye(bundle: &FluentBundle, question: &'static str) -> io::Result<Dye> {
+    let mut buf = String::with_capacity(32);
+    let mut stdout = io::stdout().lock();
+    let mut stdin = io::stdin().lock();
+
+    let question = message!(bundle, question);
+
+    let dye = loop {
+        stdout.write_all(question.as_bytes())?;
+        stdout.write_all(b" ")?;
+        stdout.flush()?;
+
+        buf.clear();
+        stdin.read_line(&mut buf)?;
+
+        if let Some(dye) = Dye::from_str(bundle, buf.as_str().trim()) {
+            break dye;
         }
     };
+
+    // the final space is for overwritting in case of `ss` -> `ß` conversion
+    //                    v
+    println!("\x1B[1A{} {} ", question, dye.ansi_color_name(bundle));
+    Ok(dye)
 }
 
-fn main() {
-    const STARTING_DYE: Dye = Dye::DEFAULT_CHOCOBO_COLOR;
-    const FINAL_DYE: Dye = Dye::RolanberryRed;
-
+fn main() -> io::Result<()> {
     let bundle = match env::args_os().skip(1).next() {
         Some(arg) => {
             match arg.to_str() {
@@ -42,18 +59,25 @@ fn main() {
         }
     };
 
-    println!("{}", message!(&bundle, "starting-color", { "name" = STARTING_DYE.ansi_color_name(&bundle) }));
-    println!("{}", message!(&bundle, "final-color", { "name" = FINAL_DYE.ansi_color_name(&bundle) }));
+    let starting_dye = ask_dye(&bundle, "starting-color-input")?;
+    let final_dye = ask_dye(&bundle, "final-color-input")?;
+
     println!();
 
-    let meal = make_meal(STARTING_DYE, FINAL_DYE);
+    let meal = make_meal(starting_dye, final_dye);
     let snacks = SnackList::from(meal.as_slice());
 
     println!("{}", message!(&bundle, "required-fruits"));
-    print_rows!(&bundle, snacks);
+    for (snack, count) in snacks.into_iter().filter(|(_, count)| *count > 0) {
+        println!("– {}", snack.quantified_name(&bundle, count as u32));
+    }
     println!();
 
-    let menu = make_menu(STARTING_DYE, snacks);
-    println!("{}", message!(&bundle, "instructions"));
-    print_rows!(&bundle, menu.into_iter());
+    let menu = make_menu(starting_dye, snacks);
+    println!("{}", message!(&bundle, "feed-order"));
+    for (snack, count) in menu {
+        println!("– {}", snack.quantified_name(&bundle, count as u32));
+    }
+
+    Ok(())
 }

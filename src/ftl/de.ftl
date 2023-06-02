@@ -148,8 +148,8 @@ purple = Violette Farbstoffe
 
 ## Eingebaute Beispiele
 
-starting-color = Ausgangsfarbe: { $name }
-final-color = Endfarbe: { $name }
+starting-color-input = Ausgangsfarbe:
+final-color-input = Endfarbe:
 
-required-fruits = Notwendige Früchte:
-instructions = Anweisungen:
+required-fruits = Benötigte Früchte:
+feed-order = Anweisungen:

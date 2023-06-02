@@ -199,6 +199,29 @@ impl Dye {{
     pub fn ansi_color_name(self, bundle: &FluentBundle) -> String {{
         ansi_text(self.color(), self.color_name(bundle))
     }}
+
+    /// Parses a localized color name into its original [`Dye`].
+    ///
+    /// Eszetts must have been replaced by "ss". The current implementation is case-insensitive,
+    /// but no diacritic-insensitve. Future implementations may be more permissive.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use chocodye::{{Dye, Lang}};
+    ///
+    /// let de = Lang::German.into_bundle();
+    ///
+    /// assert_eq!(Dye::from_str(&de, "Ul'dahbraun"), Some(Dye::UlBrown));    // exact match
+    /// assert_eq!(Dye::from_str(&de, "Ul dahbraun"), None);                  // missing apostrophe
+    /// assert_eq!(Dye::from_str(&de, "tÜrkIS"), Some(Dye::TurquoiseGreen));  // case is ignored
+    /// assert_eq!(Dye::from_str(&de, "Turkis"), None);                       // missing umlaut
+    /// assert_eq!(Dye::from_str(&de, "Russschwarz"), Some(Dye::SootBlack));  // `ß` was replaced by `ss`
+    /// assert_eq!(Dye::from_str(&de, "Rußschwarz"), None);                   // `ß` wasn't replaced by `ss`
+    /// ```
+    pub fn from_str(bundle: &FluentBundle, color_name: &str) -> Option<Dye> {{
+        from_str_impl(bundle, color_name)
+    }}
 }}"#,
                      variants = dyes.iter().zip(&variants).map(|(dye, variant)| format!("/// `{}`\n\t{variant}", dye.stain)).collect::<Vec<_>>().join(",\n\n\t"),
                      values = variants.iter().map(|dye| format!("Dye::{dye}")).collect::<Vec<_>>().join(",\n\t\t"),

@@ -8,6 +8,13 @@ use crate::Rgb;
 
 include!(concat!(env!("OUT_DIR"), "/dye.rs"));
 
+#[inline(always)]
+fn from_str_impl(bundle: &FluentBundle, s: &str) -> Option<Dye> {
+    let s = s.to_lowercase();
+
+    Dye::VALUES.into_iter().find(|dye| dye.color_name(bundle).replace("ß", "ss").to_lowercase() == s)
+}
+
 impl From<Dye> for Rgb {
     /// Converts a dye into its color.
     fn from(dye: Dye) -> Rgb {
