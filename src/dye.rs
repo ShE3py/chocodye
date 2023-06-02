@@ -1,6 +1,9 @@
 #[cfg(feature = "fluent")]
 use {crate::{FluentBundle, message}, std::borrow::Cow};
 
+#[cfg(all(feature = "fluent", feature = "truecolor"))]
+use crate::ansi_text;
+
 use crate::Rgb;
 
 include!(concat!(env!("OUT_DIR"), "/dye.rs"));
@@ -10,49 +13,6 @@ impl From<Dye> for Rgb {
     fn from(dye: Dye) -> Rgb {
         dye.color()
     }
-}
-
-/// Changes the background color of a string using three [ANSI escape codes](https://en.wikipedia.org/wiki/ANSI_escape_code#24-bit).
-/// The terminal must support [truecolors](https://en.wikipedia.org/wiki/Color_depth#True_color_(24-bit)).
-///
-/// This function also changes the foreground color according to the specified background color in order to ensure that the
-/// text is visible.
-///
-/// # Examples
-///
-/// ```
-/// use chocodye::{ansi_text, Rgb};
-///
-/// assert_eq!(ansi_text(Rgb::RED, "hello world!"), "\x1B[48;2;255;0;0m\x1B[38;2;255;255;255mhello world!\x1B[0m");
-/// //                                                         ^^^^^^^           ^^^^^^^^^^^ ^^^^^^^^^^^^
-/// //                                                        background          foreground     text
-/// ```
-///
-/// To check whether truecolor is supported:
-/// ```
-/// let is_truecolor_supported = std::env::var("COLORTERM")
-///     .map(|val| val.contains("truecolor") || val.contains("24bit"))
-///     .unwrap_or(false);
-/// ```
-pub fn ansi_text(bg: Rgb, s: &str) -> String {
-    let fg = {
-        let d = bg.distance(Rgb::WHITE);
-
-        const LIMIT: u32 = Rgb::gray(127).distance(Rgb::WHITE);
-
-        if d >= LIMIT {
-            Rgb::WHITE
-        }
-        else {
-            Rgb::BLACK
-        }
-    };
-
-    format!("\x1B[48;2;{};{};{}m\x1B[38;2;{};{};{}m{}\x1B[0m",
-        bg.r, bg.g, bg.b,
-        fg.r, fg.g, fg.b,
-        s
-    )
 }
 
 impl TryFrom<Rgb> for Dye {

@@ -17,20 +17,21 @@ and [Fluent translation lists](src/ftl/).
 Latest version:
 https://docs.rs/chocodye/
 
-## Optional features
+## Cargo Features
 
 - `fluent`: enables localization through [Fluent](https://projectfluent.org/).
+- `truecolor`: enables text to be colored in the terminal.
 
 ## Examples
 
 Sample menu:
 ```bash
-cargo run --example menu --features=fluent -- en
+cargo run --example menu -- en
 ```
 
 List of colors:
 ```bash
-cargo run --example truecolor --features=fluent -- en
+cargo run --example truecolor -- en
 ```
 
 The displayed language can be changed by replacing `en` with `fr`, `de` or `jp`.

@@ -7,19 +7,20 @@ edition = "2021"
 license = "MIT OR Apache-2.0"
 
 [package.metadata.docs.rs]
-features = ["fluent"]
 rustdoc-args = ["--cfg", "docsrs"]
 
 [features]
+default = ["fluent", "truecolor"]
 fluent = ["dep:fluent", "dep:fluent-syntax", "dep:unic-langid", "dep:log"]
+truecolor = []
 
 [[example]]
 name = "truecolor"
-required-features = ["fluent"]
+required-features = ["fluent", "truecolor"]
 
 [[example]]
 name = "menu"
-required-features = ["fluent"]
+required-features = ["fluent", "truecolor"]
 
 [dependencies.fluent]
 version = "0.16.0"

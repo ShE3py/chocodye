@@ -1,7 +1,14 @@
 //! A crate to generate a sequence of fruits to change the color of a chocobo's plumage.
 //!
-//! The optional `fluent` feature provides access to localized fruit and color names,
+//! # Features
+//!
+//! - `fluent`: provides access to localized fruit and color names,
 //! but only for English, French, German and Japanese.
+//!
+//! - `truecolor`: enables colored text to be displayed on terminals
+//! supporting 24-bit color.
+//!
+//! These two features are enabled by default.
 //!
 //! # Examples
 //!
@@ -86,19 +93,25 @@ use std::{array, fmt};
 use std::fmt::Formatter;
 use std::num::NonZeroU64;
 
-pub use dye::{ansi_text, Category, Dye};
+pub use dye::{Category, Dye};
 pub use rgb::{ParseHexError, Rgb};
 pub use snack::Snack;
 
 #[cfg(feature = "fluent")]
 pub use crate::fluent::{__format_message, FluentBundle, Lang, ParseLangError};
 
+#[cfg(feature = "truecolor")]
+pub use crate::truecolor::ansi_text;
+
+#[cfg(feature = "fluent")]
+mod fluent;
+
 mod dye;
 mod rgb;
 mod snack;
 
-#[cfg(feature = "fluent")]
-mod fluent;
+#[cfg(feature = "truecolor")]
+mod truecolor;
 
 /// Creates a vector of [`Snack`], that when fed to a chocobo, will change its plumage from one [`Dye`] to another.
 ///

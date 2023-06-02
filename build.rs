@@ -194,10 +194,10 @@ impl Dye {{
     /// Returns the localized name of `self` with [ANSI escape codes](https://en.wikipedia.org/wiki/ANSI_escape_code#24-bit) for display in `stdout`.
     ///
     /// For more documentation, check the [`ansi_text`] function. This function is also used in the `truecolor` example.
-    #[cfg(feature = "fluent")]
-    #[cfg_attr(docrs, doc(cfg(feature = "fluent")))]
+    #[cfg(all(feature = "fluent", feature = "truecolor"))]
+    #[cfg_attr(docrs, doc(cfg(all(feature = "fluent", feature = "truecolor"))))]
     pub fn ansi_full_name(self, bundle: &FluentBundle) -> String {{
-        ansi_text(self.color(), &self.full_name(bundle))
+        ansi_text(self.color(), &self.full_name(bundle)).into_owned()
     }}
 
     /// Returns the localized name of `self`'s color.
@@ -218,10 +218,10 @@ impl Dye {{
     /// Returns the localized name of `self`'s color with [ANSI escape codes](https://en.wikipedia.org/wiki/ANSI_escape_code#24-bit) for display in `stdout`.
     ///
     /// For more documentation, check the [`ansi_text`] function. This function is also used in the `truecolor` example.
-    #[cfg(feature = "fluent")]
-    #[cfg_attr(docrs, doc(cfg(feature = "fluent")))]
+    #[cfg(all(feature = "fluent", feature = "truecolor"))]
+    #[cfg_attr(docrs, doc(cfg(all(feature = "fluent", feature = "truecolor"))))]
     pub fn ansi_color_name(self, bundle: &FluentBundle) -> String {{
-        ansi_text(self.color(), self.color_name(bundle).as_ref())
+        ansi_text(self.color(), self.color_name(bundle).as_ref()).into_owned()
     }}
 }}"#,
                      variants = dyes.iter().zip(&variants).map(|(dye, variant)| format!("/// `{}`\n\t{variant}", dye.stain)).collect::<Vec<_>>().join(",\n\n\t"),
@@ -308,10 +308,10 @@ impl Category {{
     /// Returns the localized name of `self` with [ANSI escape codes](https://en.wikipedia.org/wiki/ANSI_escape_code#24-bit) for display in `stdout`.
     ///
     /// For more documentation, check the [`ansi_text`] function. This function is also used in the `truecolor` example.
-    #[cfg(feature = "fluent")]
-    #[cfg_attr(docrs, doc(cfg(feature = "fluent")))]
+    #[cfg(all(feature = "fluent", feature = "truecolor"))]
+    #[cfg_attr(docrs, doc(cfg(all(feature = "fluent", feature = "truecolor"))))]
     pub fn ansi_full_name(self, bundle: &FluentBundle) -> String {{
-        ansi_text(self.color(), self.full_name(bundle).as_ref())
+        ansi_text(self.color(), self.full_name(bundle).as_ref()).into_owned()
     }}
 }}"#,
                      variants = categories.join(",\n\t"),

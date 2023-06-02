@@ -37,7 +37,7 @@ fn main() {
             eprintln!("Please select a language from `en`, `fr`, `de` or `jp`.");
             eprintln!();
             eprintln!("Example:");
-            eprintln!("cargo run --example menu --features=fluent -- en");
+            eprintln!("cargo run --example menu -- en");
             exit(1);
         }
     };

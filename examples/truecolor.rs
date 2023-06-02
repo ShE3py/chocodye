@@ -64,7 +64,7 @@ fn  main() {
             eprintln!("Please select a language from `en`, `fr`, `de` or `jp`.");
             eprintln!();
             eprintln!("Example:");
-            eprintln!("cargo run --example truecolor --features=fluent -- en");
+            eprintln!("cargo run --example truecolor -- en");
             exit(1);
         }
     };
@@ -92,7 +92,7 @@ fn  main() {
         print!("{}{tabs}", ansi_text(category.color(), category_full_name.as_ref()));
 
         let mut current_width = BASE_INDENT;
-        let carriage = ansi_text(category.color(), &" ".repeat(category_full_name.len()));
+        let carriage = ansi_text(category.color(), &" ".repeat(category_full_name.len())).into_owned();
 
         for dye in dyes {
             let color_name = dye.color_name(&bundle);
