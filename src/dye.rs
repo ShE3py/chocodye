@@ -9,6 +9,7 @@ use crate::Rgb;
 include!(concat!(env!("OUT_DIR"), "/dye.rs"));
 
 #[inline(always)]
+#[cfg(feature = "fluent")]
 fn from_str_impl(bundle: &FluentBundle, s: &str) -> Option<Dye> {
     let s = s.to_lowercase();
 

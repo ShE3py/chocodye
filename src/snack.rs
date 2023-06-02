@@ -1,6 +1,9 @@
 use std::ops::Neg;
 
-use crate::{FluentBundle, message, Rgb};
+use crate::Rgb;
+
+#[cfg(feature = "fluent")]
+use crate::{FluentBundle, message};
 
 /// A type of bitter fruit that changes the hue of the chocobos that eat it.
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]

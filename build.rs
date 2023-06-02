@@ -219,6 +219,8 @@ impl Dye {{
     /// assert_eq!(Dye::from_str(&de, "Russschwarz"), Some(Dye::SootBlack));  // `ß` was replaced by `ss`
     /// assert_eq!(Dye::from_str(&de, "Rußschwarz"), None);                   // `ß` wasn't replaced by `ss`
     /// ```
+    #[cfg(feature = "fluent")]
+    #[cfg_attr(docrs, doc(cfg(feature = "fluent")))]
     pub fn from_str(bundle: &FluentBundle, color_name: &str) -> Option<Dye> {{
         from_str_impl(bundle, color_name)
     }}
