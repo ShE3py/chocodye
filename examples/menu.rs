@@ -6,7 +6,7 @@ use std::str::FromStr;
 use chocodye::{Dye, FluentBundle, Lang, make_meal, make_menu, message, SnackList};
 
 
-fn ask_dye(bundle: &FluentBundle, question: &'static str) -> io::Result<Dye> {
+fn ask_dye(bundle: &FluentBundle, question: &'static str, default: Option<Dye>) -> io::Result<Dye> {
     let mut buf = String::with_capacity(32);
     let mut stdout = io::stdout().lock();
     let mut stdin = io::stdin().lock();
@@ -21,8 +21,16 @@ fn ask_dye(bundle: &FluentBundle, question: &'static str) -> io::Result<Dye> {
         buf.clear();
         stdin.read_line(&mut buf)?;
 
-        if let Some(dye) = Dye::from_str(bundle, buf.as_str().trim()) {
+        let trimmed = buf.trim();
+
+        if let Some(dye) = Dye::from_str(bundle, trimmed) {
             break dye;
+        }
+
+        if trimmed.is_empty() {
+            if let Some(default) = default {
+                break default;
+            }
         }
     };
 
@@ -59,8 +67,8 @@ fn main() -> io::Result<()> {
         }
     };
 
-    let starting_dye = ask_dye(&bundle, "starting-color-input")?;
-    let final_dye = ask_dye(&bundle, "final-color-input")?;
+    let starting_dye = ask_dye(&bundle, "starting-color-input", Some(Dye::DEFAULT_CHOCOBO_COLOR))?;
+    let final_dye = ask_dye(&bundle, "final-color-input", None)?;
 
     println!();
 
