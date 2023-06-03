@@ -29,7 +29,7 @@ List of colors:
 cargo run --example truecolor -- en
 ```
 
-![Result of running the truecolor example](examples/truecolor.png)
+![Result of running the truecolor example](https://github.com/ShE3py/chocodye/blob/4898eb80cf600dc3e179a4758ba90e3a060bafdd/examples/truecolor.png?raw=true)
 
 Sample menu:
 
@@ -37,7 +37,7 @@ Sample menu:
 cargo run --example menu -- en
 ```
 
-![Result of running the menu example](examples/menu.png)
+![Result of running the menu example](https://github.com/ShE3py/chocodye/blob/4898eb80cf600dc3e179a4758ba90e3a060bafdd/examples/menu.png?raw=true)
 
 The displayed language can be changed by replacing `en` with `fr`, `de` or `jp`.
 

@@ -8,7 +8,7 @@ edition = "2021"
 rust-version = "1.66"
 license = "MIT OR Apache-2.0"
 keywords = ["ffxiv", "chocobo"]
-include = ["src/**/*", "LICENSE-*", "README.md", "build.rs"]
+include = ["examples/*.rs", "src/**/*", "LICENSE-*", "README.md", "build.rs"]
 
 [package.metadata.docs.rs]
 rustdoc-args = ["--cfg", "docsrs"]
