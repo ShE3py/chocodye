@@ -55,7 +55,7 @@ fn is_supported() -> bool {
 /// //                                                         ^^^^^^^           ^^^^^^^^^^^ ^^^^^^^^^^^^
 /// //                                                        background          foreground     text
 /// ```
-#[cfg_attr(docrs, doc(cfg(feature = "truecolor")))]
+#[cfg_attr(docsrs, doc(cfg(feature = "truecolor")))]
 pub fn ansi_text(bg: Rgb, s: &str) -> String {
     if !is_supported() {
         s.to_owned()

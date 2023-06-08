@@ -68,7 +68,7 @@ impl Snack {
     /// assert_eq!(Snack::Fruit.quantified_name(&Lang::English.into_bundle(), 12), "\u{2068}12\u{2069} Valfruits");
     /// ```
     #[cfg(feature = "fluent")]
-    #[cfg_attr(docrs, doc(cfg(feature = "fluent")))]
+    #[cfg_attr(docsrs, doc(cfg(feature = "fluent")))]
     pub fn quantified_name(self, bundle: &FluentBundle, quantity: u32) -> String {
         message!(bundle, self.short_name(), { "quantity" = quantity })
     }

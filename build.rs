@@ -186,7 +186,7 @@ impl Dye {{
     /// assert_eq!(Dye::RegalPurple.color_name(&Lang::French.into_bundle()), "byzantium");
     /// ```
     #[cfg(feature = "fluent")]
-    #[cfg_attr(docrs, doc(cfg(feature = "fluent")))]
+    #[cfg_attr(docsrs, doc(cfg(feature = "fluent")))]
     pub fn color_name(self, bundle: &FluentBundle) -> &str {{
         message!(bundle, self.short_name())
     }}
@@ -195,7 +195,7 @@ impl Dye {{
     ///
     /// For more documentation, check the [`ansi_text`] function. This function is also used in the `truecolor` example.
     #[cfg(all(feature = "fluent", feature = "truecolor"))]
-    #[cfg_attr(docrs, doc(cfg(all(feature = "fluent", feature = "truecolor"))))]
+    #[cfg_attr(docsrs, doc(cfg(all(feature = "fluent", feature = "truecolor"))))]
     pub fn ansi_color_name(self, bundle: &FluentBundle) -> String {{
         ansi_text(self.color(), self.color_name(bundle))
     }}
@@ -220,7 +220,7 @@ impl Dye {{
     /// assert_eq!(Dye::from_str(&de, "Rußschwarz"), None);                   // `ß` wasn't replaced by `ss`
     /// ```
     #[cfg(feature = "fluent")]
-    #[cfg_attr(docrs, doc(cfg(feature = "fluent")))]
+    #[cfg_attr(docsrs, doc(cfg(feature = "fluent")))]
     pub fn from_str(bundle: &FluentBundle, color_name: &str) -> Option<Dye> {{
         from_str_impl(bundle, color_name)
     }}
@@ -301,7 +301,7 @@ impl Category {{
     /// assert_eq!(Category::Purple.full_name(&Lang::French.into_bundle()), "Teintures violettes");
     /// ```
     #[cfg(feature = "fluent")]
-    #[cfg_attr(docrs, doc(cfg(feature = "fluent")))]
+    #[cfg_attr(docsrs, doc(cfg(feature = "fluent")))]
     pub fn full_name(self, bundle: &FluentBundle) -> &str {{
         message!(bundle, self.short_name())
     }}
@@ -310,7 +310,7 @@ impl Category {{
     ///
     /// For more documentation, check the [`ansi_text`] function. This function is also used in the `truecolor` example.
     #[cfg(all(feature = "fluent", feature = "truecolor"))]
-    #[cfg_attr(docrs, doc(cfg(all(feature = "fluent", feature = "truecolor"))))]
+    #[cfg_attr(docsrs, doc(cfg(all(feature = "fluent", feature = "truecolor"))))]
     pub fn ansi_full_name(self, bundle: &FluentBundle) -> String {{
         ansi_text(self.color(), self.full_name(bundle))
     }}
