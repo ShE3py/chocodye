@@ -98,7 +98,11 @@ pub use rgb::{ParseHexError, Rgb};
 pub use snack::Snack;
 
 #[cfg(feature = "fluent")]
-pub use crate::fluent::{__format_message, FluentBundle, Lang, ParseLangError};
+pub use crate::fluent::{FluentBundle, Lang, ParseLangError};
+
+#[cfg(feature = "fluent")]
+#[doc(hidden)]
+pub use crate::fluent::__format_message;
 
 #[cfg(feature = "truecolor")]
 pub use crate::truecolor::ansi_text;
