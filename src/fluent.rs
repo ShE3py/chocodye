@@ -32,28 +32,26 @@ use unic_langid::{langid, LanguageIdentifier};
 #[macro_export]
 #[cfg_attr(docsrs, doc(cfg(feature = "fluent")))]
 macro_rules! message {
-    ($bundle:expr, $id:expr $(, {})?) => {
-        {
-            let key: &'static str = $id;
+    ($bundle:expr, $id:expr $(, {})?) => {{
+        let key: &'static ::std::primitive::str = $id;
 
-            match $crate::__format_message($bundle, key, None) {
-                ::std::borrow::Cow::Borrowed(s) => s,
-                ::std::borrow::Cow::Owned(_string) => {
-                    #[cfg(debug_assertions)]
-                    { ::std::unreachable!("`message!(_, {:?})` should be `Cow::Borrowed(_)`, got `Cow::Owned({:?})`", key, _string) }
+        match $crate::__format_message($bundle, key, ::std::option::Option::None) {
+            ::std::borrow::Cow::Borrowed(s) => s,
+            ::std::borrow::Cow::Owned(_string) => {
+                #[cfg(debug_assertions)]
+                { ::std::unreachable!("`message!(_, {:?})` should be `Cow::Borrowed(_)`, got `Cow::Owned({:?})`", key, _string) }
 
-                    #[cfg(not(debug_assertions))]
-                    { key }
-                }
+                #[cfg(not(debug_assertions))]
+                { key }
             }
         }
-    };
+    }};
 
     ($bundle:expr, $id:expr, { $($k:literal = $v:expr),+ }) => {{
-        let mut args = fluent::FluentArgs::new();
+        let mut args = ::fluent::FluentArgs::new();
         $(args.set($k, $v);)+
 
-        $crate::__format_message($bundle, $id, Some(args)).into_owned()
+        $crate::__format_message($bundle, $id, ::std::option::Option::Some(args)).into_owned()
     }};
 }
 
