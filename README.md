@@ -40,6 +40,11 @@ cargo run --example menu -- en
 ![Result of running the menu example](https://github.com/ShE3py/chocodye/blob/4898eb80cf600dc3e179a4758ba90e3a060bafdd/examples/menu.png?raw=true)
 
 The displayed language can be changed by replacing `en` with `fr`, `de` or `jp`.
+Please note that for colors to be displayed under Windows, this command must first be run:
+```bat
+set COLORTERM=truecolor
+```
+See the documentation for [`chocodye::ansi_text`](https://docs.rs/chocodye/latest/chocodye/fn.ansi_text.html).
 
 ## License
 

@@ -68,7 +68,9 @@ fn get_term_width() -> Option<u16> {
             match width.try_into() {
                 Ok(w) => Some(w),
                 Err(e) => {
-                    eprintln!("`GetConsoleScreenBufferInfo()`: `dwSize.X`: {}", e)
+                    eprintln!("`GetConsoleScreenBufferInfo()`: `dwSize.X`: {}", e);
+
+                    None
                 }
             }
         }
