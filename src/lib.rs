@@ -199,7 +199,7 @@ impl SnackList {
         // SAFETY: both `self.0` and `!(0xFFu64 << (8 * snack as usize))` have their msb set to `1`, thus
         // making the result's msb to `1`.
         self.0 = unsafe { NonZeroU64::new_unchecked(
-            (self.0.get() & !(0xFFu64 << (8 * snack as usize))) | (value as u64) << (8 * snack as usize)
+            (self.0.get() & !(0xFFu64 << (8 * snack as usize))) | ((value as u64) << (8 * snack as usize))
         ) };
     }
 
@@ -212,13 +212,13 @@ impl SnackList {
 impl From<&[Snack]> for SnackList {
     /// Creates a new [`SnackList`] from a slice of [`Snack`].
     fn from(snacks: &[Snack]) -> SnackList {
-        let mut sl = SnackList::new();
+        let mut sl = SnackList::new().0.get();
 
         for snack in snacks {
-            sl.add(*snack, 1);
+            sl += 1 << (8 * *snack as usize);
         }
 
-        sl
+        SnackList(NonZeroU64::new(sl).expect("integer overflow"))
     }
 }
 
@@ -371,8 +371,9 @@ mod lib {
             assert_eq!(list.0.get(), 1 << 63);
 
             list.set(Snack::Pear, 210);
+            list.add(Snack::Pear, 12);
             assert_ne!(list.0.get(), 1 << 63);
-            assert_eq!(list.get(Snack::Pear), 210);
+            assert_eq!(list.get(Snack::Pear), 222);
 
             list.set(Snack::Pear, 0);
             assert_eq!(list.0.get(), 1 << 63);
