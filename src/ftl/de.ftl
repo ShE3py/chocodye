@@ -152,4 +152,4 @@ starting-color-input = Ausgangsfarbe:
 final-color-input = Endfarbe:
 
 required-fruits = Benötigte Früchte:
-feed-order = Anweisungen:
+feed-order = Reihenfolge, in der die Früchte zu geben:
