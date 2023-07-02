@@ -3,6 +3,7 @@ use std::process::exit;
 use std::str::FromStr;
 
 use unic_langid::langid;
+
 use chocodye::{ansi_text, Category, Lang};
 
 #[cfg(unix)]
@@ -37,7 +38,49 @@ fn get_term_width() -> Option<u16> {
     }
 }
 
-#[cfg(not(unix))]
+#[cfg(windows)]
+fn get_term_width() -> Option<u16> {
+    use std::io;
+    use std::mem::MaybeUninit;
+    use windows_sys::Win32::System::Console::{CONSOLE_SCREEN_BUFFER_INFO, GetConsoleScreenBufferInfo, GetStdHandle, STD_OUTPUT_HANDLE};
+    use windows_sys::Win32::Foundation::INVALID_HANDLE_VALUE;
+
+    let mut size = MaybeUninit::<CONSOLE_SCREEN_BUFFER_INFO>::zeroed();
+
+    unsafe {
+        let handle = GetStdHandle(STD_OUTPUT_HANDLE);
+
+        if handle == INVALID_HANDLE_VALUE {
+            eprintln!("`GetStdHandle()`: {}", io::Error::last_os_error());
+
+            return None;
+        }
+
+        if handle == 0 {
+            return None;
+        }
+
+        let ret = GetConsoleScreenBufferInfo(handle, size.as_mut_ptr());
+
+        if ret != 0 {
+            let width = size.assume_init().dwSize.X;
+
+            match width.try_into() {
+                Ok(w) => Some(w),
+                Err(e) => {
+                    eprintln!("`GetConsoleScreenBufferInfo()`: `dwSize.X`: {}", e)
+                }
+            }
+        }
+        else {
+            eprintln!("`GetConsoleScreenBufferInfo()`: {}", io::Error::last_os_error());
+
+            None
+        }
+    }
+}
+
+#[cfg(not(any(unix, windows)))]
 fn get_term_width() -> Option<u16> {
     None
 }
@@ -101,7 +144,7 @@ fn  main() {
             let color_name = dye.color_name(&bundle);
             let char_count = (color_name.chars().count() + 1) as u32;
 
-            if (current_width + char_count) > (term_width as u32) {
+            if (current_width + char_count) > term_width {
                 println!();
                 print!("{}\t", carriage);
                 current_width = BASE_INDENT;

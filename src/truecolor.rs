@@ -4,7 +4,7 @@ use std::env;
 
 use crate::Rgb;
 
-fn find_subsequence<T: PartialEq>(haystack: &[T], needle: &[T]) -> Option<usize> {
+fn find_subsequence<H: PartialEq<N>, N>(haystack: &[H], needle: &[N]) -> Option<usize> {
     haystack.windows(needle.len()).position(|window| window == needle)
 }
 
