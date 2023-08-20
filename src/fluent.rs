@@ -105,11 +105,12 @@ pub fn __format_message<'a, R, M>(bundle: &'a fluent::bundle::FluentBundle<R, M>
 /// Can be converted into a [`FluentBundle`].
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 #[cfg_attr(docsrs, doc(cfg(feature = "fluent")))]
+#[repr(u8)]
 pub enum Lang {
-    English,
-    French,
-    German,
-    Japanese
+    English = 0,
+    French = 1,
+    German = 2,
+    Japanese = 3
 }
 
 impl Lang {

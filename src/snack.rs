@@ -7,24 +7,25 @@ use crate::{FluentBundle, message};
 
 /// A type of bitter fruit that changes the hue of the chocobos that eat it.
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+#[repr(u8)]
 pub enum Snack {
     /// Xelphatol Apples are found growing in the Ixali homelands. Increases red hue, but reduces blue and green hues.
-    Apple,
+    Apple = 0,
 
     /// Mamook Pears are found growing in the arid soils of Mamook. Increases green hue, but reduces red and blue hues.
-    Pear,
+    Pear = 1,
 
     /// O'Ghomoro Berries are found growing on the volcanic soil of O'Ghomoro. Increases blue hue, but reduces red and green hues.
-    Berries,
+    Berries = 2,
 
     /// Doman Plums are found growing in the forests of far eastern Doma. Increases green and blue hues, but reduces red hue.
-    Plum,
+    Plum = 3,
 
     /// Valfruits are found growing on the distant Isle of Val. Increases red and blue hues, but reduces green hue.
-    Fruit,
+    Fruit = 4,
 
     /// Cieldalaes Pineapples are found growing on the Rhotano Sea's Cieldaleas islands. Increases red and green hues, but reduces blue hue.
-    Pineapple
+    Pineapple = 5
 }
 
 impl Snack {

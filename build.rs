@@ -10,9 +10,9 @@ mod dyes {
     use std::fs::File;
     use std::io::{BufWriter, Write};
     use std::path::PathBuf;
-
+    
     use serde::Deserialize;
-
+    
     #[derive(Deserialize)]
     struct Dyes {
         #[serde(rename = "category")]
@@ -83,6 +83,7 @@ r#"
 /// Please open an issue on GitHub if you wish to use this enum in another crate not related
 /// to chocobo dyeing.
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+#[repr(u8)]
 pub enum Dye {{
     {variants}
 }}
@@ -225,7 +226,7 @@ impl Dye {{
         from_str_impl(bundle, color_name)
     }}
 }}"#,
-                     variants = dyes.iter().zip(&variants).map(|(dye, variant)| format!("/// `{}`\n\t{variant}", dye.stain)).collect::<Vec<_>>().join(",\n\n\t"),
+                     variants = dyes.iter().zip(&variants).enumerate().map(|(i, (dye, variant))| format!("/// `{}`\n\t{variant} = {i}", dye.stain)).collect::<Vec<_>>().join(",\n\n\t"),
                      values = variants.iter().map(|dye| format!("Dye::{dye}")).collect::<Vec<_>>().join(",\n\t\t"),
 
                      categories = self.categories
@@ -250,6 +251,7 @@ impl Dye {{
             writeln!(buf, r#"
 /// A category of dyes with similar hues.
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+#[repr(u8)]
 pub enum Category {{
     {variants}
 }}
@@ -315,7 +317,7 @@ impl Category {{
         ansi_text(self.color(), self.full_name(bundle))
     }}
 }}"#,
-                     variants = categories.join(",\n\t"),
+                     variants = categories.iter().enumerate().map(|(i, category)| format!("{category} = {i}")).collect::<Vec<_>>().join(",\n\t"),
                      values = categories.iter().map(|category| format!("Category::{category}")).collect::<Vec<_>>().join(",\n\t\t"),
 
                      dyes = self.categories
@@ -386,8 +388,4 @@ impl Category {{
             Err(e) => panic!("malformed color: {:?}: {}", s, e)
         }
     }
-}
-
-pub enum Dye {
-    SnowWhite,
 }

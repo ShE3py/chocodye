@@ -397,8 +397,11 @@ mod lib {
                 (Snack::Fruit, 3),
                 (Snack::Pineapple, 2)
             ]);
-
-            assert!(Snack::VALUES.len() < 8); // see safety note of `SnackList::set`
+            
+            // see safety note of `SnackList::set`
+            for snack in Snack::VALUES {
+                assert!((snack as u8) < 8);
+            }
         }
 
         #[test]
