@@ -225,6 +225,18 @@ impl fmt::Debug for Rgb {
     }
 }
 
+impl fmt::LowerHex for Rgb {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(f, "#{:02x}{:02x}{:02x}", self.r, self.g, self.b)
+    }
+}
+
+impl fmt::UpperHex for Rgb {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(f, "#{:02X}{:02X}{:02X}", self.r, self.g, self.b)
+    }
+}
+
 /// An error that can be returned when parsing a hexadecimal color.
 ///
 /// This error is used as the error type for the [`Rgb::from_hex`] function.
