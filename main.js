@@ -5,13 +5,35 @@ const imports = {
     }
 };
 
-WebAssembly.instantiateStreaming(fetch("../target/wasm32-unknown-unknown/release/chocoweb.wasm"), imports).then(
-    (result) => {
-        wasm  = result.instance
-        
-        updateLang(read("lang-select"))
-    },
-);
+// https://stackoverflow.com/a/47880734
+// https://github.com/GoogleChromeLabs/wasm-feature-detect
+const supported = (() => {
+    try {
+        if(typeof WebAssembly === "object" && typeof WebAssembly.instantiateStreaming === "function") {
+            const module = new WebAssembly.Module(new Uint8Array([0, 97, 115, 109, 1, 0, 0, 0, 1, 4, 1, 96 , 0, 0, 3, 2, 1, 0, 10, 8, 1, 6, 0, 65, 0, 192, 26, 11]));
+            if(module instanceof WebAssembly.Module) {
+                return new WebAssembly.Instance(module) instanceof WebAssembly.Instance;
+            }
+        }
+    }
+    catch(ignored) {}
+    
+    return false;
+})();
+
+if(supported) {
+    WebAssembly.instantiateStreaming(fetch("../target/wasm32-unknown-unknown/release/chocoweb.wasm"), imports).then(
+        (result) => {
+            wasm = result.instance
+            
+            updateLang(read("lang-select"))
+        },
+    );
+}
+else {
+    document.getElementById("lang_import").innerHTML = "&#x2718; Outdated web browser; <a href=\"https://webassembly.org/roadmap/\" target=\"_blank\">WebAssembly with sign-extension operators required</a>."
+    document.getElementById("lang-select").hidden = true
+}
 
 function readUsize(ptr) {
     return new DataView(wasm.exports.memory.buffer).getUint32(ptr, true)
