@@ -37,11 +37,17 @@ pub extern "C" fn request_menu(starting_dye: i32, sl: Option<SnackList>, lang: i
                 for (snack, count) in snacks.into_iter().filter(|(_, count)| *count > 0) {
                     write!(written, "&mdash; {}<br />", snack.quantified_name(&bundle, count as u32)).unwrap();
                 }
-                write!(written, "<br />").unwrap();
                 
-                write!(written, "{}<br />", message!(&bundle, "feed-order")).unwrap();
-                for (snack, count) in (*menu).iter().copied() {
-                    write!(written, "&mdash; {}<br />", snack.quantified_name(&bundle, count as u32)).unwrap();
+                if snacks.is_empty() {
+                    write!(written, r#"<span class="emph">{}</span><br />"#, message!(&bundle, "none")).unwrap();
+                }
+                else {
+                    write!(written, "<br />").unwrap();
+                    
+                    write!(written, "{}<br />", message!(&bundle, "feed-order")).unwrap();
+                    for (snack, count) in menu.iter().copied() {
+                        write!(written, "&mdash; {}<br />", snack.quantified_name(&bundle, count as u32)).unwrap();
+                    }
                 }
                 
                 #[link(wasm_import_module = "chocoweb")]
