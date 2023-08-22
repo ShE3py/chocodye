@@ -79,12 +79,18 @@ fn main() -> io::Result<()> {
     for (snack, count) in snacks.into_iter().filter(|(_, count)| *count > 0) {
         println!("– {}", snack.quantified_name(&bundle, count as u32));
     }
-    println!();
-
-    let menu = make_menu(starting_dye, snacks);
-    println!("{}", message!(&bundle, "feed-order"));
-    for (snack, count) in menu {
-        println!("– {}", snack.quantified_name(&bundle, count as u32));
+    
+    if snacks.is_empty() {
+        println!("{}", message!(&bundle, "none"));
+    }
+    else {
+        println!();
+        
+        let menu = make_menu(starting_dye, snacks);
+        println!("{}", message!(&bundle, "feed-order"));
+        for (snack, count) in menu {
+            println!("– {}", snack.quantified_name(&bundle, count as u32));
+        }
     }
 
     Ok(())

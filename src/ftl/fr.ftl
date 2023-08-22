@@ -153,3 +153,5 @@ final-color-input = Couleur finale :
 
 required-fruits = Fruits nécessaires :
 feed-order = Ordre dans lequel donner les fruits :
+
+none = (aucun)

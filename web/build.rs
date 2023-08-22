@@ -17,7 +17,7 @@ pub fn main() -> io::Result<()> {
         let mut dyes = Dye::VALUES.clone();
         dyes.sort_unstable_by_key(|dye| dye.color_name(&bundle));
         
-        for (id, label, default) in [("start-select", "starting-color-input", Dye::DEFAULT_CHOCOBO_COLOR), ("final-select", "final-color-input", Dye::SnowWhite)] {
+        for (id, label, default) in [("start-select", "starting-color-input", Dye::DEFAULT_CHOCOBO_COLOR), ("final-select", "final-color-input", Dye::InkBlue)] {
             writeln!(f, r#"<label for="{}">{}</label>"#, id, message!(&bundle, label))?;
             write!(f, r#"<select id="{}" onchange="calculate()">"#, id)?;
             

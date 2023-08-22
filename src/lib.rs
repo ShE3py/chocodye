@@ -207,6 +207,11 @@ impl SnackList {
     pub fn add(&mut self, snack: Snack, n: u8) {
         self.set(snack, self.get(snack) + n);
     }
+    
+    ///  Returns `true` if `self` has no snacks.
+    pub const fn is_empty(&self) -> bool {
+        self.0.get() == SnackList::new().0.get()
+    }
 }
 
 impl From<&[Snack]> for SnackList {

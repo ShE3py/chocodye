@@ -153,3 +153,5 @@ final-color-input = Final Color:
 
 required-fruits = Required Fruits:
 feed-order = Feed Order:
+
+none = (none)
