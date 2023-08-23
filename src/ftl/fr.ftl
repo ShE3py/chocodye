@@ -155,3 +155,4 @@ required-fruits = Fruits nécessaires :
 feed-order = Ordre dans lequel donner les fruits :
 
 none = (aucun)
+han-lemon-note = Remarque : utiliser un citron de Radz-at-Han peut réduire le coût en fruits de { $ratio }%.

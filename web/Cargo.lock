@@ -19,6 +19,7 @@ name = "chocoweb"
 version = "0.1.0"
 dependencies = [
  "chocodye",
+ "fluent",
 ]
 
 [[package]]

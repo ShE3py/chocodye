@@ -23,7 +23,7 @@ pub extern "C" fn make_meal(starting_dye: i32, final_dye: i32) -> Option<SnackLi
 }
 
 #[no_mangle]
-pub extern "C" fn request_menu(starting_dye: i32, sl: Option<SnackList>, lang: i32) {
+pub extern "C" fn request_menu(starting_dye: i32, final_dye: i32, sl: Option<SnackList>, lang: i32) {
     if let Some(starting_dye) = usize::try_from(starting_dye).ok().and_then(|n| Dye::VALUES.get(n)).copied() {
         if let Some(snacks) = sl {
             if let Some(lang) = usize::try_from(lang).ok().and_then(|n| Lang::VALUES.get(n)).copied() {
@@ -47,6 +47,18 @@ pub extern "C" fn request_menu(starting_dye: i32, sl: Option<SnackList>, lang: i
                     write!(written, "{}<br />", message!(&bundle, "feed-order")).unwrap();
                     for (snack, count) in menu.iter().copied() {
                         write!(written, "&mdash; {}<br />", snack.quantified_name(&bundle, count as u32)).unwrap();
+                    }
+                    
+                    if let Some(final_dye) = usize::try_from(final_dye).ok().and_then(|n| Dye::VALUES.get(n)).copied() {
+                        let ds = starting_dye.distance(final_dye);
+                        let dd = Dye::DEFAULT_CHOCOBO_COLOR.distance(final_dye);
+                        
+                        if ds > dd {
+                            let ss = snacks.sum();
+                            let ds = chocodye::make_meal(Dye::DEFAULT_CHOCOBO_COLOR, final_dye).len();
+                            
+                            write!(written, "<br />{}<br />", message!(&bundle, "han-lemon-note", { "ratio" = format!("{:.1}", 100f32 * (1f32 - (ds as f32 / ss as f32))) })).unwrap();
+                        }
                     }
                 }
                 

@@ -155,3 +155,4 @@ required-fruits = Benötigte Früchte:
 feed-order = Reihenfolge, in der die Früchte zu geben:
 
 none = (keine)
+han-lemon-note = Hinweis: die Verwendung einer Han-Zitrone kann die Fruchtkosten um { $ratio }% senken.

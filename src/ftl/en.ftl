@@ -155,3 +155,4 @@ required-fruits = Required Fruits:
 feed-order = Feed Order:
 
 none = (none)
+han-lemon-note = Note: using a Han Lemon can reduce the fruit cost by { $ratio }%.

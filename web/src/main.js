@@ -88,6 +88,6 @@ function calculate() {
     
     if(start && final && lang) {
         let meal = wasm.exports.make_meal(start, final)
-        wasm.exports.request_menu(start, meal, lang)
+        wasm.exports.request_menu(start, final, meal, lang)
     }
 }

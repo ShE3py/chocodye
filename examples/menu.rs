@@ -91,6 +91,17 @@ fn main() -> io::Result<()> {
         for (snack, count) in menu {
             println!("– {}", snack.quantified_name(&bundle, count as u32));
         }
+        
+        let ds = starting_dye.distance(final_dye);
+        let dd = Dye::DEFAULT_CHOCOBO_COLOR.distance(final_dye);
+        
+        if ds > dd {
+            let ss = snacks.sum();
+            let ds = make_meal(Dye::DEFAULT_CHOCOBO_COLOR, final_dye).len();
+            
+            println!();
+            println!("{}", message!(&bundle, "han-lemon-note", { "ratio" = format!("{:.1}", 100f32 * (1f32 - (ds as f32 / ss as f32))) }));
+        }
     }
 
     Ok(())

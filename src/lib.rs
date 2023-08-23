@@ -212,6 +212,19 @@ impl SnackList {
     pub const fn is_empty(&self) -> bool {
         self.0.get() == SnackList::new().0.get()
     }
+    
+    /// Returns how many snacks are contained within `self`.
+    pub fn sum(&self) -> u64 {
+        let mut me = self.0.get() & !(1 << 63);
+        
+        let mut acc = 0;
+        for _ in 0..7 {
+            acc += me & 0xFF;
+            me >>= 8;
+        }
+        
+        acc
+    }
 }
 
 impl From<&[Snack]> for SnackList {
