@@ -1,6 +1,6 @@
 [package]
 name = "chocoweb"
-version = "0.1.0"
+version = "0.0.0"
 authors = ["ShE3py"]
 edition = "2021"
 license = "MIT OR Apache-2.0"

@@ -4,7 +4,7 @@ version = 3
 
 [[package]]
 name = "chocodye"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "fluent",
  "fluent-syntax",
@@ -16,7 +16,7 @@ dependencies = [
 
 [[package]]
 name = "chocoweb"
-version = "0.1.0"
+version = "0.0.0"
 dependencies = [
  "chocodye",
  "fluent",
