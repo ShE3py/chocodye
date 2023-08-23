@@ -90,6 +90,7 @@ for category in Category::VALUES {
 #![cfg_attr(docsrs, feature(doc_cfg))]
 
 use std::{array, fmt};
+use std::convert::identity;
 use std::fmt::Formatter;
 use std::num::NonZeroU64;
 
@@ -99,11 +100,9 @@ pub use snack::Snack;
 
 #[cfg(feature = "fluent")]
 pub use crate::fluent::{FluentBundle, Lang, ParseLangError};
-
 #[cfg(feature = "fluent")]
 #[doc(hidden)]
 pub use crate::fluent::__format_message;
-
 #[cfg(feature = "truecolor")]
 pub use crate::truecolor::ansi_text;
 
@@ -128,7 +127,7 @@ mod truecolor;
 /// ```
 /// use chocodye::{Dye, make_meal, Snack};
 ///
-/// assert_eq!(Dye::SalmonPink.distance(Dye::RosePink), Dye::EPSILON);
+/// assert_eq!(Dye::CurrantPurple.distance(Dye::GrapePurple), Dye::EPSILON);
 ///
 /// assert_eq!(make_meal(Dye::SalmonPink, Dye::RosePink), [ Snack::Fruit,  Snack::Berries]);
 /// assert_eq!(make_meal(Dye::RosePink, Dye::SalmonPink), [-Snack::Fruit, -Snack::Berries]);
@@ -142,27 +141,80 @@ pub fn make_meal(starting_dye: Dye, final_dye: Dye) -> Vec<Snack> {
     let mut current_distance = current_color.distance(final_color);
 
     loop {
-        struct Possibility {
-            snack: Snack,
+        struct Possibility<const N: usize> {
+            snacks: [Snack; N],
             next_color: Rgb,
             next_distance: u32
         }
-
-        let make_possibility = |snack: Snack| snack.alter(current_color).map(|next_color| Possibility { snack, next_color, next_distance: next_color.distance(final_color) });
-
-        let mut possibilities: Vec<_> = Snack::VALUES.iter().copied().filter_map(make_possibility).collect();
-        possibilities.sort_unstable_by_key(|possibility| possibility.next_distance);
-
-        let best_choice = possibilities.first().unwrap();
-
-        if current_distance < best_choice.next_distance {
-            break;
+        
+        impl<const N: usize> Possibility<N>{
+            fn from(snacks: [Snack; N], current_color: Rgb, final_color: Rgb) -> Option<Possibility<N>> {
+                snacks.iter().copied().try_fold(current_color, |current_color, snack| snack.alter(current_color)).map(|next_color| Possibility { snacks,  next_color, next_distance: next_color.distance(final_color) })
+            }
         }
-        else {
-            meal.push(best_choice.snack);
-            current_color = best_choice.next_color;
-            current_distance = best_choice.next_distance;
+        
+        impl Possibility<1> {
+            fn vec(current_color: Rgb, final_color: Rgb) -> Vec<Possibility<1>> {
+                Snack::VALUES.into_iter().filter_map(|s| Self::from([s], current_color, final_color)).collect()
+            }
+            
+            fn get(current_color: Rgb, final_color: Rgb) -> Possibility<1> {
+                let mut possibilities = Self::vec(current_color, final_color);
+                possibilities.sort_unstable_by_key(|p| p.next_distance);
+                possibilities.swap_remove(0)
+            }
         }
+        
+        impl Possibility<2> {
+            fn vec(current_color: Rgb, final_color: Rgb) -> Vec<Possibility<2>> {
+                use Snack::*;
+                
+                // Opposites: (Apple, Plum), (Pear, Fruit), (Berries, Pineapple)
+                
+                const PAIRS: [(Snack, Snack); Snack::VALUES.len() * (Snack::VALUES.len() - 2)] = [
+                    (Apple, Pear), (Apple, Berries), (Apple, Fruit), (Apple, Pineapple),
+                    (Pear, Apple), (Pear, Berries), (Pear, Plum), (Pear, Pineapple),
+                    (Berries, Apple), (Berries, Pear), (Berries, Plum), (Berries, Fruit),
+                    (Plum, Pear), (Plum, Berries),  (Plum, Fruit), (Plum, Pineapple),
+                    (Fruit, Apple), (Fruit, Berries), (Fruit, Plum), (Fruit, Pineapple),
+                    (Pineapple, Apple), (Pineapple, Pear), (Pineapple, Plum), (Pineapple, Fruit)
+                ];
+                
+                PAIRS.into_iter().filter_map(|(s, t)| Self::from([s, t], current_color, final_color)).collect()
+            }
+            
+            fn get(current_color: Rgb, final_color: Rgb) -> Possibility<2> {
+                let mut possibilities = Self::vec(current_color, final_color);
+                possibilities.sort_unstable_by_key(|p| p.next_distance);
+                possibilities.swap_remove(0)
+            }
+        }
+        
+        let current_dye = Dye::try_from(current_color).unwrap_or_else(identity);
+        
+        macro_rules! try_possibilities {
+            ($N:literal, $($M:literal),*) => {{
+                let best_choice = Possibility::<$N>::get(current_color, final_color);
+                
+                if current_dye == final_dye {
+                    break;
+                }
+                else if current_distance < best_choice.next_distance {
+                    try_possibilities! { $($M),* }
+                }
+                else {
+                    meal.extend(best_choice.snacks);
+                    current_color = best_choice.next_color;
+                    current_distance = best_choice.next_distance;
+                }
+            }};
+            
+            ($N:literal) => {{ try_possibilities! { $N, } }};
+            
+            () => {{ unimplemented!("Possibility<3>") }};
+        }
+        
+        try_possibilities! { 1, 2 }
     }
 
     meal
@@ -214,8 +266,8 @@ impl SnackList {
     }
     
     /// Returns how many snacks are contained within `self`.
-    pub fn sum(&self) -> u64 {
-        let mut me = self.0.get() & !(1 << 63);
+    pub fn len(&self) -> u64 {
+        let mut me = self.0.get();
         
         let mut acc = 0;
         for _ in 0..7 {
@@ -224,6 +276,22 @@ impl SnackList {
         }
         
         acc
+    }
+    
+    /// Returns how many kinds of snack are contained within `self`.
+    pub fn kinds(&self) -> u8 {
+        let mut me = self.0.get();
+        
+        let mut count = 0;
+        for _ in 0..7 {
+            if (me & 0xFF) != 0 {
+                count += 1;
+            }
+            
+            me >>= 8;
+        }
+        
+        count
     }
 }
 
@@ -296,8 +364,8 @@ impl fmt::Debug for SnackList {
 /// let meal = make_meal(Dye::BarkBrown, Dye::MesaRed);
 /// let menu = make_menu(Dye::BarkBrown, SnackList::from(meal.as_slice()));
 ///
-/// assert_eq!(meal, [Apple, Apple, Apple, Apple, Pear, Apple, Pear, Apple, Pear, Apple]);
-/// assert_eq!(menu, [(Apple, 7), (Pear, 3)]);
+/// assert_eq!(meal, [Apple, Apple, Apple, Apple, Pear, Apple]);
+/// assert_eq!(menu, [(Apple, 5), (Pear, 1)]);
 /// ```
 pub fn make_menu(starting_dye: Dye, snacks: SnackList) -> Vec<(Snack, u8)> {
     /// # Backtracking parameters
@@ -310,7 +378,7 @@ pub fn make_menu(starting_dye: Dye, snacks: SnackList) -> Vec<(Snack, u8)> {
     ///
     /// The smallest menu beginning with `menu` after having removed some snacks in `remaining`.
     ///
-    fn backtrack(remaining: SnackList, current_color: Rgb, menu: Vec<(Snack, u8)>) -> Vec<(Snack, u8)> {
+    fn backtrack(remaining: SnackList, current_color: Rgb, current_menu: Vec<(Snack, u8)>) -> Vec<(Snack, u8)> {
         let mut menus = Vec::with_capacity(Snack::VALUES.len());
 
         // for each snack, try putting the maximum of them so that the color wouldn't overflow
@@ -328,11 +396,10 @@ pub fn make_menu(starting_dye: Dye, snacks: SnackList) -> Vec<(Snack, u8)> {
                 else {
                     //     c + qd >= 0
                     // <=>     qd >= -c
-                    // <=>     q  >= -c / d
-                    // <=>     q   = ceil(-c / d)
-                    // <=>     q   = floor((-c - d - 1) / d)
-
-                    ((-(c as i16) - (d as i16) - 1) / (d as i16)) as u8
+                    // <=>     q  <= -c / d
+                    // <=>     q   = floor(-c / d)
+                    
+                    (-(c as i16) / (d as i16)) as u8
                 }
             }
 
@@ -342,7 +409,7 @@ pub fn make_menu(starting_dye: Dye, snacks: SnackList) -> Vec<(Snack, u8)> {
                 let qr = q(c.r, s.effect().0);
                 let qg = q(c.g, s.effect().1);
                 let qb = q(c.b, s.effect().2);
-
+                
                 qr.min(qg).min(qb)
             }
 
@@ -361,7 +428,7 @@ pub fn make_menu(starting_dye: Dye, snacks: SnackList) -> Vec<(Snack, u8)> {
                         b: ((current_color.b as i16) + (n as i16) * (snack.effect().2 as i16)) as u8
                     };
 
-                    let mut new_menu = menu.clone();
+                    let mut new_menu = current_menu.clone();
                     new_menu.push((snack, n));
 
                     menus.push(backtrack(new_map, new_color, new_menu));
@@ -370,7 +437,14 @@ pub fn make_menu(starting_dye: Dye, snacks: SnackList) -> Vec<(Snack, u8)> {
         }
 
         menus.sort_unstable_by_key(|menu| menu.len());
-        menus.into_iter().next().unwrap_or(menu)
+        
+        match menus.into_iter().next() {
+            Some(menu) => menu,
+            None => {
+                debug_assert!(remaining.is_empty(), "remaining {remaining:?} not empty at {current_color:?}");
+                current_menu
+            }
+        }
     }
 
     backtrack(snacks, starting_dye.color(), Vec::new())
@@ -380,9 +454,9 @@ pub fn make_menu(starting_dye: Dye, snacks: SnackList) -> Vec<(Snack, u8)> {
 mod lib {
     mod test {
         use std::convert::identity;
-
+        
         use super::super::*;
-
+        
         #[test]
         fn snacklist_get_set() {
             let mut list = SnackList::new();
@@ -421,55 +495,38 @@ mod lib {
                 assert!((snack as u8) < 8);
             }
         }
-
+        
         #[test]
-        fn meals_are_ok() {
-            fn assert_meal(starting_dye: Dye, final_dye: Dye) {
-                let meal = make_meal(starting_dye, final_dye);
-
-                let mut rgb = starting_dye.color();
-                for snack in meal {
-                    rgb = snack.alter(rgb).unwrap();
-                }
-
-                let dye = Dye::try_from(rgb).unwrap_or_else(identity);
-
-                assert_eq!(dye, final_dye, "{:?} {:?} -> {:?} {:?}, got {:?} {:?} instead", starting_dye, starting_dye.color(), final_dye, final_dye.color(), Dye::try_from(rgb), rgb);
-            }
-
-            assert_meal(Dye::DesertYellow, Dye::RoyalBlue);
-            assert_meal(Dye::DeepwoodGreen, Dye::RoyalBlue);
-            assert_meal(Dye::OthardBlue, Dye::RoyalBlue);
-            assert_meal(Dye::MesaRed, Dye::MesaRed);
-        }
-
-        #[test]
-        fn menus_are_ok() {
-            fn assert_menu(starting_dye: Dye, final_dye: Dye) {
-                let meal = make_meal(starting_dye, final_dye);
-                let menu = make_menu(starting_dye, meal.as_slice().into());
-
-                println!("{:?}", menu);
-
-                let mut rgb = starting_dye.color();
-                for (snack, count) in menu {
-                    for i in 0..count {
-                        rgb = match snack.alter(rgb) {
-                            Some(rgb) => rgb,
-                            None => panic!("integer overflow on ({:?} {:?}).alter({:?}) (i = {}/{})", snack, snack.effect(), rgb, i, count - 1)
+        fn all_is_ok() {
+            for src in Dye::VALUES {
+                for dst in Dye::VALUES {
+                    let meal = make_meal(src, dst);
+                    let snacks = SnackList::from(meal.as_slice());
+                    
+                    let mut rgb = src.color();
+                    for snack in meal {
+                        rgb = snack.alter(rgb).unwrap();
+                    }
+                    
+                    let dye = Dye::try_from(rgb).unwrap_or_else(identity);
+                    assert!(dye == dst, "make_meal({src:?}, {dst:?}) returned {dye:?} (d = {})", dye.distance(dst));
+                    
+                    let menu = make_menu(src, snacks);
+                    
+                    let mut rgb = src.color();
+                    for (snack, count) in menu.clone() {
+                        for i in 0..count {
+                            rgb = match snack.alter(rgb) {
+                                Some(rgb) => rgb,
+                                None => panic!("integer overflow on ({:?} {:?}).alter({:?}) (i = {}/{})", snack, snack.effect(), rgb, i, count - 1)
+                            }
                         }
                     }
+                    
+                    let dye = Dye::try_from(rgb).unwrap_or_else(identity);
+                    assert!(dye == dst, "make_menu({src:?}, {dst:?}) returned {dye:?} (d = {}, sl = {snacks:#?}, menu = {menu:#?})", dye.distance(dst));
                 }
-
-                let dye = Dye::try_from(rgb).unwrap_or_else(identity);
-
-                assert_eq!(dye, final_dye, "{:?} {:?} -> {:?} {:?}, got {:?} {:?} instead", starting_dye, starting_dye.color(), final_dye, final_dye.color(), Dye::try_from(rgb), rgb);
             }
-
-            assert_menu(Dye::DesertYellow, Dye::RoyalBlue);
-            assert_menu(Dye::DeepwoodGreen, Dye::RoyalBlue);
-            assert_menu(Dye::OthardBlue, Dye::RoyalBlue);
-            assert_menu(Dye::MesaRed, Dye::MesaRed);
         }
     }
 }

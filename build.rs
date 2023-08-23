@@ -90,7 +90,7 @@ pub enum Dye {{
 
 impl Dye {{
     /// The smallest distance between two dyes. Used to optimize search algorithms.
-    pub const EPSILON: u32 = 269;
+    pub const EPSILON: u32 = 89;
 
     /// The chocobos' default color.
     pub const DEFAULT_CHOCOBO_COLOR: Dye = Dye::DesertYellow;

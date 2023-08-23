@@ -44,39 +44,17 @@ impl TryFrom<Rgb> for Dye {
     /// assert_eq!(Dye::try_from(Rgb::BLACK).unwrap_or_else(identity), Dye::InkBlue);
     /// ```
     fn try_from(value: Rgb) -> Result<Dye, Self::Error> {
-        let mut iter = Dye::VALUES.iter();
-
-        let mut min = {
-            let first = iter.next().unwrap();
-            let d = first.color().distance(value);
-
-            if d == 0 {
-                return Ok(*first);
-            }
-            else if d < Dye::EPSILON {
-                return Err(*first);
-            }
-
-            (d, *first)
-        };
-
-        for dye in iter {
-            let d = dye.color().distance(value);
-
-            if d < min.0 {
-                if d == 0 {
-                    return Ok(*dye);
-                }
-                else if d < Dye::EPSILON {
-                    return Err(*dye);
-                }
-                else {
-                    min = (d, *dye);
-                }
-            }
+        let mut dyes = Dye::VALUES;
+        dyes.sort_unstable_by_key(|d| d.color().distance(value));
+        
+        let [best, ..] = dyes;
+        
+        if best.color() == value {
+            Ok(best)
         }
-
-        Err(min.1)
+        else {
+            Err(best)
+        }
     }
 
     /// The closest match if there is no exact match.
@@ -98,27 +76,15 @@ mod test {
 
     #[test]
     pub fn dyes_epsilon() {
-        let mut min = Rgb::new(0, 0, 0).distance(Rgb::new(255, 255, 255)) + 1;
-
-        for dye in Dye::VALUES {
-            let mut others = Dye::VALUES.iter().copied().filter(|d| *d != dye);
-
-            let mut epsilon = {
-                let other = others.next().unwrap();
-
-                (dye.color().distance(other.color()), other)
-            };
-
-            for other in others {
-                let d = other.distance(epsilon.1);
-
-                if d < epsilon.0 {
-                    epsilon = (d, other);
+        let mut min = Rgb::BLACK.distance(Rgb::WHITE) + 1;
+        
+        for a in Dye::VALUES {
+            for b in Dye::VALUES {
+                let d = a.distance(b);
+                
+                if a != b && d < min {
+                    min = d;
                 }
-            }
-
-            if epsilon.0 < min {
-                min = epsilon.0;
             }
         }
 
