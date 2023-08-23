@@ -22,7 +22,7 @@ const supported = (() => {
 })();
 
 if(supported) {
-    WebAssembly.instantiateStreaming(fetch("../target/wasm32-unknown-unknown/release/chocoweb.wasm"), imports).then(
+    WebAssembly.instantiateStreaming(fetch("chocoweb.wasm"), imports).then(
         (result) => {
             wasm = result.instance
             
