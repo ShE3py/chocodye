@@ -54,7 +54,7 @@ pub extern "C" fn request_menu(starting_dye: i32, final_dye: i32, sl: Option<Sna
                         let dd = Dye::DEFAULT_CHOCOBO_COLOR.distance(final_dye);
                         
                         if ds > dd {
-                            let ss = snacks.sum();
+                            let ss = snacks.len();
                             let ds = chocodye::make_meal(Dye::DEFAULT_CHOCOBO_COLOR, final_dye).len();
                             
                             write!(written, "<br />{}<br />", message!(&bundle, "han-lemon-note", { "ratio" = format!("{:.1}", 100f32 * (1f32 - (ds as f32 / ss as f32))) })).unwrap();
