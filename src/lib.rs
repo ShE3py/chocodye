@@ -204,6 +204,7 @@ pub fn make_meal(starting_dye: Dye, final_dye: Dye) -> Vec<Snack> {
                     break;
                 }
                 else if current_distance < best_choice.next_distance {
+//                  println!("using Possibility<2>! {starting_dye:?} {final_dye:?} {}", starting_dye.distance(final_dye));
                     try_possibilities! { $($M),* }
                 }
                 else {
