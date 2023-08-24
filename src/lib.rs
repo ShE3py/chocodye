@@ -151,26 +151,24 @@ pub fn make_meal(starting_dye: Dye, final_dye: Dye) -> Vec<Snack> {
             next_distance: u32
         }
         
-        impl<const N: usize> Possibility<N>{
+        impl<const N: usize> Possibility<N> {
             fn from(snacks: [Snack; N], current_color: Rgb, final_color: Rgb) -> Option<Possibility<N>> {
                 snacks.iter().copied().try_fold(current_color, |current_color, snack| snack.alter(current_color)).map(|next_color| Possibility { snacks,  next_color, next_distance: next_color.distance(final_color) })
             }
         }
         
         impl Possibility<1> {
-            fn vec(current_color: Rgb, final_color: Rgb) -> Vec<Possibility<1>> {
-                Snack::VALUES.into_iter().filter_map(|s| Self::from([s], current_color, final_color)).collect()
+            fn iter(current_color: Rgb, final_color: Rgb) -> impl Iterator<Item = Possibility<1>> {
+                Snack::VALUES.into_iter().filter_map(move |s| Self::from([s], current_color, final_color))
             }
             
             fn get(current_color: Rgb, final_color: Rgb) -> Possibility<1> {
-                let mut possibilities = Self::vec(current_color, final_color);
-                possibilities.sort_unstable_by_key(|p| p.next_distance);
-                possibilities.swap_remove(0)
+                Self::iter(current_color, final_color).min_by_key(|p| p.next_distance).unwrap()
             }
         }
         
         impl Possibility<2> {
-            fn vec(current_color: Rgb, final_color: Rgb) -> Vec<Possibility<2>> {
+            fn iter(current_color: Rgb, final_color: Rgb) -> impl Iterator<Item = Possibility<2>> {
                 use Snack::*;
                 
                 // Opposites: (Apple, Plum), (Pear, Fruit), (Berries, Pineapple)
@@ -185,32 +183,32 @@ pub fn make_meal(starting_dye: Dye, final_dye: Dye) -> Vec<Snack> {
                 ];
                 
                 // Only the following pairs are actually used
-                const USED_PAIRS: [(Snack, Snack); 6] = [
-                    (Apple, Pear), (Apple, Berries), (Pear, Berries), (Berries, Pear), (Plum, Pineapple), (Fruit, Pineapple)
+                const USED_PAIRS: [(Snack, Snack); 5] = [
+                    (Apple, Pear), (Apple, Berries), (Pear, Berries), (Plum, Pineapple), (Fruit, Pineapple)
                 ];
                 
-                USED_PAIRS.into_iter().filter_map(|(s, t)| Self::from([s, t], current_color, final_color)).collect()
+                USED_PAIRS.into_iter().filter_map(move |(s, t)| Self::from([s, t], current_color, final_color))
             }
             
             fn get(current_color: Rgb, final_color: Rgb) -> Possibility<2> {
-                let mut possibilities = Self::vec(current_color, final_color);
-                possibilities.sort_unstable_by_key(|p| p.next_distance);
-                possibilities.swap_remove(0)
+                Self::iter(current_color, final_color).min_by_key(|p| p.next_distance).unwrap()
             }
         }
-        
-        let current_dye = Dye::try_from(current_color).unwrap_or_else(identity);
         
         macro_rules! try_possibilities {
             ($N:literal, $($M:literal),*) => {{
                 let best_choice = Possibility::<$N>::get(current_color, final_color);
                 
-                if current_dye == final_dye {
-                    break;
-                }
-                else if current_distance < best_choice.next_distance {
-//                  println!("using Possibility<2>! {starting_dye:?} {final_dye:?} {}", starting_dye.distance(final_dye));
-                    try_possibilities! { $($M),* }
+                if current_distance < best_choice.next_distance {
+                    let current_dye = Dye::try_from(current_color).unwrap_or_else(identity);
+                    
+                    if current_dye == final_dye {
+                        break;
+                    }
+                    else {
+//                      println!("using Possibility<2>! {starting_dye:?} {final_dye:?} {}", starting_dye.distance(final_dye));
+                        try_possibilities! { $($M),* }
+                    }
                 }
                 else {
                     meal.extend(best_choice.snacks);
@@ -376,8 +374,8 @@ impl fmt::Debug for SnackList {
 /// let meal = make_meal(Dye::BarkBrown, Dye::MesaRed);
 /// let menu = make_menu(Dye::BarkBrown, SnackList::from(meal.as_slice()));
 ///
-/// assert_eq!(meal, [Apple, Apple, Apple, Apple, Pear, Apple]);
-/// assert_eq!(menu, [(Apple, 5), (Pear, 1)]);
+/// assert_eq!(meal, [Apple, Apple, Apple, Apple, Pear, Apple, Pear, Apple, Pear, Apple]);
+/// assert_eq!(menu, [(Apple, 7), (Pear, 3)]);
 /// ```
 pub fn make_menu(starting_dye: Dye, snacks: SnackList) -> Vec<(Snack, u8)> {
     /// # Backtracking parameters
