@@ -175,7 +175,7 @@ pub fn make_meal(starting_dye: Dye, final_dye: Dye) -> Vec<Snack> {
                 
                 // Opposites: (Apple, Plum), (Pear, Fruit), (Berries, Pineapple)
                 
-                const PAIRS: [(Snack, Snack); Snack::VALUES.len() * (Snack::VALUES.len() - 2)] = [
+                const _PAIRS: [(Snack, Snack); Snack::VALUES.len() * (Snack::VALUES.len() - 2)] = [
                     (Apple, Pear), (Apple, Berries), (Apple, Fruit), (Apple, Pineapple),
                     (Pear, Apple), (Pear, Berries), (Pear, Plum), (Pear, Pineapple),
                     (Berries, Apple), (Berries, Pear), (Berries, Plum), (Berries, Fruit),
@@ -184,7 +184,12 @@ pub fn make_meal(starting_dye: Dye, final_dye: Dye) -> Vec<Snack> {
                     (Pineapple, Apple), (Pineapple, Pear), (Pineapple, Plum), (Pineapple, Fruit)
                 ];
                 
-                PAIRS.into_iter().filter_map(|(s, t)| Self::from([s, t], current_color, final_color)).collect()
+                // Only the following pairs are actually used
+                const USED_PAIRS: [(Snack, Snack); 6] = [
+                    (Apple, Pear), (Apple, Berries), (Pear, Berries), (Berries, Pear), (Plum, Pineapple), (Fruit, Pineapple)
+                ];
+                
+                USED_PAIRS.into_iter().filter_map(|(s, t)| Self::from([s, t], current_color, final_color)).collect()
             }
             
             fn get(current_color: Rgb, final_color: Rgb) -> Possibility<2> {
@@ -442,10 +447,8 @@ pub fn make_menu(starting_dye: Dye, snacks: SnackList) -> Vec<(Snack, u8)> {
                 }
             }
         }
-
-        menus.sort_unstable_by_key(|menu| menu.len());
         
-        match menus.into_iter().next() {
+        match menus.into_iter().min_by_key(|menu| menu.len()) {
             Some(menu) => menu,
             None => {
                 debug_assert!(remaining.is_empty(), "remaining {remaining:?} not empty at {current_color:?}");

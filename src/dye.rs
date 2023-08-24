@@ -44,16 +44,13 @@ impl TryFrom<Rgb> for Dye {
     /// assert_eq!(Dye::try_from(Rgb::BLACK).unwrap_or_else(identity), Dye::InkBlue);
     /// ```
     fn try_from(value: Rgb) -> Result<Dye, Self::Error> {
-        let mut dyes = Dye::VALUES;
-        dyes.sort_unstable_by_key(|d| d.color().distance(value));
+        let dye = Dye::VALUES.iter().copied().min_by_key(|d| d.color().distance(value)).unwrap();
         
-        let [best, ..] = dyes;
-        
-        if best.color() == value {
-            Ok(best)
+        if dye.color() == value {
+            Ok(dye)
         }
         else {
-            Err(best)
+            Err(dye)
         }
     }
 }
@@ -72,19 +69,21 @@ mod test {
     }
 
     #[test]
-    pub fn dyes_epsilon() {
-        let mut min = Rgb::BLACK.distance(Rgb::WHITE) + 1;
+    pub fn dye_epsilon() {
+        let mut epsilon = u32::MAX;
         
         for a in Dye::VALUES {
             for b in Dye::VALUES {
-                let d = a.distance(b);
-                
-                if a != b && d < min {
-                    min = d;
+                if a != b {
+                    let d = a.distance(b);
+                    
+                    if d < epsilon {
+                        epsilon = d;
+                    }
                 }
             }
         }
 
-        assert_eq!(min, Dye::EPSILON);
+        assert_eq!(epsilon, Dye::EPSILON);
     }
 }
