@@ -26,7 +26,19 @@ if(supported) {
         (result) => {
             wasm = result.instance
             
-            updateLang(read("lang-select"))
+            let lang = read("lang-select")
+            
+            try {
+                let _lang = parseInt(document.cookie.split("; ").find((row) => row.startsWith("lang=")).split("=")[1])
+                
+                if(_lang >= 0 && _lang < 4 && _lang != lang) {
+                    restore("lang-select", _lang)
+                    lang = _lang
+                }
+            }
+            catch(ignored) {}
+            
+            updateLang(lang)
         },
     );
 }
@@ -74,6 +86,7 @@ function updateLang(lang) {
         calculate()
         
         document.documentElement.lang = ["en", "fr", "de", "jp"][lang]
+        document.cookie = "lang=" + lang + "; Max-Age=15552000; SameSite=Strict; Secure"
     }
 }
 
