@@ -120,7 +120,9 @@ mod truecolor;
 ///
 /// The current implementation is a [brute-force search](https://en.wikipedia.org/wiki/Brute-force_search);
 /// it tries all six snacks and takes the one that brings it closest to the desired dye, repeating until this dye is reached.
-/// Despite its name, this algorithm is quite fast, as there aren't that much possibilities.
+///
+/// If adding a single snack can't get it any closer to its goal, it will try with two separate snacks.
+/// No meal will need to use more than two snacks in order to get closer to its goal.
 ///
 /// # Examples
 ///
@@ -141,6 +143,8 @@ pub fn make_meal(starting_dye: Dye, final_dye: Dye) -> Vec<Snack> {
     let mut current_distance = current_color.distance(final_color);
 
     loop {
+        // find the best snack (N = 1) or the best two snacks (N = 2)
+        // in order to make `current_color` nearer to `final_color`
         struct Possibility<const N: usize> {
             snacks: [Snack; N],
             next_color: Rgb,
@@ -211,9 +215,11 @@ pub fn make_meal(starting_dye: Dye, final_dye: Dye) -> Vec<Snack> {
             
             ($N:literal) => {{ try_possibilities! { $N, } }};
             
-            () => {{ unimplemented!("Possibility<3>") }};
+            () => {{ unreachable!("Possibility<3>") }};
         }
         
+        // try using one snack, or two if one snack can no longer
+        // gets us any closer to the final color
         try_possibilities! { 1, 2 }
     }
 
