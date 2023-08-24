@@ -1,0 +1,2 @@
+# GitHub Pages uses Jekyll
+exclude: ["lib.rs"]
