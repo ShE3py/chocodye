@@ -226,12 +226,30 @@ impl fmt::Debug for Rgb {
 }
 
 impl fmt::LowerHex for Rgb {
+    /// Formats `self` as a hex color.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use chocodye::Rgb;
+    ///
+    /// assert_eq!(format!("{:x}", Rgb::RED), "#ff0000");
+    /// ```
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         write!(f, "#{:02x}{:02x}{:02x}", self.r, self.g, self.b)
     }
 }
 
 impl fmt::UpperHex for Rgb {
+    /// Formats `self` as a hex color.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use chocodye::Rgb;
+    ///
+    /// assert_eq!(format!("{:X}", Rgb::RED), "#FF0000");
+    /// ```
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         write!(f, "#{:02X}{:02X}{:02X}", self.r, self.g, self.b)
     }
