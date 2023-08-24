@@ -185,8 +185,9 @@ impl Lang {
 pub type FluentBundle = fluent::FluentBundle<FluentResource>;
 
 impl TryFrom<Lang> for FluentBundle {
-    // the `Error` type is further down so that it stays below the function in the generated documentation,
-    // so that the reader reads the type description after the fn description.
+    /// The tuple returned in the event of a parse error.
+    /// See [`FluentResource::try_new()`].
+    type Error = (FluentResource, Vec<ParserError>);
 
     /// Parses the translation resource of `value` into a new [`FluentBundle`].
     /// Returns both the resource and a vec of errors in case of error.
@@ -197,9 +198,6 @@ impl TryFrom<Lang> for FluentBundle {
         bundle.add_resource_overriding(res);
         Ok(bundle)
     }
-
-    /// The tuple returned in the event of a parse error.
-    type Error = (FluentResource, Vec<ParserError>);
 }
 
 impl fmt::Display for Lang {
@@ -209,8 +207,8 @@ impl fmt::Display for Lang {
 }
 
 impl FromStr for Lang {
-    // the `Error` type is further down so that it stays below the function in the generated documentation,
-    // so that the reader reads the type description after the fn description.
+    /// The type returned if there's no [`Lang`] associated with a given `&str`.
+    type Err = ParseLangError;
 
     /// Parses the two-letter [Unicode Language Identifier](https://unicode.org/reports/tr35/tr35.html#Unicode_language_identifier)
     /// of a `Lang`.
@@ -233,9 +231,6 @@ impl FromStr for Lang {
             _ => Err(ParseLangError)
         }
     }
-
-    /// The type returned if there's no [`Lang`] associated with a given `&str`.
-    type Err = ParseLangError;
 }
 
 impl From<Lang> for LanguageIdentifier {

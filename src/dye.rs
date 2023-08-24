@@ -24,8 +24,8 @@ impl From<Dye> for Rgb {
 }
 
 impl TryFrom<Rgb> for Dye {
-    // the `Error` type is further down so that it stays below the function in the generated documentation,
-    // so that the reader reads the type description after the fn description
+    /// The closest match if there is no exact match.
+    type Error = Dye;
 
     /// Converts a color to a dye, returning `Ok(_)` for an exact match, or `Err(_)` for the closest match.
     ///
@@ -56,9 +56,6 @@ impl TryFrom<Rgb> for Dye {
             Err(best)
         }
     }
-
-    /// The closest match if there is no exact match.
-    type Error = Dye;
 }
 
 #[cfg(test)]

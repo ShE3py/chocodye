@@ -44,11 +44,11 @@ version = "0.4.19"
 optional = true
 
 [build-dependencies.quick-xml]
-version = "0.28.2"
+version = "0.30.0"
 features = ["serialize"]
 
 [build-dependencies.serde]
-version = "1.0.185"
+version = "1.0.186"
 features = ["derive"]
 
 [target.'cfg(unix)'.dev-dependencies.libc]

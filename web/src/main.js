@@ -31,7 +31,7 @@ if(supported) {
             try {
                 let _lang = parseInt(document.cookie.split("; ").find((row) => row.startsWith("lang=")).split("=")[1])
                 
-                if(_lang >= 0 && _lang < 4 && _lang != lang) {
+                if(_lang >= 0 && _lang < 4 && _lang !== lang) {
                     restore("lang-select", _lang)
                     lang = _lang
                 }
