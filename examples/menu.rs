@@ -96,7 +96,7 @@ fn main() -> io::Result<()> {
         let dd = Dye::DEFAULT_CHOCOBO_COLOR.distance(final_dye);
         
         if ds > dd {
-            let ss = snacks.len();
+            let ss = snacks.sum();
             let ds = make_meal(Dye::DEFAULT_CHOCOBO_COLOR, final_dye).len();
             
             println!();

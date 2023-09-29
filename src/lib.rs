@@ -276,7 +276,7 @@ impl SnackList {
     }
     
     /// Returns how many snacks are contained within `self`.
-    pub fn len(&self) -> u64 {
+    pub fn sum(&self) -> u64 {
         let mut me = self.0.get();
         
         let mut acc = 0;
@@ -470,7 +470,7 @@ mod lib {
             let mut list = SnackList::new();
             assert_eq!(list.0.get(), 1 << 63);
             assert!(list.is_empty());
-            assert_eq!(list.len(), 0);
+            assert_eq!(list.sum(), 0);
             assert_eq!(list.kinds(), 0);
 
             list.set(Snack::Pear, 210);
@@ -478,13 +478,13 @@ mod lib {
             assert_ne!(list.0.get(), 1 << 63);
             assert_eq!(list.get(Snack::Pear), 222);
             assert!(!list.is_empty());
-            assert_eq!(list.len(), 222);
+            assert_eq!(list.sum(), 222);
             assert_eq!(list.kinds(), 1);
 
             list.set(Snack::Pear, 0);
             assert_eq!(list.0.get(), 1 << 63);
             assert!(list.is_empty());
-            assert_eq!(list.len(), 0);
+            assert_eq!(list.sum(), 0);
             assert_eq!(list.kinds(), 0);
         }
 
@@ -508,7 +508,7 @@ mod lib {
             ]);
             
             assert!(!list.is_empty());
-            assert_eq!(list.len(), 21);
+            assert_eq!(list.sum(), 21);
             assert_eq!(list.kinds(), 6);
             
             // see safety note of `SnackList::set`
