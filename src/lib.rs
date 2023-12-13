@@ -196,7 +196,7 @@ pub fn make_meal(starting_dye: Dye, final_dye: Dye) -> Vec<Snack> {
         }
         
         macro_rules! try_possibilities {
-            ($N:literal, $($M:literal),*) => {{
+            ($N:literal, $($M:literal),*) => { #[allow(clippy::redundant_else)] {
                 let best_choice = Possibility::<$N>::get(current_color, final_color);
                 
                 if current_distance < best_choice.next_distance {
@@ -246,12 +246,14 @@ pub struct SnackList(NonZeroU64);
 
 impl SnackList {
     /// Creates a new, empty `SnackList`.
+    #[must_use]
     pub const fn new() -> SnackList {
         // SAFETY: `1 << 63` is not zero.
         SnackList(unsafe { NonZeroU64::new_unchecked(1 << 63) })
     }
 
     /// Returns how many times a [`Snack`] is contained within `self`.
+    #[must_use]
     pub const fn get(&self, snack: Snack) -> u8 {
         ((self.0.get() >> (8 * snack as usize)) & 0xFF) as u8
     }
@@ -261,7 +263,7 @@ impl SnackList {
         // SAFETY: both `self.0` and `!(0xFFu64 << (8 * snack as usize))` have their msb set to `1`, thus
         // making the result's msb to `1`.
         self.0 = unsafe { NonZeroU64::new_unchecked(
-            (self.0.get() & !(0xFFu64 << (8 * snack as usize))) | ((value as u64) << (8 * snack as usize))
+            (self.0.get() & !(0xFF_u64 << (8 * snack as usize))) | ((value as u64) << (8 * snack as usize))
         ) };
     }
 
@@ -271,11 +273,13 @@ impl SnackList {
     }
     
     ///  Returns `true` if `self` has no snacks.
+    #[must_use]
     pub const fn is_empty(&self) -> bool {
         self.0.get() == SnackList::new().0.get()
     }
     
     /// Returns how many snacks are contained within `self`.
+    #[must_use]
     pub fn sum(&self) -> u64 {
         let mut me = self.0.get();
         
@@ -289,6 +293,7 @@ impl SnackList {
     }
     
     /// Returns how many kinds of snack are contained within `self`.
+    #[must_use]
     pub fn kinds(&self) -> u8 {
         let mut me = self.0.get();
         
@@ -377,6 +382,7 @@ impl fmt::Debug for SnackList {
 /// assert_eq!(meal, [Apple, Apple, Apple, Apple, Pear, Apple, Pear, Apple, Pear, Apple]);
 /// assert_eq!(menu, [(Apple, 7), (Pear, 3)]);
 /// ```
+#[must_use]
 pub fn make_menu(starting_dye: Dye, snacks: SnackList) -> Vec<(Snack, u8)> {
     /// # Backtracking parameters
     ///
@@ -388,6 +394,7 @@ pub fn make_menu(starting_dye: Dye, snacks: SnackList) -> Vec<(Snack, u8)> {
     ///
     /// The smallest menu beginning with `menu` after having removed some snacks in `remaining`.
     ///
+    #[allow(clippy::cast_possible_truncation)]
     fn backtrack(remaining: SnackList, current_color: Rgb, current_menu: Vec<(Snack, u8)>) -> Vec<(Snack, u8)> {
         let mut menus = Vec::with_capacity(Snack::VALUES.len());
 
@@ -446,7 +453,7 @@ pub fn make_menu(starting_dye: Dye, snacks: SnackList) -> Vec<(Snack, u8)> {
             }
         }
         
-        match menus.into_iter().min_by_key(|menu| menu.len()) {
+        match menus.into_iter().min_by_key(Vec::len) {
             Some(menu) => menu,
             None => {
                 debug_assert!(remaining.is_empty(), "remaining {remaining:?} not empty at {current_color:?}");

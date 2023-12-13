@@ -32,27 +32,25 @@ fn is_supported() -> bool {
 /// //                                                        background          foreground     text
 /// ```
 #[cfg_attr(docsrs, doc(cfg(feature = "truecolor")))]
+#[must_use]
 pub fn ansi_text(bg: Rgb, s: &str) -> String {
     if !is_supported() {
         s.to_owned()
     }
     else {
         let fg = {
-            let d = bg.distance(Rgb::WHITE);
-
             const LIMIT: u32 = Rgb::gray(127).distance(Rgb::WHITE);
-
-            if d >= LIMIT {
+            
+            if bg.distance(Rgb::WHITE) >= LIMIT {
                 Rgb::WHITE
             } else {
                 Rgb::BLACK
             }
         };
 
-        format!("\x1B[48;2;{};{};{}m\x1B[38;2;{};{};{}m{}\x1B[0m",
+        format!("\x1B[48;2;{};{};{}m\x1B[38;2;{};{};{}m{s}\x1B[0m",
            bg.r, bg.g, bg.b,
-           fg.r, fg.g, fg.b,
-           s
+           fg.r, fg.g, fg.b
         )
     }
 }

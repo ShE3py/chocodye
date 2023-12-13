@@ -6,9 +6,8 @@ fn main() {
 }
 
 mod dyes {
-    use std::{io, iter};
     use std::fs::File;
-    use std::io::{BufWriter, Write};
+    use std::io::{self, BufWriter, Write};
     use std::path::PathBuf;
     
     use serde::Deserialize;
@@ -89,12 +88,6 @@ pub enum Dye {{
 }}
 
 impl Dye {{
-    /// The smallest distance between two dyes. Used to optimize search algorithms.
-    pub const EPSILON: u32 = 89;
-
-    /// The chocobos' default color.
-    pub const DEFAULT_CHOCOBO_COLOR: Dye = Dye::DesertYellow;
-
     /// Contains all eighty-five `Dye` variants.
     pub const VALUES: [Dye; 85] = [
         {values}
@@ -109,7 +102,10 @@ impl Dye {{
     ///
     /// assert_eq!(Dye::CeruleumBlue.category(), Category::Blue);
     /// ```
+    #[must_use]
     pub const fn category(self) -> Category {{
+        use Dye::*;
+
         match self {{
             {categories}
         }}
@@ -124,42 +120,11 @@ impl Dye {{
     ///
     /// assert_eq!(Dye::DesertYellow.color(), Rgb::new(219, 180, 87));
     /// ```
+    #[must_use]
     pub const fn color(self) -> Rgb {{
         match self {{
             {rgbs}
         }}
-    }}
-
-    /// Computes the [squared Euclidian distance](https://en.wikipedia.org/wiki/Euclidean_distance#Squared_Euclidean_distance)
-    /// between `self` and `other`. Does *not* take human perception into consideration. Useful for intermediate algorithms.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use chocodye::Dye;
-    ///
-    /// assert_eq!(Dye::SnowWhite.distance(Dye::SootBlack), 97278);
-    /// assert_eq!(Dye::ShadowBlue.distance(Dye::CurrantPurple), 290);
-    /// ```
-    pub const fn distance(self, other: Dye) -> u32 {{
-        self.color().distance(other.color())
-    }}
-
-    /// Computes the [luma](https://en.wikipedia.org/wiki/Luma_(video)), the brightness of `self`.
-    /// Takes human perception into account. Useful for sorting dyes.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use chocodye::Dye;
-    ///
-    /// assert_eq!(Dye::SnowWhite.luma(), 222);
-    /// assert_eq!(Dye::SootBlack.luma(), 40);
-    ///
-    /// assert!(Dye::HunterGreen.luma() > Dye::WineRed.luma()); // Humans are more sensitive to green.
-    /// ```
-    pub fn luma(self) -> u8 {{
-        self.color().luma()
     }}
 
     /// Returns the variant name of `self` in kebab-case.
@@ -171,59 +136,11 @@ impl Dye {{
     ///
     /// assert_eq!(Dye::OpoOpoBrown.short_name(), "opo-opo-brown");
     /// ```
+    #[must_use]
     pub const fn short_name(self) -> &'static str {{
         match self {{
             {names}
         }}
-    }}
-
-    /// Returns the localized name of `self`'s color.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use chocodye::{{Dye, Lang}};
-    ///
-    /// assert_eq!(Dye::RegalPurple.color_name(&Lang::French.into_bundle()), "byzantium");
-    /// ```
-    #[cfg(feature = "fluent")]
-    #[cfg_attr(docsrs, doc(cfg(feature = "fluent")))]
-    pub fn color_name(self, bundle: &FluentBundle) -> &str {{
-        message!(bundle, self.short_name())
-    }}
-
-    /// Returns the localized name of `self`'s color with [ANSI escape codes](https://en.wikipedia.org/wiki/ANSI_escape_code#24-bit) for display in `stdout`.
-    ///
-    /// For more documentation, check the [`ansi_text`] function. This function is also used in the `truecolor` example.
-    #[cfg(all(feature = "fluent", feature = "truecolor"))]
-    #[cfg_attr(docsrs, doc(cfg(all(feature = "fluent", feature = "truecolor"))))]
-    pub fn ansi_color_name(self, bundle: &FluentBundle) -> String {{
-        ansi_text(self.color(), self.color_name(bundle))
-    }}
-
-    /// Parses a localized color name into its original [`Dye`].
-    ///
-    /// Eszetts must have been replaced by "ss". The current implementation is case-insensitive,
-    /// but no diacritic-insensitve. Future implementations may be more permissive.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use chocodye::{{Dye, Lang}};
-    ///
-    /// let de = Lang::German.into_bundle();
-    ///
-    /// assert_eq!(Dye::from_str(&de, "Ul'dahbraun"), Some(Dye::UlBrown));    // exact match
-    /// assert_eq!(Dye::from_str(&de, "Ul dahbraun"), None);                  // missing apostrophe
-    /// assert_eq!(Dye::from_str(&de, "tÜrkIS"), Some(Dye::TurquoiseGreen));  // case is ignored
-    /// assert_eq!(Dye::from_str(&de, "Turkis"), None);                       // missing umlaut
-    /// assert_eq!(Dye::from_str(&de, "Russschwarz"), Some(Dye::SootBlack));  // `ß` was replaced by `ss`
-    /// assert_eq!(Dye::from_str(&de, "Rußschwarz"), None);                   // `ß` wasn't replaced by `ss`
-    /// ```
-    #[cfg(feature = "fluent")]
-    #[cfg_attr(docsrs, doc(cfg(feature = "fluent")))]
-    pub fn from_str(bundle: &FluentBundle, color_name: &str) -> Option<Dye> {{
-        from_str_impl(bundle, color_name)
     }}
 }}"#,
                      variants = dyes.iter().zip(&variants).enumerate().map(|(i, (dye, variant))| format!("/// `{}`\n\t{variant} = {i}", dye.stain)).collect::<Vec<_>>().join(",\n\n\t"),
@@ -231,9 +148,7 @@ impl Dye {{
 
                      categories = self.categories
                          .iter()
-                         .flat_map(|category| iter::repeat(category).zip(&category.dyes))
-                         .filter(|(_, dye)| dye.choco)
-                         .map(|(category, dye)| format!("Dye::{} => Category::{}", make_pascal_case(&dye.name), make_pascal_case(&category.name)))
+                         .map(|category| format!("{} => Category::{}", category.dyes.iter().filter(|dye| dye.choco).map(|dye| make_pascal_case(&dye.name)).collect::<Vec<_>>().join(" | "), make_pascal_case(&category.name)))
                          .collect::<Vec<_>>()
                          .join(",\n\t\t\t"),
 
@@ -263,6 +178,7 @@ impl Category {{
     ];
 
     /// Returns all the dyes belonging to `self`. Dyes belong to one and only one category.
+    #[must_use]
     pub const fn dyes(self) -> &'static [Dye] {{
         use Dye::*;
 
@@ -272,6 +188,7 @@ impl Category {{
     }}
 
     /// Returns a color representing `self`. Does not necessarily correspond to a dye.
+    #[must_use]
     pub const fn color(self) -> Rgb {{
         match self {{
             {rgbs}
@@ -287,6 +204,7 @@ impl Category {{
     ///
     /// assert_eq!(Category::Purple.short_name(), "purple");
     /// ```
+    #[must_use]
     pub const fn short_name(self) -> &'static str {{
         match self {{
             {names}
@@ -304,6 +222,7 @@ impl Category {{
     /// ```
     #[cfg(feature = "fluent")]
     #[cfg_attr(docsrs, doc(cfg(feature = "fluent")))]
+    #[must_use]
     pub fn full_name(self, bundle: &FluentBundle) -> &str {{
         message!(bundle, self.short_name())
     }}
@@ -313,6 +232,7 @@ impl Category {{
     /// For more documentation, check the [`ansi_text`] function. This function is also used in the `truecolor` example.
     #[cfg(all(feature = "fluent", feature = "truecolor"))]
     #[cfg_attr(docsrs, doc(cfg(all(feature = "fluent", feature = "truecolor"))))]
+    #[must_use]
     pub fn ansi_full_name(self, bundle: &FluentBundle) -> String {{
         ansi_text(self.color(), self.full_name(bundle))
     }}
@@ -379,13 +299,11 @@ impl Category {{
     fn make_rgb(s: &str) -> String {
         // copied from Rgb::from_hex
 
-        if s.len() != 7 || s.as_bytes()[0] != b'#' {
-            panic!("malformed color: {:?}", s);
-        }
+        assert!(s.len() == 7 && s.as_bytes()[0] == b'#', "malformed color: {s:?}");
 
         match u32::from_str_radix(&s[1..7], 16) {
             Ok(v) => format!("Rgb::new({}, {}, {})", (v >> 16) & 0xFF, (v >> 8) & 0xFF, v & 0xFF),
-            Err(e) => panic!("malformed color: {:?}: {}", s, e)
+            Err(e) => panic!("malformed color: {s:?}: {e}")
         }
     }
 }

@@ -49,6 +49,7 @@ impl Rgb {
     ///
     /// assert_eq!(Rgb::new(5, 7, 11), Rgb { r: 5, g: 7, b: 11 });
     /// ```
+    #[must_use]
     pub const fn new(r: u8, g: u8, b: u8) -> Rgb {
         Rgb { r, g, b }
     }
@@ -62,6 +63,7 @@ impl Rgb {
     ///
     /// assert_eq!(Rgb::gray(127), Rgb::new(127, 127, 127));
     /// ```
+    #[must_use]
     pub const fn gray(rgb: u8) -> Rgb {
         Rgb { r: rgb, g: rgb, b: rgb }
     }
@@ -77,6 +79,7 @@ impl Rgb {
     /// assert!(Rgb::from_hex("#fff").is_err());
     /// assert!(Rgb::from_hex("ffffff").is_err());
     /// ```
+    #[allow(clippy::missing_errors_doc)]
     pub fn from_hex(s: &str) -> Result<Rgb, ParseHexError> {
         if s.len() != 7 {
             Err(ParseHexError::BadLen)
@@ -100,6 +103,7 @@ impl Rgb {
     /// assert_eq!(Rgb::new(20, 30, 40).checked_add_signed(2, -2, 0), Some(Rgb::new(22, 28, 40)));
     /// assert_eq!(Rgb::new(10, 2, 250).checked_add_signed(4, -5, 1), None); // `g` would underflow.
     /// ```
+    #[must_use]
     pub const fn checked_add_signed(self, r: i8, g: i8, b: i8) -> Option<Rgb> {
         // FIXME: use const ? when stable
         macro_rules! checked_add_signed {
@@ -129,6 +133,7 @@ impl Rgb {
     /// assert_eq!(Rgb::WHITE.distance(Rgb::WHITE), 0);
     /// assert_eq!(Rgb::gray(8).distance(Rgb::gray(16)), Rgb::gray(24).distance(Rgb::gray(16)));
     /// ```
+    #[must_use]
     pub const fn distance(self, other: Rgb) -> u32 {
         let dx = (self.r as i32) - (other.r as i32);
         let dy = (self.g as i32) - (other.g as i32);
@@ -153,6 +158,8 @@ impl Rgb {
     ///
     /// assert!(Rgb::GREEN.luma() > Rgb::RED.luma()); // Humans are more sensitive to green.
     /// ```
+    #[must_use]
+    #[allow(clippy::cast_possible_truncation)]
     pub fn luma(self) -> u8 {
         (0.299 * (self.r as f32) + 0.587 * (self.g as f32) + 0.114 * (self.b as f32)) as u8
     }
@@ -168,6 +175,7 @@ impl Rgb {
     /// assert_eq!(Rgb::WHITE.grayscale(), Rgb::WHITE);
     /// assert_eq!(Rgb::BLACK.grayscale(), Rgb::BLACK);
     /// ```
+    #[must_use]
     pub fn grayscale(self) -> Rgb {
         Rgb::gray(self.luma())
     }

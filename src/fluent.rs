@@ -27,7 +27,7 @@ use unic_langid::{langid, LanguageIdentifier};
 /// assert_eq!(message!(&bundle, "sky-blue"), "Sky Blue");
 /// assert_eq!(message!(&bundle, "pear", { "quantity" = 1 }), "\u{2068}1\u{2069} Mamook Pear");
 ///
-/// assert_eq!(message!(&bundle, "missing-key", { "foo" = "bar" }), "missing-key(bar)");
+/// assert_eq!(message!(&bundle, "missing-key", { "foo" = "bar" }), r#"missing-key(foo: "bar")"#);
 /// ```
 #[macro_export]
 #[cfg_attr(docsrs, doc(cfg(feature = "fluent")))]
@@ -61,7 +61,6 @@ pub fn __format_message<'a, R, M>(bundle: &'a fluent::bundle::FluentBundle<R, M>
         Some(msg) => match msg.value() {
             Some(pattern) => {
                 let mut errors = Vec::new();
-
                 match &args {
                     Some(args) => {
                         let result = bundle.format_pattern(pattern, Some(args), &mut errors);
@@ -80,7 +79,6 @@ pub fn __format_message<'a, R, M>(bundle: &'a fluent::bundle::FluentBundle<R, M>
                 }
 
                 error!(target: "fluent", "unable to format message `{}`", id);
-
                 for error in errors {
                     error!(target: "fluent", "{}", error);
                 }
@@ -92,9 +90,9 @@ pub fn __format_message<'a, R, M>(bundle: &'a fluent::bundle::FluentBundle<R, M>
 
     if let Some(args) = args {
         let scope = Scope::new(bundle, None, None);
-        let args = args.into_iter().map(|(_, v)| v.as_string(&scope)).collect::<Vec<_>>().join(", ");
+        let args = args.into_iter().map(|(k, v)| format!("{k}: {:?}", v.as_string(&scope))).collect::<Vec<_>>().join(", ");
 
-        Cow::Owned(format!("{}({})", id, args))
+        Cow::Owned(format!("{id}({args})"))
     }
     else {
         Cow::Borrowed(id)
@@ -132,6 +130,7 @@ impl Lang {
     ///
     /// assert_eq!(Lang::German.short_code(), "de");
     /// ```
+    #[must_use]
     pub const fn short_code(self) -> &'static str {
         match self {
             Lang::English  => "en",
@@ -143,6 +142,7 @@ impl Lang {
 
     /// Returns the [Unicode Language Identifier](https://unicode.org/reports/tr35/tr35.html#Unicode_language_identifier)
     /// of `self`.
+    #[must_use]
     pub const fn langid(self) -> LanguageIdentifier {
         match self {
             Lang::English  => langid!("en"),
@@ -153,6 +153,7 @@ impl Lang {
     }
 
     /// Returns the Fluent translation resource of `self`.
+    #[must_use]
     pub const fn file(self) -> &'static str {
         match self {
             Lang::English  => include_str!("ftl/en.ftl"),
@@ -164,6 +165,7 @@ impl Lang {
 
     /// Parses the translation resource of `self` into a new [`FluentBundle`].
     /// Returns an empty bundle on error, but this shouldn't happen since the file is located in the read-only data segment.
+    #[must_use]
     pub fn into_bundle(self) -> FluentBundle {
         match self.try_into() {
             Ok(bundle) => bundle,
@@ -182,6 +184,7 @@ impl Lang {
 
 /// A collection of messages for a given language. Obtained from [`Lang::into_bundle`].
 #[cfg_attr(docsrs, doc(cfg(feature = "fluent")))]
+#[allow(clippy::module_name_repetitions)]
 pub type FluentBundle = fluent::FluentBundle<FluentResource>;
 
 impl TryFrom<Lang> for FluentBundle {
