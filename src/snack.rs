@@ -49,6 +49,7 @@ impl Snack {
     /// assert_eq!(Snack::Apple.short_name(), "apple");
     /// ```
     #[must_use]
+    #[inline]
     pub const fn short_name(self) -> &'static str {
         match self {
             Snack::Apple     => "apple",
@@ -85,6 +86,7 @@ impl Snack {
     /// assert_eq!(Snack::Plum.effect(), (-5, 5, 5));
     /// ```
     #[must_use]
+    #[inline]
     pub const fn effect(self) -> (i8, i8, i8) {
         match self {
             Snack::Apple     => ( 5, -5, -5),
@@ -107,6 +109,7 @@ impl Snack {
     /// assert_eq!(Snack::Plum.alter(Rgb::new(40, 20, 255)), None);
     /// ```
     #[must_use]
+    #[inline]
     pub const fn alter(self, color: Rgb) -> Option<Rgb> {
         let (r, g, b) = self.effect();
 
@@ -127,6 +130,7 @@ impl Neg for Snack {
     /// assert_eq!(Snack::Pear.effect(), (-5, 5, -5));
     /// assert_eq!((-Snack::Pear).effect(), (5, -5, 5));
     /// ```
+    #[inline]
     fn neg(self) -> Self::Output {
         match self {
             Snack::Apple => Snack::Plum,

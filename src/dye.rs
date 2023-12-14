@@ -27,6 +27,7 @@ impl Dye {
     /// assert_eq!(Dye::ShadowBlue.distance(Dye::CurrantPurple), 290);
     /// ```
     #[must_use]
+    #[inline]
     pub const fn distance(self, other: Dye) -> u32 {
         self.color().distance(other.color())
     }
@@ -45,6 +46,7 @@ impl Dye {
     /// assert!(Dye::HunterGreen.luma() > Dye::WineRed.luma()); // Humans are more sensitive to green.
     /// ```
     #[must_use]
+    #[inline]
     pub fn luma(self) -> u8 {
         self.color().luma()
     }
@@ -106,6 +108,7 @@ impl Dye {
 
 impl From<Dye> for Rgb {
     /// Converts a dye into its color.
+    #[inline]
     fn from(dye: Dye) -> Rgb {
         dye.color()
     }

@@ -247,6 +247,7 @@ pub struct SnackList(NonZeroU64);
 impl SnackList {
     /// Creates a new, empty `SnackList`.
     #[must_use]
+    #[inline]
     pub const fn new() -> SnackList {
         // SAFETY: `1 << 63` is not zero.
         SnackList(unsafe { NonZeroU64::new_unchecked(1 << 63) })
@@ -254,11 +255,13 @@ impl SnackList {
 
     /// Returns how many times a [`Snack`] is contained within `self`.
     #[must_use]
+    #[inline]
     pub const fn get(&self, snack: Snack) -> u8 {
         ((self.0.get() >> (8 * snack as usize)) & 0xFF) as u8
     }
 
     /// Sets how many times a [`Snack`] is contained within `self`.
+    #[inline]
     pub fn set(&mut self, snack: Snack, value: u8) {
         // SAFETY: both `self.0` and `!(0xFFu64 << (8 * snack as usize))` have their msb set to `1`, thus
         // making the result's msb to `1`.
@@ -268,12 +271,14 @@ impl SnackList {
     }
 
     /// Adds *n* [`Snack`] to `self`.
+    #[inline]
     pub fn add(&mut self, snack: Snack, n: u8) {
         self.set(snack, self.get(snack) + n);
     }
     
     ///  Returns `true` if `self` has no snacks.
     #[must_use]
+    #[inline]
     pub const fn is_empty(&self) -> bool {
         self.0.get() == SnackList::new().0.get()
     }
@@ -347,6 +352,7 @@ impl IntoIterator for SnackList {
 
 impl Default for SnackList {
     /// Creates a new, empty `SnackList`.
+    #[inline]
     fn default() -> SnackList {
         SnackList::new()
     }
@@ -396,12 +402,12 @@ pub fn make_menu(starting_dye: Dye, snacks: SnackList) -> Vec<(Snack, u8)> {
     ///
     #[allow(clippy::cast_possible_truncation)]
     fn backtrack(remaining: SnackList, current_color: Rgb, current_menu: Vec<(Snack, u8)>) -> Vec<(Snack, u8)> {
-        let mut menus = Vec::with_capacity(Snack::VALUES.len());
+        let mut menu = Vec::new();
 
         // for each snack, try putting the maximum of them so that the color wouldn't overflow
         for (snack, count) in remaining {
             /// Returns the largest number `q` such that `0 <= c + qd <= 255`.
-            fn q(c: u8, d: i8) -> u8 {
+            const fn q(c: u8, d: i8) -> u8 {
                 if d > 0 {
                     //     c + qd <= 255
                     // <=>     qd <= 255 - c
@@ -436,29 +442,33 @@ pub fn make_menu(starting_dye: Dye, snacks: SnackList) -> Vec<(Snack, u8)> {
 
                 if n > 0 {
                     // try backtracking with `n` less `snack` snacks
-                    let mut new_map = remaining;
-                    new_map.set(snack, count - n);
+                    let mut bt_remaning = remaining;
+                    bt_remaning.set(snack, count - n);
 
-                    let new_color = Rgb {
+                    let bt_color = Rgb {
                         r: ((current_color.r as i16) + (n as i16) * (snack.effect().0 as i16)) as u8,
                         g: ((current_color.g as i16) + (n as i16) * (snack.effect().1 as i16)) as u8,
                         b: ((current_color.b as i16) + (n as i16) * (snack.effect().2 as i16)) as u8
                     };
 
-                    let mut new_menu = current_menu.clone();
-                    new_menu.push((snack, n));
+                    let mut bt_menu = Vec::with_capacity(current_menu.len() + 1);
+                    bt_menu.extend_from_slice(&current_menu);
+                    bt_menu.push((snack, n));
 
-                    menus.push(backtrack(new_map, new_color, new_menu));
+                    let bt_result = backtrack(bt_remaning, bt_color, bt_menu);
+                    if bt_result.len() < menu.len() || menu.is_empty() {
+                        menu = bt_result;
+                    }
                 }
             }
         }
         
-        match menus.into_iter().min_by_key(Vec::len) {
-            Some(menu) => menu,
-            None => {
-                debug_assert!(remaining.is_empty(), "remaining {remaining:?} not empty at {current_color:?}");
-                current_menu
-            }
+        if !menu.is_empty() {
+            menu
+        }
+        else {
+            debug_assert!(remaining.is_empty(), "remaining {remaining:?} not empty at {current_color:?}");
+            current_menu
         }
     }
 

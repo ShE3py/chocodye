@@ -103,6 +103,7 @@ impl Dye {{
     /// assert_eq!(Dye::CeruleumBlue.category(), Category::Blue);
     /// ```
     #[must_use]
+    #[inline]
     pub const fn category(self) -> Category {{
         use Dye::*;
 
@@ -121,6 +122,7 @@ impl Dye {{
     /// assert_eq!(Dye::DesertYellow.color(), Rgb::new(219, 180, 87));
     /// ```
     #[must_use]
+    #[inline]
     pub const fn color(self) -> Rgb {{
         match self {{
             {rgbs}
@@ -137,6 +139,7 @@ impl Dye {{
     /// assert_eq!(Dye::OpoOpoBrown.short_name(), "opo-opo-brown");
     /// ```
     #[must_use]
+    #[inline]
     pub const fn short_name(self) -> &'static str {{
         match self {{
             {names}
@@ -179,6 +182,7 @@ impl Category {{
 
     /// Returns all the dyes belonging to `self`. Dyes belong to one and only one category.
     #[must_use]
+    #[inline]
     pub const fn dyes(self) -> &'static [Dye] {{
         use Dye::*;
 
@@ -189,6 +193,7 @@ impl Category {{
 
     /// Returns a color representing `self`. Does not necessarily correspond to a dye.
     #[must_use]
+    #[inline]
     pub const fn color(self) -> Rgb {{
         match self {{
             {rgbs}
@@ -205,6 +210,7 @@ impl Category {{
     /// assert_eq!(Category::Purple.short_name(), "purple");
     /// ```
     #[must_use]
+    #[inline]
     pub const fn short_name(self) -> &'static str {{
         match self {{
             {names}
