@@ -135,7 +135,7 @@ impl TryFrom<Rgb> for Dye {
     /// assert_eq!(Dye::try_from(Rgb::BLACK).unwrap_or_else(identity), Dye::InkBlue);
     /// ```
     fn try_from(value: Rgb) -> Result<Dye, Self::Error> {
-        let dye = Dye::VALUES.iter().copied().min_by_key(|d| d.color().distance(value)).unwrap();
+        let dye = Dye::VALUES.into_iter().min_by_key(|d| d.color().distance(value)).unwrap();
         
         if dye.color() == value {
             Ok(dye)
@@ -151,7 +151,7 @@ mod test {
     use super::*;
 
     #[test]
-    pub fn dyes_in_self_category() {
+    fn dyes_in_self_category() {
         assert_eq!(Dye::VALUES.len(), Category::VALUES.iter().map(|category| category.dyes().len()).sum());
 
         for category in Category::VALUES {
@@ -160,7 +160,7 @@ mod test {
     }
 
     #[test]
-    pub fn dye_epsilon() {
+    fn dye_epsilon() {
         let mut epsilon = u32::MAX;
         
         for a in Dye::VALUES {

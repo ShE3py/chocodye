@@ -164,7 +164,7 @@ impl Rgb {
     /// ```
     #[must_use]
     #[inline]
-    #[allow(clippy::cast_possible_truncation)]
+    #[allow(clippy::cast_possible_truncation, clippy::suboptimal_flops)]
     pub fn luma(self) -> u8 {
         (0.299 * (self.r as f32) + 0.587 * (self.g as f32) + 0.114 * (self.b as f32)) as u8
     }

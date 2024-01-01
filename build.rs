@@ -47,7 +47,7 @@ mod dyes {
     }
 
     impl Dyes {
-        pub fn codegen(&self) -> io::Result<()> {
+        fn codegen(&self) -> io::Result<()> {
             let mut path = PathBuf::from(std::env::var_os("OUT_DIR").expect("`OUT_DIR` is not defined"));
             path.push("dye.rs");
 
@@ -269,7 +269,7 @@ impl Category {{
         }
     }
 
-    pub fn codegen() {
+    pub(crate) fn codegen() {
         let dyes = match quick_xml::de::from_str::<Dyes>(include_str!("src/xml/dyes.xml")) {
             Ok(v) => v,
             Err(e) => panic!("cannot deserialize `dyes.xml`: {e}")

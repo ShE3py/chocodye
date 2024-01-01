@@ -57,46 +57,45 @@ macro_rules! message {
 
 #[doc(hidden)]
 pub fn __format_message<'a, R, M>(bundle: &'a fluent::bundle::FluentBundle<R, M>, id: &'static str, args: Option<FluentArgs<'a>>) -> Cow<'a, str> where R: Borrow<FluentResource>, M: MemoizerKind {
-    match bundle.get_message(id) {
-        Some(msg) => match msg.value() {
-            Some(pattern) => {
-                let mut errors = Vec::new();
-                match &args {
-                    Some(args) => {
-                        let result = bundle.format_pattern(pattern, Some(args), &mut errors);
-
-                        if errors.is_empty() {
-                            return Cow::Owned(result.into_owned());
-                        }
-                    },
-                    None => {
-                        let result = bundle.format_pattern(pattern, None, &mut errors);
-
-                        if errors.is_empty() {
-                            return result;
-                        }
+    if let Some(msg) = bundle.get_message(id) {
+        if let Some(pattern) = msg.value() {
+            let mut errors = Vec::new();
+            match &args {
+                Some(args) => {
+                    let result = bundle.format_pattern(pattern, Some(args), &mut errors);
+                    
+                    if errors.is_empty() {
+                        return Cow::Owned(result.into_owned());
+                    }
+                },
+                None => {
+                    let result = bundle.format_pattern(pattern, None, &mut errors);
+                    
+                    if errors.is_empty() {
+                        return result;
                     }
                 }
-
-                error!(target: "fluent", "unable to format message `{}`", id);
-                for error in errors {
-                    error!(target: "fluent", "{}", error);
-                }
-            },
-            None => error!(target: "fluent", "message `{}` has no value", id)
-        },
-        None => error!(target: "fluent", "missing message `{}`", id)
+            }
+            
+            error!(target: "fluent", "unable to format message `{}`", id);
+            for error in errors {
+                error!(target: "fluent", "{}", error);
+            }
+        }
+        else {
+            error!(target: "fluent", "message `{}` has no value", id);
+        }
     }
-
-    if let Some(args) = args {
+    else {
+        error!(target: "fluent", "missing message `{}`", id);
+    }
+    
+    args.map_or(Cow::Borrowed(id), |args| {
         let scope = Scope::new(bundle, None, None);
         let args = args.into_iter().map(|(k, v)| format!("{k}: {:?}", v.as_string(&scope))).collect::<Vec<_>>().join(", ");
 
         Cow::Owned(format!("{id}({args})"))
-    }
-    else {
-        Cow::Borrowed(id)
-    }
+    })
 }
 
 /// A language officially supported by *Final Fantasy XIV*.

@@ -14,7 +14,7 @@ pub fn main() -> io::Result<()> {
         
         let bundle = lang.into_bundle();
         
-        let mut dyes = Dye::VALUES.clone();
+        let mut dyes = Dye::VALUES;
         dyes.sort_unstable_by_key(|dye| dye.color_name(&bundle));
         
         for (id, label, default) in [("start-select", "starting-color-input", Dye::DEFAULT_CHOCOBO_COLOR), ("final-select", "final-color-input", Dye::InkBlue)] {
