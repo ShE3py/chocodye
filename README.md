@@ -4,10 +4,8 @@ A Rust library for changing the color of the chocobos' plumage in *Final Fantasy
 
 [![Current version](https://img.shields.io/crates/v/chocodye)](https://crates.io/crates/chocodye/)
 [![License](https://img.shields.io/crates/l/chocodye)](#license)
-[![Crate size](https://img.shields.io/badge/crate%20size-30.8%20KiB-blue)]()
 [![Minimum Supported Rust Version](https://img.shields.io/badge/MSRV-1.70-blue)](https://blog.rust-lang.org/2023/06/01/Rust-1.70.0.html)
 [![Documentation](https://img.shields.io/docsrs/chocodye)](https://docs.rs/chocodye/)
-[![Maintained](https://img.shields.io/maintenance/yes/2023)]()
 
 This repository also includes language-agnostic files such as [`dyes.xml`](src/xml/dyes.xml)
 and [Fluent translation lists](src/ftl/).
