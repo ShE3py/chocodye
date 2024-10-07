@@ -1,5 +1,8 @@
 body {
     font-family: sans-serif;
+    background: #2e3440;
+    color: #d8dee9;
+    color-scheme: dark;
 }
 
 .emph {
