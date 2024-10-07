@@ -14,8 +14,8 @@ pear =
 
 berries =
     { $quantity ->
-         [one] { $quantity } O'Ghomoro-Beere
-        *[other] { $quantity } O'Ghomoro-Beeren
+         [one] { $quantity } O’Ghomoro-Beere
+        *[other] { $quantity } O’Ghomoro-Beeren
     }
 
 plum =
@@ -80,7 +80,7 @@ shale-brown = Schieferbraun
 mole-brown = Maulwurfsbraun
 loam-brown = Lehmbraun
 bone-white = Knochenweiß
-ul-brown = Ul'dahbraun
+ul-brown = Ul’dahbraun
 desert-yellow = Wüstengelb
 honey-yellow = Honiggelb
 millioncorn-yellow = Maisgelb

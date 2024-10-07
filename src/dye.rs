@@ -102,7 +102,7 @@ impl Dye {
     pub fn from_str(bundle: &FluentBundle, color_name: &str) -> Option<Dye> {
         let s = color_name.to_lowercase();
 
-        Dye::VALUES.into_iter().find(|dye| dye.color_name(bundle).replace('ß', "ss").to_lowercase() == s)
+        Dye::VALUES.into_iter().find(|dye| dye.color_name(bundle).replace('ß', "ss").replace('’', "'").to_lowercase() == s)
     }
 }
 

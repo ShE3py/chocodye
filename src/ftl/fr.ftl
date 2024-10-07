@@ -14,8 +14,8 @@ pear =
 
 berries =
     { $quantity ->
-         [one] { $quantity } raisin d'O'Ghomoro
-        *[other] { $quantity } raisins d'O'Ghomoro
+         [one] { $quantity } raisin d’O’Ghomoro
+        *[other] { $quantity } raisins d’O’Ghomoro
     }
 
 plum =
@@ -117,7 +117,7 @@ ceruleum-blue = bleu céruleum
 woad-blue = bleu guède
 ink-blue = bleu encre
 raptor-blue = bleu raptor
-othard-blue = bleu d'Othard
+othard-blue = bleu d’Othard
 storm-blue = bleu tempête
 void-blue = bleu du néant
 royal-blue = bleu royal

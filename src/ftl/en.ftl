@@ -14,8 +14,8 @@ pear =
 
 berries =
     { $quantity ->
-         [one] { $quantity } O'Ghomoro Berry
-        *[other] { $quantity } O'Ghomoro Berries
+         [one] { $quantity } O’Ghomoro Berry
+        *[other] { $quantity } O’Ghomoro Berries
     }
 
 plum =
