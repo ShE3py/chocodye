@@ -8,3 +8,7 @@ body {
 .emph {
     font-style: oblique;
 }
+
+#lang-select {
+    margin-bottom: .25rem;
+}

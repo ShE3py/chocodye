@@ -33,21 +33,22 @@ pub extern "C" fn request_menu(starting_dye: i32, final_dye: i32, sl: Option<Sna
                 
                 let mut written = String::new();
                 
-                write!(written, "{}<br />", message!(&bundle, "required-fruits")).unwrap();
+                write!(written, "<p>{}</p><ul>", message!(&bundle, "required-fruits")).unwrap();
                 for (snack, count) in snacks.into_iter().filter(|(_, count)| *count > 0) {
-                    write!(written, "&mdash; {}<br />", snack.quantified_name(&bundle, count as u32)).unwrap();
+                    write!(written, "<li>{}</li>", snack.quantified_name(&bundle, count as u32)).unwrap();
                 }
                 
                 if snacks.is_empty() {
-                    write!(written, r#"<span class="emph">{}</span><br />"#, message!(&bundle, "none")).unwrap();
+                    write!(written, r#"<li><span class="emph">{}</li></ul>"#, message!(&bundle, "none")).unwrap();
                 }
                 else {
-                    write!(written, "<br />").unwrap();
+                    write!(written, "</ul>").unwrap();
                     
-                    write!(written, "{}<br />", message!(&bundle, "feed-order")).unwrap();
+                    write!(written, "<p>{}</p><ul>", message!(&bundle, "feed-order")).unwrap();
                     for (snack, count) in menu {
-                        write!(written, "&mdash; {}<br />", snack.quantified_name(&bundle, count as u32)).unwrap();
+                        write!(written, "<li>{}</li>", snack.quantified_name(&bundle, count as u32)).unwrap();
                     }
+                    write!(written, "</ul>").unwrap();
                     
                     if let Some(final_dye) = usize::try_from(final_dye).ok().and_then(|n| Dye::VALUES.get(n)).copied() {
                         let ds = starting_dye.distance(final_dye);
@@ -57,7 +58,7 @@ pub extern "C" fn request_menu(starting_dye: i32, final_dye: i32, sl: Option<Sna
                             let ss = snacks.sum();
                             let ds = chocodye::make_meal(Dye::DEFAULT_CHOCOBO_COLOR, final_dye).len();
                             
-                            write!(written, "<br />{}<br />", message!(&bundle, "han-lemon-note", { "ratio" = format!("{:.1}", 100_f32 * (1_f32 - (ds as f32 / ss as f32))) })).unwrap();
+                            write!(written, "<p>{}</p>", message!(&bundle, "han-lemon-note", { "ratio" = format!("{:.1}", 100_f32 * (1_f32 - (ds as f32 / ss as f32))) })).unwrap();
                         }
                     }
                 }
