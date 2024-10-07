@@ -42,7 +42,7 @@ r#"<select id="lang-select" onchange="updateLang(parseInt(this.value))">
                 write!(f, r#"<option value="{}" {}>{}</option>"#, dye as u8, if dye == default { "selected" } else { "" }, dye.color_name(&bundle))?;
             }
             
-            writeln!(f, r#"</select>"#)?;
+            writeln!(f, r#"</select><br />"#)?;
         }
     }
     
