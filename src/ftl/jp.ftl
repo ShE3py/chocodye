@@ -1,3 +1,42 @@
+## 果物
+
+apple =
+    { $quantity ->
+        *[other] ゼルファトルの果実{ $quantity }個
+    }
+
+pear =
+    { $quantity ->
+        *[other] マムークの果実{ $quantity }個
+    }
+
+berries =
+    { $quantity ->
+        *[other] オ・ゴモロの果実{ $quantity }個
+    }
+
+plum =
+    { $quantity ->
+        *[other] ドマの果実{ $quantity }個
+    }
+
+fruit =
+    { $quantity ->
+        *[other] バルの果実{ $quantity }個
+    }
+
+pineapple =
+    { $quantity ->
+        *[other] シェルダレーの果実{ $quantity }個
+    }
+
+lemon =
+    { $quantity ->
+       *[other] ラザハンの果実{ $quantity }個
+   }
+
+## カラーズ
+
 snow-white = スノウホワイト
 ash-grey = アッシュグレイ
 goobbue-grey = グゥーブーグレイ
@@ -89,3 +128,15 @@ lotus-pink = ロータスピンク
 colibri-pink = コリブリピンク
 plum-purple = プラムパープル
 regal-purple = リーガルパープル
+
+## 組み込み例
+
+lang-input = 言語：
+starting-color-input = スターティングカラー：
+final-color-input = ファイナルカラー：
+
+required-fruits = 必要な果物：
+feed-order = 果実を与える順番：
+
+none = （なし）
+han-lemon-note = 注：ラザハンの果実を使用すると、果物のコストを{ $ratio }％削減できる。
