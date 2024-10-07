@@ -148,6 +148,7 @@ purple = Teintures violettes
 
 ## Exemples intégrés
 
+lang-input = Langue :
 starting-color-input = Couleur initiale :
 final-color-input = Couleur finale :
 

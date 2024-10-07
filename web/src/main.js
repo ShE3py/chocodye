@@ -26,13 +26,12 @@ if(supported) {
         (result) => {
             wasm = result.instance
             
-            let lang = read("lang-select")
+            let lang = 0
             
             try {
                 let _lang = parseInt(document.cookie.split("; ").find((row) => row.startsWith("lang=")).split("=")[1])
                 
-                if(_lang >= 0 && _lang < 4 && _lang !== lang) {
-                    restore("lang-select", _lang)
+                if(_lang >= 0 && _lang < 4) {
                     lang = _lang
                 }
             }
@@ -80,6 +79,7 @@ function updateLang(lang) {
         
         document.getElementById("lang_import").innerHTML = readStr(readUsize(wasm.exports.LANGS.value + 8 * lang), readUsize(wasm.exports.LANG_SIZES.value  + 4 * lang))
         
+        restore("lang-select", lang)
         restore("start-select", start)
         restore("final-select", final)
         

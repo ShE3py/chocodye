@@ -148,6 +148,7 @@ purple = Violette Farbstoffe
 
 ## Eingebaute Beispiele
 
+lang-input = Sprache:
 starting-color-input = Ausgangsfarbe:
 final-color-input = Endfarbe:
 

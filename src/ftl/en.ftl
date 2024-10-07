@@ -148,6 +148,7 @@ purple = Purple Dyes
 
 ## Builtin examples
 
+lang-input = Language:
 starting-color-input = Starting Color:
 final-color-input = Final Color:
 
