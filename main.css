@@ -44,6 +44,11 @@ body {
     font-style: oblique;
 }
 
-#lang-select {
+fieldset {
+    border: none;
+    padding: inherit;
+}
+
+#lang-select, #start-select {
     margin-bottom: .25rem;
 }
