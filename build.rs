@@ -1,3 +1,5 @@
+#[path = "src/rgb.rs"]
+mod rgb;
 
 fn main() {
     println!("cargo:rerun-if-changed=src/xml/dyes.xml");
@@ -6,11 +8,14 @@ fn main() {
 }
 
 mod dyes {
+    use std::fmt::{self, Formatter};
     use std::fs::File;
     use std::io::{self, BufWriter, Write};
     use std::path::PathBuf;
     
-    use serde::Deserialize;
+    use crate::rgb::Rgb;
+    use serde::{Deserialize, Deserializer};
+    use serde::de::{Error, Visitor};
     
     #[derive(Deserialize)]
     struct Dyes {
@@ -23,8 +28,8 @@ mod dyes {
         #[serde(rename = "@name")]
         name: String,
 
-        #[serde(rename = "@stain")]
-        stain: String,
+        #[serde(rename = "@stain", deserialize_with = "deserialize_rgb")]
+        stain: Rgb,
 
         #[serde(rename = "dye", default)]
         dyes: Vec<Dye>
@@ -35,11 +40,32 @@ mod dyes {
         #[serde(rename = "@name")]
         name: String,
 
-        #[serde(rename = "@stain")]
-        stain: String,
+        #[serde(rename = "@stain", deserialize_with = "deserialize_rgb")]
+        stain: Rgb,
 
         #[serde(rename = "@choco", default = "default_choco")]
         choco: bool,
+    }
+    
+    fn deserialize_rgb<'de, D>(deserializer: D) -> Result<Rgb, D::Error> where D: Deserializer<'de> {
+        struct RgbVisitor;
+        
+        impl Visitor<'_> for RgbVisitor {
+            type Value = Rgb;
+            
+            fn expecting(&self, formatter: &mut Formatter<'_>) -> fmt::Result {
+                formatter.write_str("a hex color")
+            }
+            
+            fn visit_str<E>(self, v: &str) -> Result<Self::Value, E>
+            where
+                E: Error,
+            {
+                Rgb::from_hex(v).map_err(E::custom)
+            }
+        }
+        
+        deserializer.deserialize_str(RgbVisitor)
     }
 
     const fn default_choco() -> bool {
@@ -77,10 +103,6 @@ r#"
 /// A color that can be found as the plumage of a chocobo.
 ///
 /// Some dyes, such as vanilla yellow, are not included in this enum.
-///
-/// As the build script has no access to [`Rgb`], documentation of variants is rather feeble.
-/// Please open an issue on GitHub if you wish to use this enum in another crate not related
-/// to chocobo dyeing.
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 #[repr(u8)]
 pub enum Dye {{
@@ -146,7 +168,7 @@ impl Dye {{
         }}
     }}
 }}"#,
-                     variants = dyes.iter().zip(&variants).enumerate().map(|(i, (dye, variant))| format!("/// `{}`\n\t{variant} = {i}", dye.stain)).collect::<Vec<_>>().join(",\n\n\t"),
+                     variants = dyes.iter().zip(&variants).enumerate().map(|(i, (dye, variant))| format!("/// <div style=\"background-color: {:x}; width: 3em; height: 3em;\" aria-hidden=\"true\"></div>\n\t{variant} = {i}", dye.stain)).collect::<Vec<_>>().join(",\n\n\t"),
                      values = variants.iter().map(|dye| format!("Dye::{dye}")).collect::<Vec<_>>().join(",\n\t\t"),
 
                      categories = self.categories
@@ -155,7 +177,7 @@ impl Dye {{
                          .collect::<Vec<_>>()
                          .join(",\n\t\t\t"),
 
-                     rgbs = dyes.iter().zip(variants.iter()).map(|(dye, name)| format!("Dye::{name} => {}", make_rgb(&dye.stain))).collect::<Vec<_>>().join(",\n\t\t\t"),
+                     rgbs = dyes.iter().zip(variants.iter()).map(|(dye, name)| format!("Dye::{name} => Rgb::new({}, {}, {})", dye.stain.r, dye.stain.g, dye.stain.b)).collect::<Vec<_>>().join(",\n\t\t\t"),
                      names = self.categories.iter().flat_map(|category| &category.dyes).filter(|dye| dye.choco).map(|dye| format!("Dye::{} => {:?}", make_pascal_case(&dye.name), &dye.name)).collect::<Vec<_>>().join(",\n\t\t\t")
             )
         }
@@ -235,7 +257,7 @@ impl Category {{
                     .collect::<Vec<_>>()
                     .join(",\n\t\t\t"),
 
-                     rgbs = self.categories.iter().map(|category| format!("Category::{} => {}", make_pascal_case(&category.name), make_rgb(&category.stain))).collect::<Vec<_>>().join(",\n\t\t\t"),
+                     rgbs = self.categories.iter().map(|category| format!("Category::{} => Rgb::new({}, {}, {})", make_pascal_case(&category.name), category.stain.r, category.stain.g, category.stain.b)).collect::<Vec<_>>().join(",\n\t\t\t"),
                      names = self.categories.iter().map(|category| format!("Category::{} => {:?}", make_pascal_case(&category.name), &category.name)).collect::<Vec<_>>().join(",\n\t\t\t")
             )?;
 
@@ -274,16 +296,5 @@ impl Category {{
         }
 
         String::from_utf8(pc).expect("infallible conversion failed")
-    }
-
-    fn make_rgb(s: &str) -> String {
-        // copied from Rgb::from_hex
-
-        assert!(s.len() == 7 && s.as_bytes()[0] == b'#', "malformed color: {s:?}");
-
-        match u32::from_str_radix(&s[1..7], 16) {
-            Ok(v) => format!("Rgb::new({}, {}, {})", (v >> 16) & 0xFF, (v >> 8) & 0xFF, v & 0xFF),
-            Err(e) => panic!("malformed color: {s:?}: {e}")
-        }
     }
 }

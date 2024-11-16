@@ -3,6 +3,9 @@ use std::fmt::{self, Formatter};
 use std::num::ParseIntError;
 
 /// A color represented by three `u8` components.
+///
+/// This struct implements [`Debug`](fmt::Debug), [`LowerHex`](fmt::LowerHex) and
+/// [`UpperHex`](fmt::UpperHex), but no [`Display`](fmt::Display).
 #[derive(Copy, Clone, Eq, PartialEq, Hash)]
 pub struct Rgb {
     /// The red component.
