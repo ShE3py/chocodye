@@ -56,7 +56,7 @@ impl Dye {
     /// # Examples
     ///
     /// ```
-    /// use chocodye::{{Dye, Lang}};
+    /// use chocodye::{Dye, Lang};
     ///
     /// assert_eq!(Dye::RegalPurple.color_name(&Lang::French.into_bundle()), "byzantium");
     /// ```
@@ -85,7 +85,7 @@ impl Dye {
     /// # Examples
     ///
     /// ```
-    /// use chocodye::{{Dye, Lang}};
+    /// use chocodye::{Dye, Lang};
     ///
     /// let de = Lang::German.into_bundle();
     ///
@@ -112,7 +112,7 @@ impl Category {
     /// # Examples
     ///
     /// ```
-    /// use chocodye::{{Category, Lang}};
+    /// use chocodye::{Category, Lang};
     ///
     /// assert_eq!(Category::Purple.full_name(&Lang::French.into_bundle()), "Teintures violettes");
     /// ```
