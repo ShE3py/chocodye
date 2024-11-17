@@ -56,7 +56,7 @@ fn get_term_width() -> Option<u16> {
             return None;
         }
 
-        if handle == 0 {
+        if handle.is_null() {
             return None;
         }
 

@@ -27,33 +27,33 @@ name = "menu"
 required-features = ["fluent", "truecolor"]
 
 [dependencies.fluent]
-version = "0.16.0"
+version = "0.16.1"
 optional = true
 
 [dependencies.fluent-syntax]
-version = "0.11.0"
+version = "0.11.1"
 optional = true
 
 [dependencies.unic-langid]
-version = "0.9.1"
+version = "0.9.5"
 features = ["macros"]
 optional = true
 
 [dependencies.log]
-version = "0.4.20"
+version = "0.4.22"
 optional = true
 
 [build-dependencies.quick-xml]
-version = "0.31.0"
+version = "0.37.0"
 features = ["serialize"]
 
 [build-dependencies.serde]
-version = "1.0.188"
+version = "1.0.215"
 features = ["derive"]
 
 [target.'cfg(unix)'.dev-dependencies.libc]
-version = "0.2.153"
+version = "0.2.164"
 
 [target.'cfg(windows)'.dev-dependencies.windows-sys]
-version = "0.48.0"
+version = "0.59.0"
 features = ["Win32_System_Console", "Win32_Foundation"]
