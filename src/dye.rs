@@ -188,6 +188,7 @@ mod test {
     }
 
     #[test]
+    #[cfg_attr(miri, ignore)]
     fn dye_epsilon() {
         let mut epsilon = u32::MAX;
         

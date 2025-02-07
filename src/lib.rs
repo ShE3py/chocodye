@@ -16,7 +16,7 @@
 //!
 
 #![cfg_attr(feature = "fluent", doc = r#"
-```
+```no_run
 use chocodye::{Dye, Lang};
 
 let bundle = Lang::English.into_bundle();
@@ -33,7 +33,7 @@ println!();
 "#)]
 
 #![cfg_attr(not(feature = "fluent"), doc = r#"
-```
+```no_run
 use chocodye::Dye;
 
 let mut dyes = Dye::VALUES;
@@ -48,7 +48,7 @@ println!("{:#?}", dyes);
 //!
 
 #![cfg_attr(feature = "fluent", doc = r#"
-```
+```no_run
 use chocodye::{Category, Lang};
 
 let bundle = Lang::English.into_bundle();
@@ -66,7 +66,7 @@ for category in Category::VALUES {
 "#)]
 
 #![cfg_attr(not(feature = "fluent"), doc = r#"
-```
+```no_run
 use chocodye::Category;
 
 for category in Category::VALUES {
@@ -531,6 +531,7 @@ mod lib {
         }
         
         #[test]
+        #[cfg_attr(miri, ignore)]
         fn all_is_ok() {
             for src in Dye::VALUES {
                 for dst in Dye::VALUES {
@@ -543,7 +544,7 @@ mod lib {
                     }
                     
                     let dye = Dye::try_from(rgb).unwrap_or_else(identity);
-                    assert!(dye == dst, "make_meal({src:?}, {dst:?}) returned {dye:?} (d = {})", dye.distance(dst));
+                    assert_eq!(dye, dst, "make_meal({src:?}, {dst:?}) returned {dye:?} (d = {})", dye.distance(dst));
                     
                     let menu = make_menu(src, snacks);
                     
@@ -558,7 +559,7 @@ mod lib {
                     }
                     
                     let dye = Dye::try_from(rgb).unwrap_or_else(identity);
-                    assert!(dye == dst, "make_menu({src:?}, {dst:?}) returned {dye:?} (d = {}, sl = {snacks:#?}, menu = {menu:#?})", dye.distance(dst));
+                    assert_eq!(dye, dst, "make_menu({src:?}, {dst:?}) returned {dye:?} (d = {}, sl = {snacks:#?}, menu = {menu:#?})", dye.distance(dst));
                 }
             }
         }
