@@ -106,14 +106,10 @@ pub use crate::fluent::__format_message;
 #[cfg(feature = "truecolor")]
 pub use crate::truecolor::ansi_text;
 
-#[cfg(feature = "fluent")]
-mod fluent;
-
 mod dye;
+mod fluent;
 mod rgb;
 mod snack;
-
-#[cfg(feature = "truecolor")]
 mod truecolor;
 
 /// Creates a vector of [`Snack`], that when fed to a chocobo, will change its plumage from one [`Dye`] to another.

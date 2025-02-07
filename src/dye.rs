@@ -6,7 +6,7 @@ use crate::ansi_text;
 
 use crate::Rgb;
 
-include!(concat!(env!("OUT_DIR"), "/dye.rs"));
+include!(concat!(env!("OUT_DIR"), "/dyes.rs"));
 
 impl Dye {
     /// The smallest distance between two dyes. Used to optimize search algorithms.

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="us-ascii" ?>
+<dyes>
+    <category name="white" color="#ffffff">
+        <dye name="snow-white" color="#e4dfd0" />
+        <dye name="ash-grey" color="#aca8a2" />
+        <dye name="goobbue-grey" color="#898784" />
+        <dye name="slate-grey" color="#656565" />
+        <dye name="charcoal-grey" color="#484742" />
+        <dye name="soot-black" color="#2b2923" />
+    </category>
+
+    <category name="red" color="#da2c2c">
+        <dye name="rose-pink" color="#e69f96" />
+        <dye name="lilac-purple" color="#836969" />
+        <dye name="rolanberry-red" color="#5b1729" />
+        <dye name="dalamud-red" color="#781a1a" />
+        <dye name="rust-red" color="#622207" />
+        <dye name="wine-red" color="#451511" />
+        <dye name="coral-pink" color="#cc6c5e" />
+        <dye name="blood-red" color="#913b27" />
+        <dye name="salmon-pink" color="#e4aa8a" />
+        <dye name="ruby-red" color="#e40011" choco="false" />
+        <dye name="cherry-pink" color="#f5379b" choco="false" />
+    </category>
+
+    <category name="brown" color="#b8864a">
+        <dye name="sunset-orange" color="#b75c2d" />
+        <dye name="mesa-red" color="#7d3906" />
+        <dye name="bark-brown" color="#6a4b37" />
+        <dye name="chocolate-brown" color="#6e3d24" />
+        <dye name="russet-brown" color="#4f2d1f" />
+        <dye name="kobold-brown" color="#30211b" />
+        <dye name="cork-brown" color="#c99156" />
+        <dye name="qiqirn-brown" color="#996e3f" />
+        <dye name="opo-opo-brown" color="#7b5c2d" />
+        <dye name="aldgoat-brown" color="#a2875c" />
+        <dye name="pumpkin-orange" color="#c57424" />
+        <dye name="acorn-brown" color="#8e581b" />
+        <dye name="orchard-brown" color="#644216" />
+        <dye name="chestnut-brown" color="#3d290d" />
+        <dye name="gobbiebag-brown" color="#b9a489" />
+        <dye name="shale-brown" color="#92816c" />
+        <dye name="mole-brown" color="#615245" />
+        <dye name="loam-brown" color="#3f3329" />
+    </category>
+
+    <category name="yellow" color="#f3e33f">
+        <dye name="bone-white" color="#ebd3a0" />
+        <dye name="ul-brown" color="#b7a370" />
+        <dye name="desert-yellow" color="#dbb457" />
+        <dye name="honey-yellow" color="#fac62b" />
+        <dye name="millioncorn-yellow" color="#e49e34" />
+        <dye name="coeurl-yellow" color="#bc8804" />
+        <dye name="cream-yellow" color="#f2d770" />
+        <dye name="halatali-yellow" color="#a58430" />
+        <dye name="raisin-brown" color="#403311" />
+        <dye name="canary-yellow" color="#fef864" choco="false" />
+        <dye name="vanilla-yellow" color="#fbf1b4" choco="false" />
+    </category>
+
+    <category name="green" color="#a7d550">
+        <dye name="mud-green" color="#585230" />
+        <dye name="sylph-green" color="#bbbb8a" />
+        <dye name="lime-green" color="#abb054" />
+        <dye name="moss-green" color="#707326" />
+        <dye name="meadow-green" color="#8b9c63" />
+        <dye name="olive-green" color="#4b5232" />
+        <dye name="marsh-green" color="#323621" />
+        <dye name="apple-green" color="#9bb363" />
+        <dye name="cactuar-green" color="#658241" />
+        <dye name="hunter-green" color="#284b2c" />
+        <dye name="ochu-green" color="#406339" />
+        <dye name="adamantoise-green" color="#5f7558" />
+        <dye name="nophica-green" color="#3b4d3c" />
+        <dye name="deepwood-green" color="#1e2a21" />
+        <dye name="celeste-green" color="#96bdb9" />
+        <dye name="turquoise-green" color="#437272" />
+        <dye name="morbol-green" color="#1f4646" />
+    </category>
+
+    <category name="blue" color="#5f95f5">
+        <dye name="ice-blue" color="#b2c4ce" />
+        <dye name="sky-blue" color="#83b0d2" />
+        <dye name="seafog-blue" color="#6481a0" />
+        <dye name="peacock-blue" color="#3b6886" />
+        <dye name="rhotano-blue" color="#1c3d54" />
+        <dye name="corpse-blue" color="#8e9bac" />
+        <dye name="ceruleum-blue" color="#4f5766" />
+        <dye name="woad-blue" color="#2f3851" />
+        <dye name="ink-blue" color="#1a1f27" />
+        <dye name="raptor-blue" color="#5b7fc0" />
+        <dye name="othard-blue" color="#2f5889" />
+        <dye name="storm-blue" color="#234172" />
+        <dye name="void-blue" color="#112944" />
+        <dye name="royal-blue" color="#273067" />
+        <dye name="midnight-blue" color="#181937" />
+        <dye name="shadow-blue" color="#373747" />
+        <dye name="abyssal-blue" color="#312d57" />
+        <dye name="dragoon-blue" color="#000ea2" choco="false" />
+        <dye name="turquoise-blue" color="#04afcd" choco="false" />
+    </category>
+
+    <category name="purple" color="#b577e9">
+        <dye name="lavender-purple" color="#877fae" />
+        <dye name="gloom-purple" color="#514560" />
+        <dye name="currant-purple" color="#322c3b" />
+        <dye name="iris-purple" color="#b79ebc" />
+        <dye name="grape-purple" color="#3b2a3d" />
+        <dye name="lotus-pink" color="#fecef5" />
+        <dye name="colibri-pink" color="#dc9bca" />
+        <dye name="plum-purple" color="#79526c" />
+        <dye name="regal-purple" color="#66304e" />
+    </category>
+</dyes>
