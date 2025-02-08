@@ -155,10 +155,10 @@ impl Lang {
     #[must_use]
     pub const fn file(self) -> &'static str {
         match self {
-            Lang::English  => include_str!("ftl/en.ftl"),
-            Lang::French   => include_str!("ftl/fr.ftl"),
-            Lang::German   => include_str!("ftl/de.ftl"),
-            Lang::Japanese => include_str!("ftl/jp.ftl")
+            Lang::English  => include_str!("../locales/en.ftl"),
+            Lang::French   => include_str!("../locales/fr.ftl"),
+            Lang::German   => include_str!("../locales/de.ftl"),
+            Lang::Japanese => include_str!("../locales/jp.ftl")
         }
     }
 

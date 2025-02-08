@@ -90,12 +90,11 @@ fn codegen_enum_dye(data: &Dyes, buf: &mut impl Write) -> io::Result<()> {
         buf,
         include_str!("enum.Dye.rs"),
         
-        variants = flat_dyes.iter().enumerate()
-            .map(|(i, dye)| format!(
+        variants = flat_dyes.iter()
+            .map(|dye| format!(
                 include_str!("enum.Dye.variant.rs"),
                 color = dye.color,
                 variant = dye.name.rust,
-                discriminant = i,
             ))
             .collect::<Vec<_>>().join("\n"),
         
@@ -142,9 +141,9 @@ fn codegen_enum_category(data: &Dyes, buf: &mut impl Write) -> io::Result<()> {
         buf,
         include_str!("enum.Category.rs"),
         
-        variants = data.categories.iter().enumerate()
-            .map(|(i, category)| format!(
-                "{variant} = {i}",
+        variants = data.categories.iter()
+            .map(|category| format!(
+                "{variant}",
                 variant = category.name.rust
             ))
             .collect::<Vec<_>>().join(",\n\t"),

@@ -40,7 +40,7 @@ lemon =
     { $quantity ->
         [one] { $quantity } citron de Radz-at-Han
        *[other] { $quantity } citrons de Radz-at-Han
-   }
+    }
 
 ## Couleurs
 
