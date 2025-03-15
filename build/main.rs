@@ -142,10 +142,7 @@ fn codegen_enum_category(data: &Dyes, buf: &mut impl Write) -> io::Result<()> {
         include_str!("enum.Category.rs"),
         
         variants = data.categories.iter()
-            .map(|category| format!(
-                "{variant}",
-                variant = category.name.rust
-            ))
+            .map(|category| category.name.rust.clone())
             .collect::<Vec<_>>().join(",\n\t"),
         
         associatedconstant_VALUES = data.categories.iter()
