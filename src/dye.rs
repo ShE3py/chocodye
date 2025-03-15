@@ -23,8 +23,8 @@ impl Dye {
     /// ```
     /// use chocodye::Dye;
     ///
-    /// assert_eq!(Dye::SnowWhite.distance(Dye::SootBlack), 97278);
-    /// assert_eq!(Dye::ShadowBlue.distance(Dye::CurrantPurple), 290);
+    /// assert_eq!(Dye::LotusPink.distance(Dye::InkBlue), 125045);
+    /// assert_eq!(Dye::CurrantPurple.distance(Dye::GrapePurple), 89);
     /// ```
     #[must_use]
     #[inline]
