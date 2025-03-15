@@ -114,7 +114,7 @@ mod truecolor;
 
 /// Creates a vector of [`Snack`], that when fed to a chocobo, will change its plumage from one [`Dye`] to another.
 ///
-/// The current implementation is a [brute-force search](https://en.wikipedia.org/wiki/Brute-force_search);
+/// The current implementation is a [greedy algorithm](https://en.wikipedia.org/wiki/Greedy_algorithm);
 /// it tries all six snacks and takes the one that brings it closest to the desired dye, repeating until this dye is reached.
 ///
 /// If adding a single snack can't get it any closer to its goal, it will try with two separate snacks.
@@ -124,8 +124,6 @@ mod truecolor;
 ///
 /// ```
 /// use chocodye::{Dye, make_meal, Snack};
-///
-/// assert_eq!(Dye::CurrantPurple.distance(Dye::GrapePurple), Dye::EPSILON);
 ///
 /// assert_eq!(make_meal(Dye::SalmonPink, Dye::RosePink), [ Snack::Fruit,  Snack::Berries]);
 /// assert_eq!(make_meal(Dye::RosePink, Dye::SalmonPink), [-Snack::Fruit, -Snack::Berries]);
@@ -386,6 +384,37 @@ impl fmt::Debug for SnackList {
 /// ```
 #[must_use]
 pub fn make_menu(starting_dye: Dye, snacks: SnackList) -> Vec<(Snack, u8)> {
+    /// Returns the largest number `q` such that `0 <= c + qd <= 255`.
+    #[inline]
+    const fn max(c: u8, d: i8) -> u8 {
+        if d > 0 {
+            //     c + qd <= 255
+            // <=>     qd <= 255 - c
+            // <=>      q <= (255 - c) / d
+            // <=>      q  = floor((255 - c) / d)
+            
+            (u8::MAX - c) / (d as u8)
+        }
+        else {
+            //     c + qd >= 0
+            // <=>     qd >= -c
+            // <=>     q  <= -c / d
+            // <=>     q   = floor(-c / d)
+            
+            (-(c as i16) / (d as i16)) as u8
+        }
+    }
+    
+    /// Returns the largest number `q` such that `0 <= c + qd <= 255` for `c := { r, g, b }`.
+    #[allow(non_snake_case)]
+    fn Q(c: Rgb, s: Snack) -> u8 {
+        let qr = max(c.r, s.effect().0);
+        let qg = max(c.g, s.effect().1);
+        let qb = max(c.b, s.effect().2);
+        
+        qr.min(qg).min(qb)
+    }
+    
     /// # Backtracking parameters
     ///
     /// - `remaining`: snacks that have yet to be added.
@@ -402,60 +431,29 @@ pub fn make_menu(starting_dye: Dye, snacks: SnackList) -> Vec<(Snack, u8)> {
 
         // for each snack, try putting the maximum of them so that the color wouldn't overflow
         for (snack, count) in remaining {
-            /// Returns the largest number `q` such that `0 <= c + qd <= 255`.
-            const fn q(c: u8, d: i8) -> u8 {
-                if d > 0 {
-                    //     c + qd <= 255
-                    // <=>     qd <= 255 - c
-                    // <=>      q <= (255 - c) / d
-                    // <=>      q  = floor((255 - c) / d)
-
-                    (u8::MAX - c) / (d as u8)
-                }
-                else {
-                    //     c + qd >= 0
-                    // <=>     qd >= -c
-                    // <=>     q  <= -c / d
-                    // <=>     q   = floor(-c / d)
-                    
-                    (-(c as i16) / (d as i16)) as u8
-                }
+            // `q` considering all components and the remaining count
+            let n = Ord::min(Q(current_color, snack), count);
+            if n == 0 {
+                continue;
             }
+            
+            // try backtracking with `n` less `snack` snacks
+            let mut bt_remaning = remaining;
+            bt_remaning.set(snack, count - n);
 
-            /// Returns the largest number `q` such that `0 <= c + qd <= 255` for `c := { r, g, b }`.
-            #[allow(non_snake_case)]
-            fn Q(c: Rgb, s: Snack) -> u8 {
-                let qr = q(c.r, s.effect().0);
-                let qg = q(c.g, s.effect().1);
-                let qb = q(c.b, s.effect().2);
-                
-                qr.min(qg).min(qb)
-            }
+            let bt_color = Rgb {
+                r: ((current_color.r as i16) + (n as i16) * (snack.effect().0 as i16)) as u8,
+                g: ((current_color.g as i16) + (n as i16) * (snack.effect().1 as i16)) as u8,
+                b: ((current_color.b as i16) + (n as i16) * (snack.effect().2 as i16)) as u8
+            };
 
-            if count > 0 {
-                // `q` considering all components and the remaining count
-                let n = Q(current_color, snack).min(count);
+            let mut bt_menu = Vec::with_capacity(current_menu.len() + 1);
+            bt_menu.extend_from_slice(&current_menu);
+            bt_menu.push((snack, n));
 
-                if n > 0 {
-                    // try backtracking with `n` less `snack` snacks
-                    let mut bt_remaning = remaining;
-                    bt_remaning.set(snack, count - n);
-
-                    let bt_color = Rgb {
-                        r: ((current_color.r as i16) + (n as i16) * (snack.effect().0 as i16)) as u8,
-                        g: ((current_color.g as i16) + (n as i16) * (snack.effect().1 as i16)) as u8,
-                        b: ((current_color.b as i16) + (n as i16) * (snack.effect().2 as i16)) as u8
-                    };
-
-                    let mut bt_menu = Vec::with_capacity(current_menu.len() + 1);
-                    bt_menu.extend_from_slice(&current_menu);
-                    bt_menu.push((snack, n));
-
-                    let bt_result = backtrack(bt_remaning, bt_color, bt_menu);
-                    if bt_result.len() < menu.len() || menu.is_empty() {
-                        menu = bt_result;
-                    }
-                }
+            let bt_result = backtrack(bt_remaning, bt_color, bt_menu);
+            if bt_result.len() < menu.len() || menu.is_empty() {
+                menu = bt_result;
             }
         }
         
