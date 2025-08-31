@@ -20,12 +20,12 @@ jobs:
       
       - name: Create artifact
         run: |
-          mkdir _site
-          mv ./src/_config.yml _site/
-          mv ./src/index.html _site/
-          mv ./src/main.css _site/
-          mv ./src/main.js _site/
-          mv ./target/wasm32-unknown-unknown/release/chocoweb.wasm _site/
+          mkdir ../_site
+          mv ./src/_config.yml ../_site/
+          mv ./src/index.html ../_site/
+          mv ./src/main.css ../_site/
+          mv ./src/main.js ../_site/
+          mv ./target/wasm32-unknown-unknown/release/chocoweb.wasm ../_site/
       
       - uses: actions/upload-pages-artifact@v4
   
