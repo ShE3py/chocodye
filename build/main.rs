@@ -13,17 +13,17 @@ pub mod rgb;
 
 fn main() {
     println!("cargo:rerun-if-changed=dyes.xml");
-    
+
     let mut dyes = match quick_xml::de::from_str::<Dyes>(include_str!("dyes.xml")) {
         Ok(v) => v,
         Err(e) => panic!("cannot deserialize `dyes.xml`: {e}")
     };
-    
+
     // Excludes non-choco
     for cat in &mut dyes.categories {
         cat.dyes.retain(|dye| dye.choco);
     }
-    
+
     if let Err(e) = codegen(&dyes) {
         panic!("cannot codegen `dyes.rs`: {e}");
     }
@@ -62,7 +62,7 @@ struct Dye {
 struct Name {
     /// kebab-case
     key: String,
-    
+
     /// PascalCase
     rust: String,
 }
@@ -70,13 +70,13 @@ struct Name {
 fn codegen(dyes: &Dyes) -> io::Result<()> {
     let mut path = PathBuf::from(env::var_os("OUT_DIR").expect("`OUT_DIR` is not defined"));
     path.push("dyes.rs");
-    
+
     let file = File::create(path)?;
     let mut buf = BufWriter::new(file);
-    
+
     codegen_enum_dye(dyes, &mut buf)?;
     codegen_enum_category(dyes, &mut buf)?;
-    
+
     Ok(())
 }
 
@@ -85,11 +85,11 @@ fn codegen_enum_dye(data: &Dyes, buf: &mut impl Write) -> io::Result<()> {
         .iter()
         .flat_map(|category| &category.dyes)
         .collect();
-    
+
     writeln!(
         buf,
         include_str!("enum.Dye.rs"),
-        
+
         variants = flat_dyes.iter()
             .map(|dye| format!(
                 include_str!("enum.Dye.variant.rs"),
@@ -97,7 +97,7 @@ fn codegen_enum_dye(data: &Dyes, buf: &mut impl Write) -> io::Result<()> {
                 variant = dye.name.rust,
             ))
             .collect::<Vec<_>>().join("\n"),
-        
+
         associatedconstant_VALUES = flat_dyes.iter()
             .map(|dye| format!(
                 "Dye::{variant}",
@@ -135,12 +135,12 @@ fn codegen_enum_dye(data: &Dyes, buf: &mut impl Write) -> io::Result<()> {
             .collect::<Vec<_>>().join(",\n\t\t\t")
     )
 }
-    
+
 fn codegen_enum_category(data: &Dyes, buf: &mut impl Write) -> io::Result<()> {
     writeln!(
         buf,
         include_str!("enum.Category.rs"),
-        
+
         variants = data.categories.iter()
             .map(|category| category.name.rust.as_str())
             .collect::<Vec<_>>().join(",\n\t"),
@@ -182,7 +182,7 @@ fn codegen_enum_category(data: &Dyes, buf: &mut impl Write) -> io::Result<()> {
             ))
             .collect::<Vec<_>>().join(",\n\t\t\t")
     )?;
-    
+
     Ok(())
 }
 
@@ -190,16 +190,16 @@ fn deserialize_rgb<'de, D: Deserializer<'de>>(deserializer: D) -> Result<Rgb, D:
     struct RgbVisitor;
     impl Visitor<'_> for RgbVisitor {
         type Value = Rgb;
-        
+
         fn expecting(&self, formatter: &mut Formatter<'_>) -> fmt::Result {
             formatter.write_str("a hex color")
         }
-        
+
         fn visit_str<E: Error>(self, v: &str) -> Result<Self::Value, E> {
             Rgb::from_hex(v).map_err(E::custom)
         }
     }
-    
+
     deserializer.deserialize_str(RgbVisitor)
 }
 
@@ -211,11 +211,11 @@ impl<'de> Deserialize<'de> for Name {
         struct NameVisitor;
         impl Visitor<'_> for NameVisitor {
             type Value = Name;
-            
+
             fn expecting(&self, formatter: &mut Formatter<'_>) -> fmt::Result {
                 formatter.write_str("a str")
             }
-            
+
             fn visit_str<E: Error>(self, v: &str) -> Result<Self::Value, E> {
                 Ok(Name {
                     key: v.to_owned(),
@@ -223,7 +223,7 @@ impl<'de> Deserialize<'de> for Name {
                 })
             }
         }
-        
+
         deserializer.deserialize_str(NameVisitor)
     }
 }

@@ -10,7 +10,7 @@ impl Category {{
     pub const VALUES: [Category; 7] = [
         {associatedconstant_VALUES}
     ];
-    
+
     /// Returns all the dyes belonging to `self`. Dyes belong to one and only one category.
     #[must_use]
     #[inline]
@@ -21,7 +21,7 @@ impl Category {{
             {method_dyes}
         }}
     }}
-    
+
     /// Returns a color representing `self`. Does not necessarily correspond to a dye.
     #[must_use]
     #[inline]
@@ -30,7 +30,7 @@ impl Category {{
             {method_color}
         }}
     }}
-    
+
     /// Returns the variant name of `self` in kebab-case.
     ///
     /// # Examples

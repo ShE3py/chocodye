@@ -12,7 +12,7 @@ impl Dye {{
     pub const VALUES: [Dye; 85] = [
         {associatedconstant_VALUES}
     ];
-    
+
     /// Returns the dye category of `self`.
     ///
     /// # Examples
@@ -31,7 +31,7 @@ impl Dye {{
             {method_category}
         }}
     }}
-    
+
     /// Returns the color of `self`.
     ///
     /// # Examples
@@ -48,7 +48,7 @@ impl Dye {{
             {method_color}
         }}
     }}
-    
+
     /// Returns the variant name of `self` in kebab-case.
     ///
     /// # Examples
