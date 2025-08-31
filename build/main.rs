@@ -103,8 +103,8 @@ fn codegen_enum_dye(data: &Dyes, buf: &mut impl Write) -> io::Result<()> {
                 "Dye::{variant}",
                 variant = dye.name.rust,
             ))
-            .collect::<Vec<_>>().join(",\n\t\t"),
-        
+            .collect::<Vec<_>>().join(",\n        "),
+
         method_category = data.categories.iter()
              .map(|category| format!(
                  "{dyes} => Category::{variant}",
@@ -114,8 +114,8 @@ fn codegen_enum_dye(data: &Dyes, buf: &mut impl Write) -> io::Result<()> {
                  variant = &category.name.rust,
              ))
              .collect::<Vec<_>>()
-             .join(",\n\t\t\t"),
-        
+             .join(",\n            "),
+
         method_color = flat_dyes.iter()
             .map(|dye| format!(
                 "Dye::{variant} => Rgb::new({r}, {g}, {b})",
@@ -124,15 +124,15 @@ fn codegen_enum_dye(data: &Dyes, buf: &mut impl Write) -> io::Result<()> {
                 g = dye.color.g,
                 b = dye.color.b,
             ))
-            .collect::<Vec<_>>().join(",\n\t\t\t"),
-        
+            .collect::<Vec<_>>().join(",\n            "),
+
         method_short_names = flat_dyes.iter()
             .map(|dye| format!(
                 "Dye::{variant} => {key:?}",
                 variant = dye.name.rust,
                 key = dye.name.key
             ))
-            .collect::<Vec<_>>().join(",\n\t\t\t")
+            .collect::<Vec<_>>().join(",\n            ")
     )
 }
 
@@ -143,15 +143,15 @@ fn codegen_enum_category(data: &Dyes, buf: &mut impl Write) -> io::Result<()> {
 
         variants = data.categories.iter()
             .map(|category| category.name.rust.as_str())
-            .collect::<Vec<_>>().join(",\n\t"),
-        
+            .collect::<Vec<_>>().join(",\n    "),
+
         associatedconstant_VALUES = data.categories.iter()
             .map(|category| format!(
                 "Category::{variant}",
                 variant = category.name.rust
             ))
-            .collect::<Vec<_>>().join(",\n\t\t"),
-        
+            .collect::<Vec<_>>().join(",\n        "),
+
         method_dyes = data.categories
             .iter()
             .map(|category| format!(
@@ -162,8 +162,8 @@ fn codegen_enum_category(data: &Dyes, buf: &mut impl Write) -> io::Result<()> {
                     .collect::<Vec<_>>().join(", ")
             ))
             .collect::<Vec<_>>()
-            .join(",\n\t\t\t"),
-        
+            .join(",\n            "),
+
         method_color = data.categories.iter()
             .map(|category| format!(
                 "Category::{variant} => Rgb::new({r}, {g}, {b})",
@@ -172,15 +172,15 @@ fn codegen_enum_category(data: &Dyes, buf: &mut impl Write) -> io::Result<()> {
                 g = category.color.g,
                 b = category.color.b,
             ))
-            .collect::<Vec<_>>().join(",\n\t\t\t"),
-        
+            .collect::<Vec<_>>().join(",\n            "),
+
         method_short_names = data.categories.iter()
             .map(|category| format!(
                 "Category::{variant} => {key:?}",
                 variant = category.name.rust,
                 key = category.name.key,
             ))
-            .collect::<Vec<_>>().join(",\n\t\t\t")
+            .collect::<Vec<_>>().join(",\n            ")
     )?;
 
     Ok(())

@@ -16,7 +16,6 @@ impl Category {{
     #[inline]
     pub const fn dyes(self) -> &'static [Dye] {{
         use Dye::*;
-        
         match self {{
             {method_dyes}
         }}

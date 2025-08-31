@@ -26,7 +26,6 @@ impl Dye {{
     #[inline]
     pub const fn category(self) -> Category {{
         use Dye::*;
-        
         match self {{
             {method_category}
         }}
