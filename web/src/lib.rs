@@ -1,4 +1,4 @@
-use std::fmt::Write;
+use std::fmt::Write as _;
 
 use chocodye::{Dye, Lang, message, SnackList};
 
@@ -19,7 +19,7 @@ pub extern "C" fn make_meal(starting_dye: i32, final_dye: i32) -> Option<SnackLi
     let final_dye = Dye::VALUES.get(usize::try_from(final_dye).ok()?).copied()?;
     
     let meal = chocodye::make_meal(starting_dye, final_dye);
-    return Some(SnackList::from(meal.as_slice()));
+    Some(SnackList::from(meal.as_slice()))
 }
 
 #[no_mangle]

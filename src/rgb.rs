@@ -84,7 +84,7 @@ impl Rgb {
     /// assert!(Rgb::from_hex("#fff").is_err());
     /// assert!(Rgb::from_hex("ffffff").is_err());
     /// ```
-    #[allow(clippy::missing_errors_doc)]
+    #[expect(clippy::missing_errors_doc, clippy::indexing_slicing)]
     pub fn from_hex(s: &str) -> Result<Rgb, ParseHexError> {
         if s.len() != 7 {
             Err(ParseHexError::BadLen)

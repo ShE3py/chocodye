@@ -97,7 +97,7 @@ pub use snack::{Snack, SnackList};
 pub use crate::fluent::{FluentBundle, Lang, ParseLangError};
 #[cfg(feature = "fluent")]
 #[doc(hidden)]
-pub use crate::fluent::__format_message;
+pub use crate::fluent::{__format_message, __FluentArgs};
 #[cfg(feature = "truecolor")]
 pub use crate::truecolor::ansi_text;
 
@@ -176,8 +176,8 @@ pub fn make_meal(starting_dye: Dye, final_dye: Dye) -> Vec<Snack> {
                 const USED_PAIRS: [(Snack, Snack); 5] = [
                     (Apple, Pear), (Apple, Berries), (Pear, Berries), (Plum, Pineapple), (Fruit, Pineapple)
                 ];
-                
-                USED_PAIRS.into_iter().filter_map(move |(s, t)| Self::from([s, t], current_color, final_color))
+
+                USED_PAIRS.into_iter().filter_map(move |st| Self::from(st.into(), current_color, final_color))
             }
             
             fn get(current_color: Rgb, final_color: Rgb) -> Possibility<2> {

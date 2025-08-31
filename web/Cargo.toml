@@ -20,9 +20,6 @@ path = ".."
 default-features = false
 features = ["fluent"]
 
-[dependencies.fluent]
-version = "0.16.1"
-
 [build-dependencies.chocodye]
 path = ".."
 default-features = false

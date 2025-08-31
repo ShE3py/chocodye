@@ -48,12 +48,15 @@ macro_rules! message {
     }};
 
     ($bundle:expr, $id:expr, { $($k:literal = $v:expr),+ }) => {{
-        let mut args = ::fluent::FluentArgs::new();
+        let mut args = $crate::__FluentArgs::new();
         $(args.set($k, $v);)+
 
         $crate::__format_message($bundle, $id, ::std::option::Option::Some(args)).into_owned()
     }};
 }
+
+#[doc(hidden)]
+pub type __FluentArgs<'args> = FluentArgs<'args>;
 
 #[doc(hidden)]
 pub fn __format_message<'a, R, M>(bundle: &'a fluent::bundle::FluentBundle<R, M>, id: &'static str, args: Option<FluentArgs<'a>>) -> Cow<'a, str> where R: Borrow<FluentResource>, M: MemoizerKind {
@@ -76,18 +79,18 @@ pub fn __format_message<'a, R, M>(bundle: &'a fluent::bundle::FluentBundle<R, M>
                     }
                 }
             }
-            
-            error!(target: "fluent", "unable to format message `{}`", id);
+
+            error!(target: "fluent", "unable to format message `{id}`");
             for error in errors {
-                error!(target: "fluent", "{}", error);
+                error!(target: "fluent", "{error}");
             }
         }
         else {
-            error!(target: "fluent", "message `{}` has no value", id);
+            error!(target: "fluent", "message `{id}` has no value");
         }
     }
     else {
-        error!(target: "fluent", "missing message `{}`", id);
+        error!(target: "fluent", "missing message `{id}`");
     }
     
     args.map_or(Cow::Borrowed(id), |args| {
@@ -172,7 +175,7 @@ impl Lang {
                 error!(target: "lang", "unable to load bundle `{}`:", self.short_code());
 
                 for error in errors {
-                    error!(target: "lang", "{}", error);
+                    error!(target: "lang", "{error}");
                 }
 
                 FluentBundle::new(vec![self.langid()])
