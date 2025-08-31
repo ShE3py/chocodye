@@ -15,14 +15,19 @@ jobs:
       - name: Install wasm32 target
         run: rustup target add wasm32-unknown-unknown
       
-      - run: cargo build --release
+      - name: Compile package
+        run: cargo build --release
       
-      - run: mv ./target/wasm32-unknown-unknown/release/chocoweb.wasm ./src/
-      - run: rm ./src/lib.rs
+      - name: Create artifact
+        run: |
+          mkdir _site
+          mv web/src/_config.yml _site/
+          mv web/src/index.html _site/
+          mv web/src/main.css _site/
+          mv web/src/main.js _site/
+          mv web/target/wasm32-unknown-unknown/release/chocoweb.wasm _site/
       
       - uses: actions/upload-pages-artifact@v4
-        with:
-          path: ./src/
   
   deploy:
     needs: build
