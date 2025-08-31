@@ -6,7 +6,7 @@ rustflags = [
     "-Wmeta_variable_misuse", "-Fmissing_abi", "-Wmissing_debug_implementations", "-Fnon_ascii_idents", "-Wredundant_lifetimes",
     "-Wsingle_use_lifetimes", "-Funnameable_types", "-Wunreachable_pub", "-Wunsafe_op_in_unsafe_fn", "-Wunused_extern_crates",
     "-Wunused_import_braces", "-Wunused_lifetimes", "-Wunused_qualifications",
-    
+
     # Restrictions
     "-Wclippy::alloc_instead_of_core", "-Fclippy::as_underscore", "-Wclippy::assertions_on_result_states",
     "-Fclippy::clone_on_ref_ptr", "-Fclippy::default_union_representation", "-Wclippy::else_if_without_else", "-Wclippy::empty_drop",
@@ -21,7 +21,7 @@ rustflags = [
     "-Wclippy::unnecessary_self_imports", "-Wclippy::unneeded_field_pattern", "-Fclippy::unseparated_literal_suffix",
     "-Wclippy::verbose_file_reads", "-Wclippy::renamed_function_params", "-Wclippy::cfg_not_test", "-Fclippy::unused_result_ok",
     "-Wclippy::unused_trait_names", "-Wclippy::non_zero_suggestions",
-    
+
     # Pedantic
     "-Wclippy::assigning_clones", "-Wclippy::bool_to_int_with_if", "-Fclippy::borrow_as_ptr",
     "-Wclippy::case_sensitive_file_extension_comparisons", "-Dclippy::cast_possible_truncation", "-Wclippy::checked_conversions",
@@ -47,7 +47,7 @@ rustflags = [
     "-Wclippy::unnecessary_box_returns", "-Wclippy::unnecessary_join", "-Wclippy::unnecessary_wraps", "-Wclippy::unnested_or_patterns",
     "-Fclippy::unsafe_derive_deserialize", "-Wclippy::zero_sized_map_values", "-Wclippy::assigning_clones", "-Wclippy::single_char_pattern",
     "-Wclippy::manual_is_power_of_two", "-Wclippy::used_underscore_items", "-Wclippy::ref_option",
-    
+
     # Nursery
     "-Fclippy::as_ptr_cast_mut", "-Wclippy::branches_sharing_code", "-Wclippy::clear_with_drain", "-Wclippy::cognitive_complexity",
     "-Wclippy::collection_is_never_read", "-Wclippy::debug_assert_with_mut_call", "-Wclippy::derive_partial_eq_without_eq",
@@ -61,7 +61,7 @@ rustflags = [
     "-Wclippy::trait_duplication_in_bounds", "-Wclippy::transmute_undefined_repr", "-Wclippy::trivial_regex", "-Wclippy::tuple_array_conversions",
     "-Wclippy::type_repetition_in_bounds", "-Fclippy::uninhabited_references", "-Wclippy::unnecessary_struct_initialization", "-Wclippy::unused_peekable",
     "-Wclippy::unused_rounding", "-Wclippy::useless_let_if_seq", "-Wclippy::set_contains_or_insert",
-    
+
     # Cargo
     "-Wclippy::multiple_crate_versions", "-Fclippy::negative_feature_names", "-Fclippy::redundant_feature_names", "-Fclippy::wildcard_dependencies"
 ]

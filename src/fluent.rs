@@ -66,14 +66,14 @@ pub fn __format_message<'a, R, M>(bundle: &'a fluent::bundle::FluentBundle<R, M>
             match &args {
                 Some(args) => {
                     let result = bundle.format_pattern(pattern, Some(args), &mut errors);
-                    
+
                     if errors.is_empty() {
                         return Cow::Owned(result.into_owned());
                     }
                 },
                 None => {
                     let result = bundle.format_pattern(pattern, None, &mut errors);
-                    
+
                     if errors.is_empty() {
                         return result;
                     }
@@ -92,7 +92,7 @@ pub fn __format_message<'a, R, M>(bundle: &'a fluent::bundle::FluentBundle<R, M>
     else {
         error!(target: "fluent", "missing message `{id}`");
     }
-    
+
     args.map_or(Cow::Borrowed(id), |args| {
         let scope = Scope::new(bundle, None, None);
         let args = args.into_iter().map(|(k, v)| format!("{k}: {:?}", v.as_string(&scope))).collect::<Vec<_>>().join(", ");
