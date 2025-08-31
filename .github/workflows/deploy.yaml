@@ -1,0 +1,29 @@
+name: Deploy
+on: workflow_dispatch
+env:
+  CARGO_TERM_COLOR: always
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./web
+    steps:
+      - uses: actions/checkout@v5
+      - run: cargo build --release
+      - run: mv ./target/wasm32-unknown-unknown/release/chocoweb.wasm ./src/
+      - run: rm ./src/lib.rs
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: ./src/
+  deploy:
+    needs: build
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/deploy-pages@v4
