@@ -109,7 +109,7 @@ fn codegen_enum_dye(data: &Dyes, buf: &mut impl Write) -> io::Result<()> {
              .map(|category| format!(
                  "{dyes} => Category::{variant}",
                  dyes = category.dyes.iter()
-                     .map(|dye| dye.name.rust.clone())
+                     .map(|dye| dye.name.rust.as_str())
                      .collect::<Vec<_>>().join(" | "),
                  variant = &category.name.rust,
              ))
@@ -142,7 +142,7 @@ fn codegen_enum_category(data: &Dyes, buf: &mut impl Write) -> io::Result<()> {
         include_str!("enum.Category.rs"),
         
         variants = data.categories.iter()
-            .map(|category| category.name.rust.clone())
+            .map(|category| category.name.rust.as_str())
             .collect::<Vec<_>>().join(",\n\t"),
         
         associatedconstant_VALUES = data.categories.iter()
@@ -158,7 +158,7 @@ fn codegen_enum_category(data: &Dyes, buf: &mut impl Write) -> io::Result<()> {
                 "Category::{variant} => &[{dyes}]",
                 variant = category.name.rust,
                 dyes = category.dyes.iter()
-                    .map(|dye| dye.name.rust.clone())
+                    .map(|dye| dye.name.rust.as_str())
                     .collect::<Vec<_>>().join(", ")
             ))
             .collect::<Vec<_>>()
