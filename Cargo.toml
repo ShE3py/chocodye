@@ -8,7 +8,7 @@ edition = "2021"
 rust-version = "1.82"
 license = "MIT OR Apache-2.0"
 keywords = ["ffxiv", "chocobo"]
-include = ["examples/*.rs", "src/**/*", "LICENSE-*", "README.md", "build/*"]
+include = ["examples/*.rs", "src/*.rs", "build/*.rs", "build/dyes.xml", "locales/*.ftl", "LICENSE-*", "README.md"]
 build = "build/main.rs"
 
 [package.metadata.docs.rs]
