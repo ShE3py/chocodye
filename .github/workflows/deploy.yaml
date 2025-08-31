@@ -1,6 +1,7 @@
-name: Deploy
+name: Deploy to GitHub Pages
 on: workflow_dispatch
 env:
+  RUSTUP_TERM_COLOR: always
   CARGO_TERM_COLOR: always
 jobs:
   build:
@@ -10,12 +11,19 @@ jobs:
         working-directory: ./web
     steps:
       - uses: actions/checkout@v5
+      
+      - name: Install wasm32 target
+        run: rustup target add wasm32-unknown-unknown
+      
       - run: cargo build --release
+      
       - run: mv ./target/wasm32-unknown-unknown/release/chocoweb.wasm ./src/
       - run: rm ./src/lib.rs
+      
       - uses: actions/upload-pages-artifact@v4
         with:
           path: ./src/
+  
   deploy:
     needs: build
     permissions:
