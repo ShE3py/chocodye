@@ -54,6 +54,7 @@ pub extern "C" fn request_menu(starting_dye: i32, final_dye: i32, sl: Option<Sna
                         let ds = starting_dye.distance(final_dye);
                         let dd = Dye::DEFAULT_CHOCOBO_COLOR.distance(final_dye);
 
+                        #[expect(clippy::cast_precision_lost, reason = "precision not required as we're rounding to .1")]
                         if ds > dd {
                             let ss = snacks.sum();
                             let ds = chocodye::make_meal(Dye::DEFAULT_CHOCOBO_COLOR, final_dye).len();

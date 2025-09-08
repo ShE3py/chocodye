@@ -216,6 +216,7 @@ impl<'de> Deserialize<'de> for Name {
                 formatter.write_str("a str")
             }
 
+            #[expect(clippy::string_slice, reason = "name is ASCII, slicing is okay")]
             fn visit_str<E: Error>(self, v: &str) -> Result<Self::Value, E> {
                 Ok(Name {
                     key: v.to_owned(),

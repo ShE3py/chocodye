@@ -8,14 +8,16 @@ fn is_supported() -> bool {
     env::var("COLORTERM").ok().is_some_and(|s| s == "truecolor" || s == "24bit")
 }
 
-/// Changes the background color of a string using three [ANSI escape codes](https://en.wikipedia.org/wiki/ANSI_escape_code#24-bit)
-/// if the terminal support [truecolors](https://en.wikipedia.org/wiki/Color_depth#True_color_(24-bit)).
+/// Changes the background color of a string using three [ANSI escape codes] if the terminal support [truecolors].
 ///
 /// If the environment variable `COLORTERM` is not defined or contains neither `truecolor` nor `24bit`, the string parameter
 /// is returned as is.
 ///
 /// This function also changes the foreground color according to the specified background color in order to ensure that the
 /// text is visible.
+///
+/// [ANSI escape codes]: https://en.wikipedia.org/wiki/ANSI_escape_code#24-bit
+/// [truecolors]: https://en.wikipedia.org/wiki/Color_depth#True_color_(24-bit)
 ///
 /// # Examples
 ///

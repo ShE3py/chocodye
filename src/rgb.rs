@@ -84,7 +84,7 @@ impl Rgb {
     /// assert!(Rgb::from_hex("#fff").is_err());
     /// assert!(Rgb::from_hex("ffffff").is_err());
     /// ```
-    #[expect(clippy::missing_errors_doc, clippy::indexing_slicing)]
+    #[expect(clippy::missing_errors_doc, clippy::indexing_slicing, clippy::string_slice)]
     pub fn from_hex(s: &str) -> Result<Rgb, ParseHexError> {
         if s.len() != 7 {
             Err(ParseHexError::BadLen)
@@ -167,9 +167,9 @@ impl Rgb {
     /// ```
     #[must_use]
     #[inline]
-    #[allow(clippy::cast_possible_truncation, clippy::suboptimal_flops)]
-    pub fn luma(self) -> u8 {
-        (0.299 * (self.r as f32) + 0.587 * (self.g as f32) + 0.114 * (self.b as f32)) as u8
+    #[expect(clippy::cast_possible_truncation)]
+    pub const fn luma(self) -> u8 {
+        (((299 * self.r as u32) + (587 * self.g as u32) + (114 * self.b as u32)) / 1000) as u8
     }
 
     /// Converts this color into a gray shade. Takes human perception into account.
@@ -185,7 +185,7 @@ impl Rgb {
     /// ```
     #[must_use]
     #[inline]
-    pub fn grayscale(self) -> Rgb {
+    pub const fn grayscale(self) -> Rgb {
         Rgb::gray(self.luma())
     }
 }

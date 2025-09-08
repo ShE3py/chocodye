@@ -47,7 +47,7 @@ impl Dye {
     /// ```
     #[must_use]
     #[inline]
-    pub fn luma(self) -> u8 {
+    pub const fn luma(self) -> u8 {
         self.color().luma()
     }
 

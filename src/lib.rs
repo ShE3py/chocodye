@@ -186,7 +186,7 @@ pub fn make_meal(starting_dye: Dye, final_dye: Dye) -> Vec<Snack> {
         }
 
         macro_rules! try_possibilities {
-            ($N:literal, $($M:literal),*) => { #[allow(clippy::redundant_else)] {
+            ($N:literal, $($M:literal),*) => { #[expect(clippy::redundant_else)] {
                 let best_choice = Possibility::<$N>::get(current_color, final_color);
 
                 if current_distance < best_choice.next_distance {
@@ -239,7 +239,7 @@ pub fn make_meal(starting_dye: Dye, final_dye: Dye) -> Vec<Snack> {
 /// assert_eq!(menu, [(Apple, 7), (Pear, 3)]);
 /// ```
 #[must_use]
-#[allow(clippy::cast_possible_truncation)]
+#[expect(clippy::cast_possible_truncation)]
 pub fn make_menu(starting_dye: Dye, snacks: SnackList) -> Vec<(Snack, u8)> {
     /// Returns the largest number `q` such that `0 <= c + qd <= 255`.
     #[inline]
@@ -263,7 +263,7 @@ pub fn make_menu(starting_dye: Dye, snacks: SnackList) -> Vec<(Snack, u8)> {
     }
 
     /// Returns the largest number `q` such that `0 <= c + qd <= 255` for `c := { r, g, b }`.
-    #[allow(non_snake_case)]
+    #[expect(non_snake_case)]
     fn Q(c: Rgb, s: Snack) -> u8 {
         let qr = max(c.r, s.effect().0);
         let qg = max(c.g, s.effect().1);

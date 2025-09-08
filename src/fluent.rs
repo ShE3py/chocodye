@@ -59,7 +59,7 @@ macro_rules! message {
 pub type __FluentArgs<'args> = FluentArgs<'args>;
 
 #[doc(hidden)]
-pub fn __format_message<'a, R, M>(bundle: &'a fluent::bundle::FluentBundle<R, M>, id: &'static str, args: Option<FluentArgs<'a>>) -> Cow<'a, str> where R: Borrow<FluentResource>, M: MemoizerKind {
+pub fn __format_message<'bundle, R, M>(bundle: &'bundle fluent::bundle::FluentBundle<R, M>, id: &'static str, args: Option<FluentArgs<'_>>) -> Cow<'bundle, str> where R: Borrow<FluentResource>, M: MemoizerKind {
     if let Some(msg) = bundle.get_message(id) {
         if let Some(pattern) = msg.value() {
             let mut errors = Vec::new();
@@ -186,7 +186,6 @@ impl Lang {
 
 /// A collection of messages for a given language. Obtained from [`Lang::into_bundle`].
 #[cfg_attr(docsrs, doc(cfg(feature = "fluent")))]
-#[allow(clippy::module_name_repetitions)]
 pub type FluentBundle = fluent::FluentBundle<FluentResource>;
 
 impl TryFrom<Lang> for FluentBundle {
