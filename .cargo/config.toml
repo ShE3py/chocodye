@@ -17,7 +17,7 @@ rustflags = [
     "-Fclippy::mixed_read_write_in_expression", "-Fclippy::mod_module_files", "-Wclippy::mutex_atomic", "-Fclippy::pub_without_shorthand",
     "-Wclippy::rc_buffer", "-Wclippy::rc_mutex", "-Fclippy::redundant_type_annotations", "-Wclippy::rest_pat_in_fully_bound_structs",
     "-Fclippy::semicolon_outside_block", "-Fclippy::str_to_string", "-Wclippy::string_lit_chars_any",
-    "-Fclippy::string_to_string", "-Fclippy::try_err", "-Fclippy::undocumented_unsafe_blocks", "-Wclippy::unnecessary_safety_comment",
+    "-Fclippy::try_err", "-Fclippy::undocumented_unsafe_blocks", "-Wclippy::unnecessary_safety_comment",
     "-Wclippy::unnecessary_self_imports", "-Wclippy::unneeded_field_pattern", "-Fclippy::unseparated_literal_suffix",
     "-Wclippy::verbose_file_reads", "-Wclippy::renamed_function_params", "-Wclippy::cfg_not_test", "-Fclippy::unused_result_ok",
     "-Wclippy::unused_trait_names", "-Wclippy::non_zero_suggestions",

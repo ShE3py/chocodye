@@ -60,45 +60,30 @@ pub type __FluentArgs<'args> = FluentArgs<'args>;
 
 #[doc(hidden)]
 pub fn __format_message<'bundle, R, M>(bundle: &'bundle fluent::bundle::FluentBundle<R, M>, id: &'static str, args: Option<FluentArgs<'_>>) -> Cow<'bundle, str> where R: Borrow<FluentResource>, M: MemoizerKind {
-    if let Some(msg) = bundle.get_message(id) {
-        if let Some(pattern) = msg.value() {
-            let mut errors = Vec::new();
-            match &args {
-                Some(args) => {
-                    let result = bundle.format_pattern(pattern, Some(args), &mut errors);
-
-                    if errors.is_empty() {
-                        return Cow::Owned(result.into_owned());
-                    }
-                },
-                None => {
-                    let result = bundle.format_pattern(pattern, None, &mut errors);
-
-                    if errors.is_empty() {
-                        return result;
-                    }
-                }
-            }
-
-            error!(target: "fluent", "unable to format message `{id}`");
-            for error in errors {
-                error!(target: "fluent", "{error}");
-            }
-        }
-        else {
-            error!(target: "fluent", "message `{id}` has no value");
-        }
-    }
-    else {
-        error!(target: "fluent", "missing message `{id}`");
-    }
-
-    args.map_or(Cow::Borrowed(id), |args| {
+    let error = || args.as_ref().map_or(Cow::Borrowed(id), |args| {
         let scope = Scope::new(bundle, None, None);
-        let args = args.into_iter().map(|(k, v)| format!("{k}: {:?}", v.as_string(&scope))).collect::<Vec<_>>().join(", ");
+        let args = args.iter().map(|(k, v)| format!("{k}: {v:?}", v = v.as_string(&scope))).collect::<Vec<_>>().join(", ");
 
         Cow::Owned(format!("{id}({args})"))
-    })
+    });
+
+    let Some(pattern) = bundle.get_message(id).and_then(|msg| msg.value()) else {
+        error!(target: "fluent", "missing message `{id}`");
+        return error();
+    };
+
+    let mut errors = Vec::new();
+    let result = bundle.format_pattern(pattern, args.as_ref(), &mut errors);
+
+    if !errors.is_empty() {
+        error!(target: "fluent", "unable to format message `{id}`");
+        for error in errors {
+            error!(target: "fluent", "{error}");
+        }
+        return error();
+    }
+
+    result
 }
 
 /// A language officially supported by *Final Fantasy XIV*.
