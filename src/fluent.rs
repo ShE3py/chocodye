@@ -60,16 +60,16 @@ pub type __FluentArgs<'args> = FluentArgs<'args>;
 
 #[doc(hidden)]
 pub fn __format_message<'bundle, R, M>(bundle: &'bundle fluent::bundle::FluentBundle<R, M>, id: &'static str, args: Option<FluentArgs<'_>>) -> Cow<'bundle, str> where R: Borrow<FluentResource>, M: MemoizerKind {
-    let error = || args.as_ref().map_or(Cow::Borrowed(id), |args| {
+    let error = |args: Option<FluentArgs<'_>>| args.map_or(Cow::Borrowed(id), |args| {
         let scope = Scope::new(bundle, None, None);
-        let args = args.iter().map(|(k, v)| format!("{k}: {v:?}", v = v.as_string(&scope))).collect::<Vec<_>>().join(", ");
+        let args = args.into_iter().map(|(k, v)| format!("{k}: {v:?}", v = v.into_string(&scope))).collect::<Vec<_>>().join(", ");
 
         Cow::Owned(format!("{id}({args})"))
     });
 
     let Some(pattern) = bundle.get_message(id).and_then(|msg| msg.value()) else {
         error!(target: "fluent", "missing message `{id}`");
-        return error();
+        return error(args);
     };
 
     let mut errors = Vec::new();
@@ -80,7 +80,7 @@ pub fn __format_message<'bundle, R, M>(bundle: &'bundle fluent::bundle::FluentBu
         for error in errors {
             error!(target: "fluent", "{error}");
         }
-        return error();
+        return error(args);
     }
 
     result

@@ -25,10 +25,10 @@ fn is_supported() -> bool {
 /// use chocodye::{Rgb, ansi_text};
 /// use std::env;
 ///
-/// env::remove_var("COLORTERM");
+/// unsafe { env::remove_var("COLORTERM") };
 /// assert_eq!(ansi_text(Rgb::RED, "hello world!"), "hello world!");
 ///
-/// env::set_var("COLORTERM", "truecolor");
+/// unsafe { env::set_var("COLORTERM", "truecolor") };
 /// assert_eq!(ansi_text(Rgb::RED, "hello world!"), "\x1B[48;2;255;0;0m\x1B[38;2;255;255;255mhello world!\x1B[0m");
 /// //                                                         ^^^^^^^           ^^^^^^^^^^^ ^^^^^^^^^^^^
 /// //                                                        background          foreground     text
@@ -42,7 +42,7 @@ pub fn ansi_text(bg: Rgb, s: &str) -> String {
     else {
         let fg = {
             const LIMIT: u32 = Rgb::gray(127).distance(Rgb::WHITE);
-            
+
             if bg.distance(Rgb::WHITE) >= LIMIT {
                 Rgb::WHITE
             } else {

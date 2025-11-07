@@ -7,17 +7,17 @@ static LANG_EN: &str = include_str!(concat!(env!("OUT_DIR"), "/LANG_EN.html"));
 static LANG_FR: &str = include_str!(concat!(env!("OUT_DIR"), "/LANG_FR.html"));
 static LANG_JP: &str = include_str!(concat!(env!("OUT_DIR"), "/LANG_JP.html"));
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub static LANGS: [&str; 4] = [LANG_EN, LANG_FR, LANG_DE, LANG_JP];
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub static LANG_SIZES: [usize; 4] = [LANG_EN.len(), LANG_FR.len(), LANG_DE.len(), LANG_JP.len()];
 
 fn cvt(dye: i32) -> Option<Dye> {
     Dye::VALUES.get(usize::try_from(dye).ok()?).copied()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn make_meal(starting_dye: i32, final_dye: i32) -> Option<SnackList> {
     let starting_dye = cvt(starting_dye)?;
     let final_dye = cvt(final_dye)?;
@@ -26,7 +26,7 @@ pub extern "C" fn make_meal(starting_dye: i32, final_dye: i32) -> Option<SnackLi
     Some(SnackList::from(meal.as_slice()))
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn request_menu(starting_dye: i32, final_dye: i32, sl: Option<SnackList>, lang: i32) {
     let Some(((starting_dye, final_dye), snacks)) = cvt(starting_dye).zip(cvt(final_dye)).zip(sl) else {
         return;
