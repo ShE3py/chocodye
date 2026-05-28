@@ -42,11 +42,11 @@ features = ["macros"]
 optional = true
 
 [dependencies.log]
-version = "0.4.28"
+version = "0.4.30"
 optional = true
 
 [build-dependencies.quick-xml]
-version = "0.38.3"
+version = "0.40.1"
 features = ["serialize"]
 
 [build-dependencies.serde]
@@ -54,7 +54,7 @@ version = "1.0.228"
 features = ["derive"]
 
 [target.'cfg(unix)'.dev-dependencies.libc]
-version = "0.2.177"
+version = "0.2.186"
 
 [target.'cfg(windows)'.dev-dependencies.windows-sys]
 version = "0.61.2"
