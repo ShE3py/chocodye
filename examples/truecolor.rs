@@ -121,8 +121,8 @@ fn  main() {
 
     const BASE_INDENT: u32 = TABS * TAB_WIDTH;
 
-    let char_weight = match bundle.locales.iter().next() {
-        Some(locale) if *locale == langid!("jp") => 2,
+    let char_weight = match bundle.locale() {
+        locale if *locale == langid!("jp") => 2,
         _ => 1
     };
 

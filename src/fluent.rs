@@ -177,8 +177,15 @@ impl Lang {
 /// A collection of messages for a given language. Obtained from [`Lang::into_bundle`].
 #[cfg_attr(docsrs, doc(cfg(feature = "fluent")))]
 #[repr(transparent)]
-#[derive(Debug, Clone)]
+#[expect(missing_debug_implementations, reason = "non-derivable")]
 pub struct FluentBundle(fluent::FluentBundle<FluentResource>);
+
+impl FluentBundle {
+    /// Returns the language this bundle represents.
+    pub fn locale(&self) -> &LanguageIdentifier {
+        self.0.locales.first().expect("must be non-empty")
+    }
+}
 
 impl TryFrom<Lang> for FluentBundle {
     /// The tuple returned in the event of a parse error.
