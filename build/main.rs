@@ -24,6 +24,8 @@ fn main() {
         cat.dyes.retain(|dye| dye.choco);
     }
 
+    dyes.categories.iter_mut().for_each(|category| category.dyes.sort_unstable_by_key(|dye| u8::MAX - dye.color.luma()));
+
     if let Err(e) = codegen(&dyes) {
         panic!("cannot codegen `dyes.rs`: {e}");
     }
@@ -142,7 +144,15 @@ fn codegen_enum_category(data: &Dyes, buf: &mut impl Write) -> io::Result<()> {
         include_str!("enum.Category.rs"),
 
         variants = data.categories.iter()
-            .map(|category| category.name.rust.as_str())
+            .map(|category| format!(
+                "/// {hack}{dyes} \n    \
+                {variant}",
+                variant = category.name.rust,
+                hack = r#"<span aria-hidden="true">[<div></div>](Dye)</span>"#, // otherwise, the first dye is not clickable (?)
+                dyes = category.dyes.iter()
+                    .map(|dye| format!(r#"[<div style="background-color: {color:x}; width: 3em; height: 3em; display: inline-block;" aria-hidden="true"></div>](Dye::{dye})"#, color = dye.color, dye = dye.name.rust))
+                    .collect::<Vec<_>>().join(" ")
+            ))
             .collect::<Vec<_>>().join(",\n    "),
 
         associatedconstant_VALUES = data.categories.iter()
