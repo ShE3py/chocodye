@@ -1,21 +1,24 @@
 #![cfg(feature = "fluent")]
 
-use std::borrow::{Borrow, Cow};
+use std::borrow::Cow;
 use std::error::Error;
 use std::fmt::{self, Formatter};
 use std::str::FromStr;
 
-use fluent::{FluentArgs, FluentResource};
-use fluent::memoizer::MemoizerKind;
 use fluent::resolver::Scope;
+use fluent::{FluentArgs, FluentResource};
 use fluent_syntax::parser::ParserError;
 use log::error;
 use unic_langid::{langid, LanguageIdentifier};
 
-/// Formats a Fluent message fail-safely. Missing keys are formatted arbitrarily.
+/// Formats a Fluent message fail-safely; missing keys are formatted arbitrarily.
 ///
-/// Messages without arguments are evaluated to [`&str`], while messages with arguments
-/// are evaluated to [`String`].
+/// First argument must be of type [`&'bundle FluentBundle`](FluentBundle),
+/// second argument must be of type [`&'static str`](&str).
+/// Arguments are only evaluated once.
+///
+/// Messages without arguments are evaluated to [`&'bundle str`](&str),
+/// while messages with arguments are evaluated to [`String`].
 ///
 /// # Examples
 ///
@@ -59,7 +62,9 @@ macro_rules! message {
 pub type __FluentArgs<'args> = FluentArgs<'args>;
 
 #[doc(hidden)]
-pub fn __format_message<'bundle, R, M>(bundle: &'bundle fluent::bundle::FluentBundle<R, M>, id: &'static str, args: Option<FluentArgs<'_>>) -> Cow<'bundle, str> where R: Borrow<FluentResource>, M: MemoizerKind {
+pub fn __format_message<'bundle>(bundle: &'bundle FluentBundle, id: &'static str, args: Option<FluentArgs<'_>>) -> Cow<'bundle, str> {
+    let bundle = &bundle.0;
+
     let error = |args: Option<FluentArgs<'_>>| args.map_or(Cow::Borrowed(id), |args| {
         let scope = Scope::new(bundle, None, None);
         let args = args.into_iter().map(|(k, v)| format!("{k}: {v:?}", v = v.into_string(&scope))).collect::<Vec<_>>().join(", ");
@@ -87,7 +92,7 @@ pub fn __format_message<'bundle, R, M>(bundle: &'bundle fluent::bundle::FluentBu
 }
 
 /// A language officially supported by *Final Fantasy XIV*.
-/// Can be converted into a [`FluentBundle`].
+/// Can be converted into a [`FluentBundle`] via [`into_bundle`](Lang::into_bundle).
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 #[cfg_attr(docsrs, doc(cfg(feature = "fluent")))]
 #[repr(u8)]
@@ -163,7 +168,7 @@ impl Lang {
                     error!(target: "lang", "{error}");
                 }
 
-                FluentBundle::new(vec![self.langid()])
+                FluentBundle(fluent::FluentBundle::new(vec![self.langid()]))
             }
         }
     }
@@ -171,7 +176,9 @@ impl Lang {
 
 /// A collection of messages for a given language. Obtained from [`Lang::into_bundle`].
 #[cfg_attr(docsrs, doc(cfg(feature = "fluent")))]
-pub type FluentBundle = fluent::FluentBundle<FluentResource>;
+#[repr(transparent)]
+#[derive(Debug, Clone)]
+pub struct FluentBundle(fluent::FluentBundle<FluentResource>);
 
 impl TryFrom<Lang> for FluentBundle {
     /// The tuple returned in the event of a parse error.
@@ -181,11 +188,11 @@ impl TryFrom<Lang> for FluentBundle {
     /// Parses the translation resource of `value` into a new [`FluentBundle`].
     /// Returns both the resource and a vec of errors in case of error.
     fn try_from(value: Lang) -> Result<Self, Self::Error> {
-        let mut bundle = FluentBundle::new(vec![value.langid()]);
+        let mut bundle = fluent::FluentBundle::new(vec![value.langid()]);
         let res = FluentResource::try_new(value.file().to_owned())?;
 
         bundle.add_resource_overriding(res);
-        Ok(bundle)
+        Ok(FluentBundle(bundle))
     }
 }
 
@@ -217,7 +224,7 @@ impl FromStr for Lang {
             "fr" => Ok(Lang::French),
             "de" => Ok(Lang::German),
             "jp" => Ok(Lang::Japanese),
-            _ => Err(ParseLangError)
+            _ => Err(ParseLangError(()))
         }
     }
 }
@@ -234,7 +241,8 @@ impl From<Lang> for LanguageIdentifier {
 /// This error is used as the error type for the [`Lang::from_str`] function.
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 #[cfg_attr(docsrs, doc(cfg(feature = "fluent")))]
-pub struct ParseLangError;
+#[repr(transparent)]
+pub struct ParseLangError(());
 
 impl fmt::Display for ParseLangError {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
