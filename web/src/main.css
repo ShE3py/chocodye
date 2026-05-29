@@ -52,3 +52,13 @@ fieldset {
 #lang-select, #start-select {
     margin-bottom: .25rem;
 }
+
+footer {
+    font-family: monospace;
+
+    position: absolute;
+    top: 4px;
+    right: 84px;
+    border: 0;
+    text-align: right;
+}

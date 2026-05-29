@@ -50,8 +50,12 @@ function readUsize(ptr) {
     return new DataView(wasm.exports.memory.buffer).getUint32(ptr, true)
 }
 
+function readRStr(ptr) {
+    return readStr(readUsize(ptr), readUsize(ptr + 4))
+}
+
 function readStr(ptr, len) {
-    return (new TextDecoder()).decode(new Uint8Array(wasm.exports.memory.buffer,  ptr, len))
+    return (new TextDecoder()).decode(new Uint8Array(wasm.exports.memory.buffer, ptr, len))
 }
 
 function read(select_id) {
@@ -76,9 +80,10 @@ function updateLang(lang) {
     if(lang >= 0 && lang < 4) {
         let start = read("start-select")
         let final = read("final-select")
-        
-        document.getElementById("lang_import").innerHTML = readStr(readUsize(wasm.exports.LANGS.value + 8 * lang), readUsize(wasm.exports.LANG_SIZES.value  + 4 * lang))
-        
+
+        document.getElementById("lang_import").innerHTML = readRStr(wasm.exports.LANGS.value + 8 * lang)
+        document.getElementById("footer_import").innerHTML = "<small>" + readRStr(wasm.exports.FOOTER.value) + "</small>";
+
         restore("lang-select", lang)
         restore("start-select", start)
         restore("final-select", final)

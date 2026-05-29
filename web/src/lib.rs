@@ -2,16 +2,22 @@ use std::fmt::Write as _;
 
 use chocodye::{Dye, Lang, message, SnackList};
 
-static LANG_DE: &str = include_str!(concat!(env!("OUT_DIR"), "/LANG_DE.html"));
-static LANG_EN: &str = include_str!(concat!(env!("OUT_DIR"), "/LANG_EN.html"));
-static LANG_FR: &str = include_str!(concat!(env!("OUT_DIR"), "/LANG_FR.html"));
-static LANG_JP: &str = include_str!(concat!(env!("OUT_DIR"), "/LANG_JP.html"));
+const LANG_DE: &str = include_str!(concat!(env!("OUT_DIR"), "/LANG_DE.html"));
+const LANG_EN: &str = include_str!(concat!(env!("OUT_DIR"), "/LANG_EN.html"));
+const LANG_FR: &str = include_str!(concat!(env!("OUT_DIR"), "/LANG_FR.html"));
+const LANG_JP: &str = include_str!(concat!(env!("OUT_DIR"), "/LANG_JP.html"));
 
 #[unsafe(no_mangle)]
 pub static LANGS: [&str; 4] = [LANG_EN, LANG_FR, LANG_DE, LANG_JP];
 
 #[unsafe(no_mangle)]
-pub static LANG_SIZES: [usize; 4] = [LANG_EN.len(), LANG_FR.len(), LANG_DE.len(), LANG_JP.len()];
+pub static FOOTER: &str = const {
+    concat!(
+        env!("CARGO_PKG_NAME"), " ", env!("CARGO_PKG_VERSION"),
+        " (", env!("GIT_HEAD"), " <time datetime=\"", env!("BUILD_DATE"), "\">", env!("BUILD_DATE"), "</time>)<br />",
+        env!("CARGO_PKG_LICENSE")
+    )
+};
 
 fn cvt(dye: i32) -> Option<Dye> {
     Dye::VALUES.get(usize::try_from(dye).ok()?).copied()

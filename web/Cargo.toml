@@ -24,3 +24,8 @@ features = ["fluent"]
 path = ".."
 default-features = false
 features = ["fluent"]
+
+[build-dependencies.chrono]
+version = "0.4.44"
+default-features = false
+features = ["now"]
