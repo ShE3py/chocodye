@@ -113,7 +113,7 @@ fn codegen_enum_dye(data: &Dyes, buf: &mut impl Write) -> io::Result<()> {
                  dyes = category.dyes.iter()
                      .map(|dye| dye.name.rust.as_str())
                      .collect::<Vec<_>>().join(" | "),
-                 variant = &category.name.rust,
+                 variant = category.name.rust,
              ))
              .collect::<Vec<_>>()
              .join(",\n            "),

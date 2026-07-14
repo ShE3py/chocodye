@@ -42,11 +42,11 @@ features = ["macros"]
 optional = true
 
 [dependencies.log]
-version = "0.4.30"
+version = "0.4.33"
 optional = true
 
 [build-dependencies.quick-xml]
-version = "0.40.1"
+version = "0.41.0"
 features = ["serialize"]
 
 [build-dependencies.serde]
