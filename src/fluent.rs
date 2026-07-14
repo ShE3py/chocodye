@@ -223,7 +223,7 @@ impl FromStr for Lang {
     /// use std::str::FromStr;
     ///
     /// assert_eq!(Lang::from_str("jp"), Ok(Lang::Japanese));
-    /// assert_eq!(Lang::from_str("ja"), Err(ParseLangError));
+    /// assert!(Lang::from_str("ja").is_err());
     /// ```
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
